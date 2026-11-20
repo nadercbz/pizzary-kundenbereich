@@ -1,0 +1,8 @@
+ORDNER-INFO: 04_Manual
+==================================================
+
+## INHALT (Unterordner):
+(Keine Unterordner - Endpunkt für Dateien)
+
+## BESCHREIBUNG:
+Hier werden Dateien im Bereich '04_Manual' abgelegt.

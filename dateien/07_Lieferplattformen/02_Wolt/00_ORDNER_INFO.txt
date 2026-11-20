@@ -1,0 +1,11 @@
+ORDNER-INFO: 02_Wolt
+==================================================
+
+## INHALT (Unterordner):
+- [ORDNER] 01_Profile_Assets
+- [ORDNER] 02_Menu_Assets
+- [ORDNER] 03_Promos_Banner
+- [ORDNER] 04_Manual
+
+## BESCHREIBUNG:
+Hier werden Dateien im Bereich '02_Wolt' abgelegt.

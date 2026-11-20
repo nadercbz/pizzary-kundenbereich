@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Einkaufsliste Wandbild. The Pizzary</title>
+<meta name="theme-color" content="#6887DD">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<style>
+@font-face{font-family:"Bright Dreams";src:url("assets/BrightDreams-Regular.ttf") format("truetype");font-display:swap}
+@font-face{font-family:"Bisko";src:url("assets/Bisko.otf") format("opentype");font-display:swap}
+:root{
+  --base:#F4F4ED;--blue:#6887DD;--cheesy:#F5F5AF;--red:#BE2337;--ink:#000;
+  --f-house:"Ariana Pro","Avenir Next","Avenir","Montserrat","Helvetica Neue",Arial,sans-serif;
+  --f-loud:"Bright Dreams","Arial Black",Impact,sans-serif;
+  --f-hand:"Bisko","Comic Sans MS",cursive;
+  --pad:clamp(16px,5vw,48px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--base);color:var(--ink);font:400 1rem/1.5 var(--f-house)}
+h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+.loud{font-family:var(--f-loud);font-weight:400;text-transform:uppercase;letter-spacing:.01em}
+.hand{font-family:var(--f-hand);text-transform:uppercase;letter-spacing:.02em}
+
+.top{background:var(--blue);color:#fff;padding:22px var(--pad) 34px}
+.top-in{max-width:760px;margin:0 auto}
+.top img.logo{width:clamp(120px,26vw,170px);height:auto;display:block}
+.top h1{margin-top:24px;font-size:clamp(2.4rem,10vw,4.4rem);line-height:.95;color:var(--cheesy)}
+.top .sub{margin-top:10px;font-size:1.2rem}
+.bar{display:flex;align-items:center;gap:14px;margin-top:20px;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em}
+.track{flex:1;height:10px;background:rgba(255,255,255,.3);border:2px solid var(--ink)}
+.track i{display:block;height:100%;width:0;background:var(--cheesy);transition:width .3s}
+.reset{appearance:none;border:2px solid var(--ink);background:transparent;color:#fff;font:800 .72rem var(--f-house);text-transform:uppercase;letter-spacing:.06em;padding:.45em .8em;cursor:pointer}
+.reset:hover{background:var(--cheesy);color:var(--ink)}
+
+main{max-width:760px;margin:0 auto;padding:10px var(--pad) 80px}
+.prev{display:block;width:100%;height:auto;border:3px solid var(--ink);margin:26px 0 0}
+section{padding:38px 0 8px;border-top:3px solid var(--ink);margin-top:34px}
+.head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.num{font-family:var(--f-loud);font-size:1.15rem;color:var(--red)}
+h2{font-family:var(--f-loud);font-weight:400;text-transform:uppercase;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1}
+h3{font-family:var(--f-loud);font-weight:400;text-transform:uppercase;font-size:1.05rem;color:var(--red);margin:26px 0 6px}
+.note{margin:6px 0 14px;font-size:1rem;color:#222}
+.box{border:3px solid var(--ink);background:var(--cheesy);padding:14px 16px;font-size:.98rem}
+.box b{display:block;font-family:var(--f-loud);font-weight:400;text-transform:uppercase;font-size:1.05rem;margin-bottom:4px}
+
+/* Checkbox Zeilen */
+.chk{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:2px solid #d9d9cf;cursor:pointer}
+.chk input{position:absolute;opacity:0;pointer-events:none}
+.chk .bx{flex:none;width:26px;height:26px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;margin-top:1px}
+.chk .bx::after{content:"";width:12px;height:7px;border-left:4px solid var(--ink);border-bottom:4px solid var(--ink);transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+.chk input:checked + .bx{background:var(--cheesy)}
+.chk input:checked + .bx::after{opacity:1}
+.chk input:checked ~ .tx{opacity:.45}
+.chk input:focus-visible + .bx{outline:3px solid var(--red);outline-offset:3px}
+.tx{flex:1;font-weight:700;line-height:1.35}
+.tx small{display:block;margin-top:2px;font-weight:500;color:#444;font-size:.92rem}
+.qty{flex:none;text-align:right;font-family:var(--f-loud);font-size:1.15rem;line-height:1.1;white-space:nowrap;padding-left:8px}
+.qty small{display:block;font-family:var(--f-house);font-weight:600;font-size:.78rem;color:#555;text-transform:none}
+.sw{flex:none;width:44px;height:44px;border:3px solid var(--ink);margin-top:-3px}
+
+/* Schritte */
+.steps{counter-reset:s;display:grid;gap:12px;margin-top:8px}
+.steps li{display:flex;gap:14px;font-weight:600;line-height:1.4}
+.steps li::before{counter-increment:s;content:counter(s);flex:none;font-family:var(--f-loud);color:var(--red);font-size:1.2rem;width:1.4rem}
+.steps small{display:block;font-weight:500;color:#444;font-size:.92rem}
+
+.foot{margin-top:46px;padding-top:18px;border-top:3px solid var(--ink);font-size:.85rem;color:#444}
+
+@media print{
+  .reset,.bar{display:none}
+  .top{background:#fff;color:var(--ink)}
+  .top h1{color:var(--red)}
+  .top img.logo{filter:invert(1)}
+  section{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <img class="logo" src="assets/logo-weiss.svg" alt="The Pizzary" width="170" height="78">
+    <h1 class="loud">Einkaufsliste<br>Wandbild.</h1>
+    <p class="sub hand">Taube "Ick seh allet." und Gesichter Reihe</p>
+    <div class="bar">
+      <span id="count">0 / 0</span>
+      <div class="track"><i id="fill"></i></div>
+      <button class="reset" id="reset" type="button">Zurücksetzen</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <img class="prev" src="assets/vorschau.jpg" alt="Visualisierung: Taube mit beweglichen Augen links, Gesichter Reihe rechts" width="1400" height="1045">
+
+  <div class="box" style="margin-top:22px">
+    <b>Annahmen für die Mengen</b>
+    Beide Wandfelder zusammen ca. 20 m² (je ca. 4 m breit, 2,5 m hoch). Taube ca. 3 m breit. 9 Gesichter je ca. 40 mal 50 cm. Rechnung: 1 Liter Wandfarbe reicht für ca. 10 m² pro Anstrich, Gelb und Hell auf Blau braucht 3 Anstriche.<br>
+    <strong>Formel für deine echten Maße:</strong> Liter = Fläche in m² mal Anstriche, geteilt durch 10, plus 20 % Reserve. Miss die Wand nach und schick mir die Zahlen, dann rechne ich neu.
+  </div>
+
+  <section>
+    <div class="head"><span class="num">01</span><h2>Farben</h2></div>
+    <p class="note">Wandfarbe matt und abwaschbar (Nassabrieb Klasse 1 oder 2, wegen Fett und Reinigung). Alle Farben auf einmal im Baumarkt oder Farbfachhandel mischen lassen, damit sie aus einer Charge sind. Den HEX Wert dem Mischcomputer nennen oder die Figuren Datei zum Abgleichen mitnehmen.</p>
+
+    <ul>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#6887DD"></span><span class="tx">Blau, die ganze Wand<small>#6887DD. Beide Felder, 2 Anstriche.</small></span><span class="qty">5 L<small>Eimer</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#FFFFFF"></span><span class="tx">Weiße Grundierung (Deckvorstreichfarbe)<small>Die Wand ist dunkelgrau. Ohne Grundierung wird das Blau fleckig und braucht viel mehr Farbe.</small></span><span class="qty">2,5 L<small>Eimer</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#BBABD5"></span><span class="tx">Lila, Taube und Haut<small>#BBABD5. Aus der Figur gemessen, am Farbfächer abgleichen. Taube ca. 4,5 m², 3 Anstriche.</small></span><span class="qty">2 L<small>Eimer</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#7D82D9"></span><span class="tx">Himmelblau, Gefieder und Federwellen<small>#7D82D9</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#AFCDAF"></span><span class="tx">Mint, Haut und Haare<small>#AFCDAF</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#DE7DCE"></span><span class="tx">Pink, Schnabel, Haare, Lippen<small>#DE7DCE</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#F5F5AF"></span><span class="tx">Käse Gelb, Käsescheibe<small>#F5F5AF. Auf Blau erst mit Weiß vorstreichen, sonst wird es grünlich.</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#FFC31E"></span><span class="tx">Gold, Krone und Sternaugen<small>#FFC31E. Ebenfalls auf Weiß vorstreichen.</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#BE2337"></span><span class="tx">Rot, Herz und Lippen<small>#BE2337</small></span><span class="qty">0,5 L</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="sw" style="background:#000000"></span><span class="tx">Schwarz, alle Konturen<small>#000000. Ca. 60 m Linie, 1 bis 3 cm breit. Für feine Details zusätzlich 2 schwarze Acrylmarker mit 15 mm Spitze.</small></span><span class="qty">0,5 L</span></label></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="head"><span class="num">02</span><h2>Zum Streichen</h2></div>
+    <ul>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Abdeckvlies für Boden und Tische<small>Vlies saugt Farbe auf, Folie rutscht.</small></span><span class="qty">1 Rolle</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Abdeckfolie für Möbel und Säulen<small>Die Holzsäulen mit den LED Panels gut abkleben.</small></span><span class="qty">2 Rollen</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Malerkrepp 50 mm</span><span class="qty">4 Rollen</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Präzisionskrepp 30 mm für die Kanten an den Säulen</span><span class="qty">2 Rollen</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Farbrolle 25 cm, Kurzflor, dazu Teleskopstange</span><span class="qty">3 Stück<small>Rolle, Ersatz, Stange</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Flachpinsel 30 und 50 mm</span><span class="qty">je 3</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Rundpinsel 12 und 20 mm für Gesichter<small>Dazu 2 Schlepper (Konturenpinsel) für lange Linien.</small></span><span class="qty">je 3</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Farbwanne und Farbgitter</span><span class="qty">2 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Spachtelmasse, Spachtel, Schleifpapier Körnung 120<small>Löcher und Dellen zuerst schließen.</small></span><span class="qty">1 Set</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Leiter oder Podest, Lasermeter, Wasserwaage, Bleistift, Kreide</span><span class="qty">leihen</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Beamer zum Übertragen der Zeichnung<small>Grafik an die Wand projizieren und mit Bleistift nachzeichnen. Alternative: Raster aus Kreppband, 50 cm Felder.</small></span><span class="qty">leihen</span></label></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="head"><span class="num">03</span><h2>Augen bauen</h2></div>
+    <p class="note">Zwei bewegliche Augäpfel in der Taube. Sie schauen zu dem Gast, der am nächsten steht. Ohne Kamera, nur Radar, deshalb gibt es keine Datenschutzfrage. Ohne Gast schauen sie zum Stammtisch in der Mitte.</p>
+
+    <h3>Material für beide Augen</h3>
+    <ul>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Hohlkugel weiß, Durchmesser 300 mm<small>Leuchtenkugel aus Opal Acryl, zum Bestellen als "Opalkugel 300 mm". Das ist der Augapfel.</small></span><span class="qty">2 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Schwarze Klebefolie, glänzend<small>Pupille, Kreis mit 120 mm Durchmesser, auf die Kugel geklebt.</small></span><span class="qty">1 Bogen</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Weiße PVC Platte 5 mm<small>Zwei Ringe mit 600 mm Außen und 280 mm Innendurchmesser. Das ist der große weiße Rand um das Auge, außen auf die Wand geschraubt.</small></span><span class="qty">1 Platte<small>ca. 1 x 1,3 m</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Servos, Metallgetriebe, digital, ca. 25 kg·cm<small>Je Auge einer zum Drehen und einer zum Neigen.</small></span><span class="qty">4 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Pan Tilt Halterung aus Metall für große Servos</span><span class="qty">2 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Sperrholz 18 mm für zwei Gehäuse<small>Je Gehäuse ca. 45 x 45 x 20 cm, hinter dem Auge. Dort sitzen Servos und Halterung.</small></span><span class="qty">1 Platte<small>ca. 1,25 x 1,25 m</small></span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Mikrocontroller ESP32 Board</span><span class="qty">1 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Servo Treiber PCA9685, 16 Kanäle</span><span class="qty">1 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Radar Sensor HLK LD2450<small>24 GHz, erkennt bis zu 3 Personen mit Position, Reichweite ca. 6 m. Das ist das "Gehirn" der Augen.</small></span><span class="qty">1 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Netzteil 5 bis 6 Volt, 10 Ampere, Gleichstrom<small>Servos ziehen beim Anlaufen viel Strom. Ein zu schwaches Netzteil lässt sie zucken.</small></span><span class="qty">1 Stück</span></label></li>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Kabel, Klemmen, Schrauben, Dübel, Wandwinkel, Kabelkanal<small>Dübelart nach Wandart wählen (Trockenbau braucht Hohlraumdübel).</small></span><span class="qty">1 Set</span></label></li>
+    </ul>
+
+    <h3>So wird gebaut</h3>
+    <ol class="steps">
+      <li><span>Gehäuse bauen<small>Zwei offene Kisten aus Sperrholz. Vorne offen, hinten an die Wand. In der Mitte die Halterung mit den zwei Servos festschrauben.</small></span></li>
+      <li><span>Kugel aufsetzen<small>Die Hohlkugel mit einem Ring am Servo Arm befestigen. Der Schwerpunkt muss im Drehpunkt liegen, dann braucht der Servo kaum Kraft.</small></span></li>
+      <li><span>Pupille kleben<small>Schwarzen Kreis mit 120 mm Durchmesser ausschneiden und mittig auf die Kugel kleben. Beide Pupillen schauen anfangs geradeaus.</small></span></li>
+      <li><span>Ring anbringen<small>Weißen PVC Ring um die Öffnung schrauben. Die Kugel schaut ca. 10 cm heraus und kann sich frei drehen.</small></span></li>
+      <li><span>Strom und Steuerung<small>ESP32, PCA9685 und die vier Servos verkabeln, Radar daneben an die Wand, auf ca. 1,2 m Höhe, Blick in den Raum. Das Netzteil kommt zusammen mit einer Steckdose in ein verstecktes Fach.</small></span></li>
+      <li><span>Programm<small>Der ESP32 liest die Position vom Radar und dreht die Augen dorthin. Ohne Person schauen sie zum Stammtisch. Den Code kann ich dir schreiben, sag Bescheid.</small></span></li>
+      <li><span>Testen vor dem Streichen<small>Alles erst auf dem Tisch aufbauen und eine Stunde laufen lassen. Erst wenn es sauber folgt, an die Wand.</small></span></li>
+    </ol>
+
+    <h3>Wichtig</h3>
+    <ul>
+      <li><p class="note" style="margin:6px 0">Augenmitte mindestens 1,7 m über dem Boden, damit niemand die Kugeln greifen kann.</p></li>
+      <li><p class="note" style="margin:6px 0">Die 230 Volt Zuleitung und das Netzteil macht ein Elektriker. Die Servos laufen nur mit Kleinspannung.</p></li>
+      <li><p class="note" style="margin:6px 0">Die Augen in der Visualisierung sind größer als 30 cm. Mit dem weißen Ring (60 cm) wirkt es aber genauso groß.</p></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="head"><span class="num">04</span><h2>Optional</h2></div>
+    <ul>
+      <li><label class="chk"><input type="checkbox"><span class="bx"></span><span class="tx">Neon Sprechblase "ICK SEH ALLET."<small>LED Neon Flex, Silikon, warmweiß 2700 K, ca. 3 m. Dazu ein 24 Volt Netzteil mit 60 Watt und Montageclips. Von einem Neon Hersteller auf eine klare Acrylplatte biegen lassen ist sauberer als selbst kleben.</small></span><span class="qty">ca. 3 m</span></label></li>
+    </ul>
+  </section>
+
+  <p class="foot">The Pizzary · Wandbild Sitzbereich · Mengen sind Schätzungen, noch keine Angebote. Häkchen bleiben in diesem Browser gespeichert.</p>
+</main>
+
+<script>
+(function () {
+  var KEY = "pizzary-wand-einkauf";
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type="checkbox"]'));
+  var count = document.getElementById("count"), fill = document.getElementById("fill");
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+  boxes.forEach(function (b, i) { b.checked = !!saved[i]; });
+  function update() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    count.textContent = done + " / " + boxes.length;
+    fill.style.width = (boxes.length ? done / boxes.length * 100 : 0) + "%";
+    try { localStorage.setItem(KEY, JSON.stringify(boxes.map(function (b) { return b.checked ? 1 : 0; }))); } catch (e) {}
+  }
+  boxes.forEach(function (b) { b.addEventListener("change", update); });
+  document.getElementById("reset").addEventListener("click", function () {
+    boxes.forEach(function (b) { b.checked = false; });
+    update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>

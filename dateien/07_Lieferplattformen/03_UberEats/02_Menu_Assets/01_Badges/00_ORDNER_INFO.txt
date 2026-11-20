@@ -1,0 +1,8 @@
+ORDNER-INFO: 01_Badges
+==================================================
+
+## INHALT (Unterordner):
+(Keine Unterordner - Endpunkt für Dateien)
+
+## BESCHREIBUNG:
+Hier werden Dateien im Bereich '01_Badges' abgelegt.

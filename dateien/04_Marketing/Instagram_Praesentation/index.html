@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pizzary Instagram Analyse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+@property --accent{syntax:'<color>';inherits:true;initial-value:#FFC31E}
+@property --p{syntax:'<percentage>';inherits:false;initial-value:0%}
+:root{
+  --base:#F4F4ED;--tomato:#BE2337;--cheesy:#F5F5AF;--cheesy-d:#FFC31E;
+  --sky:#7D82D9;--veggie:#AFCDAF;--pink:#DE7DCE;--black:#0B0B0B;
+  --bg:#BE2337;--ink:#F4F4ED;--accent:#FFC31E;
+  --display:'Unbounded','Arial Black',sans-serif;
+  --body:'Bricolage Grotesque','Helvetica Neue',sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--body);
+  transition:background-color 1.1s var(--ease),color 1.1s var(--ease),--accent 1.1s var(--ease);
+  -webkit-font-smoothing:antialiased;
+}
+.grain{position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;z-index:50;opacity:.16;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+
+.blob{position:fixed;left:0;top:0;border-radius:50%;filter:blur(2px);pointer-events:none;z-index:0;
+  width:var(--s);height:var(--s);background:var(--c);
+  transform:translate(calc(var(--x) - 50%),calc(var(--y) - 50%));
+  transition:transform 1.6s var(--ease),width 1.6s var(--ease),height 1.6s var(--ease),background-color 1.4s var(--ease)}
+.blob.b2{transition-duration:1.9s,1.9s,1.9s,1.4s}
+.blob.b3{transition-duration:2.2s,2.2s,2.2s,1.4s}
+
+.logo{position:fixed;top:clamp(16px,3.2vh,34px);left:clamp(20px,4vw,64px);z-index:20;height:clamp(34px,6.4vh,62px);width:auto;aspect-ratio:2084/1213}
+.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s var(--ease)}
+.logo .w{opacity:1}.logo .k{opacity:0}
+body.logo-b .logo .w{opacity:0}body.logo-b .logo .k{opacity:1}
+
+.progress{position:fixed;left:0;top:0;height:4px;width:100%;z-index:30;background:transparent}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width 1s var(--ease)}
+
+.nav{position:fixed;right:clamp(20px,4vw,64px);bottom:clamp(16px,3.4vh,36px);z-index:30;display:flex;align-items:center;gap:14px;font-family:var(--display);font-size:.72rem;letter-spacing:.08em}
+.nav button{all:unset;cursor:pointer;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1.5px solid currentColor;transition:transform .35s var(--ease),background-color .35s,color .35s}
+.nav button:hover{transform:scale(1.1);background:var(--ink);color:var(--bg)}
+.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.nav svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.count{min-width:64px;text-align:center;opacity:.85}
+.dots{position:fixed;left:clamp(20px,4vw,64px);bottom:clamp(26px,4.4vh,46px);z-index:30;display:flex;gap:7px}
+.dots button{all:unset;cursor:pointer;width:8px;height:8px;border-radius:99px;background:currentColor;opacity:.28;transition:width .6s var(--ease),opacity .4s}
+.dots button.on{width:30px;opacity:1;background:var(--accent)}
+.dots button:hover{opacity:.7}
+.dots button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.stage{position:fixed;inset:0;z-index:10}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(86px,13vh,130px) clamp(24px,6vw,100px) clamp(76px,12vh,110px);
+  opacity:0;visibility:hidden;transform:translateX(9vw) scale(.985);
+  transition:opacity .9s var(--ease),transform 1.1s var(--ease),visibility 0s linear 1.1s}
+.slide.before{transform:translateX(-9vw) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .9s var(--ease) .25s,transform 1.1s var(--ease) .15s,visibility 0s}
+
+.r{opacity:0;transform:translateY(34px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.active .r{opacity:1;transform:none;transition-delay:calc(.45s + var(--i,0) * 90ms)}
+.line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.line>.r{display:block;transform:translateY(110%)}
+.active .line>.r{transform:none}
+
+.kicker{font-family:var(--display);font-size:clamp(.62rem,.85vw,.8rem);letter-spacing:.2em;text-transform:uppercase;font-weight:500;margin-bottom:clamp(14px,2.4vh,26px);display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:34px;height:3px;border-radius:3px;background:var(--accent);flex:none}
+.mega{font-family:var(--display);font-weight:900;font-size:clamp(2.8rem,10.4vw,10rem);line-height:.96;letter-spacing:-.045em}
+.mega em{font-style:normal;color:var(--accent)}
+.h2{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3.5vw,3.3rem);line-height:1.04;letter-spacing:-.035em;max-width:24ch}
+.h2 em{font-style:normal;color:var(--accent)}
+.lead{font-size:clamp(1rem,1.5vw,1.45rem);line-height:1.45;max-width:46ch;opacity:.92;margin-top:clamp(14px,2.6vh,28px)}
+.small{font-size:clamp(.78rem,.98vw,.95rem);line-height:1.45;opacity:.78}
+.pill{display:inline-flex;align-items:center;padding:.5em 1em;border-radius:99px;border:1.5px solid currentColor;font-size:clamp(.78rem,1vw,.95rem);font-weight:600;white-space:nowrap}
+.card{background:color-mix(in srgb,currentColor 9%,transparent);border-radius:26px;padding:clamp(14px,2.2vh,26px) clamp(16px,1.8vw,28px);backdrop-filter:blur(6px)}
+.num{font-family:var(--display);font-weight:900;letter-spacing:-.05em;line-height:1}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,72px);align-items:start;margin-top:clamp(18px,3.6vh,40px)}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* Datenbasis */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.chip{padding:.55em 1.05em;border-radius:99px;font-weight:600;font-size:clamp(.8rem,1.02vw,.98rem);background:color-mix(in srgb,currentColor 11%,transparent)}
+.chip.no{background:transparent;border:1.5px dashed currentColor;opacity:.85}
+.colhead{font-family:var(--display);font-weight:700;font-size:clamp(.95rem,1.4vw,1.3rem);letter-spacing:-.02em;display:flex;gap:10px;align-items:center}
+.tick{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--accent);color:var(--bg);font-size:.85em}
+
+/* Views Slide */
+.huge{font-family:var(--display);font-weight:900;font-size:clamp(3rem,10.6vw,10.4rem);letter-spacing:-.06em;line-height:.92;color:var(--accent)}
+.area{position:relative;margin-top:clamp(8px,1.6vh,18px);height:clamp(110px,22vh,230px);max-width:min(1100px,100%)}
+.area svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.area .ln{fill:none;stroke:var(--accent);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.4s var(--ease) .9s}
+.area .fl{fill:var(--accent);opacity:0;transition:opacity 1.6s var(--ease) 1.8s}
+.active .area .ln{stroke-dashoffset:0}
+.active .area .fl{opacity:.2}
+.area .tag{position:absolute;font-size:clamp(.7rem,.9vw,.86rem);font-weight:700;background:var(--accent);color:var(--bg);padding:.3em .85em;border-radius:99px;white-space:nowrap;opacity:0;transform:translateY(8px);transition:opacity .7s var(--ease) 2.6s,transform .7s var(--ease) 2.6s}
+.active .area .tag{opacity:1;transform:none}
+.axis{display:flex;justify-content:space-between;max-width:min(1100px,100%);font-size:.72rem;opacity:.6;margin-top:6px;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:clamp(14px,2.6vh,28px);max-width:1100px}
+.stat b{display:block;font-family:var(--display);font-size:clamp(1.1rem,2.1vw,2rem);letter-spacing:-.04em;font-weight:800}
+.stat span{font-size:clamp(.74rem,.92vw,.9rem);opacity:.75}
+
+/* Hit Reel */
+.hit{display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,5vw,90px);align-items:center;margin-top:clamp(14px,3vh,34px)}
+.donutwrap{position:relative;display:grid;place-items:center;width:clamp(170px,28vw,360px);aspect-ratio:1}
+.donut{position:absolute;inset:0;border-radius:50%;--p:0%;background:conic-gradient(var(--accent) 0 var(--p),color-mix(in srgb,currentColor 16%,transparent) 0);
+  -webkit-mask:radial-gradient(circle,transparent 57%,#000 58%);mask:radial-gradient(circle,transparent 57%,#000 58%);transition:--p 2s var(--ease) .9s}
+.active .donut{--p:63%}
+.donutnum{position:relative;text-align:center;font-family:var(--display);font-weight:900;font-size:clamp(2rem,5.2vw,5rem);letter-spacing:-.06em;line-height:1}
+.donutnum small{display:block;font-family:var(--body);font-weight:600;letter-spacing:0;font-size:clamp(.7rem,.95vw,.92rem);margin-top:6px;opacity:.75}
+.hstats{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.4vw,18px)}
+.hstats .card b{display:block;font-family:var(--display);font-weight:900;font-size:clamp(1.5rem,3.2vw,3rem);letter-spacing:-.05em;line-height:1}
+.hstats .card span{font-size:clamp(.76rem,.95vw,.92rem);opacity:.78;display:block;margin-top:6px}
+
+/* Top Reels */
+.rtable{margin-top:clamp(10px,2vh,22px);display:grid;gap:clamp(4px,.9vh,9px)}
+.rrow{display:grid;grid-template-columns:clamp(150px,27%,330px) 1fr clamp(44px,5vw,70px) clamp(44px,5vw,70px);gap:clamp(8px,1.4vw,20px);align-items:center;font-size:clamp(.68rem,.92vw,.9rem);font-weight:600}
+.rrow.head{font-size:clamp(.6rem,.75vw,.72rem);opacity:.6;text-transform:uppercase;letter-spacing:.1em;font-family:var(--display);font-weight:500}
+.rrow .t{display:flex;align-items:center;gap:8px;min-width:0}
+.rrow .t em{font-style:normal;font-family:var(--display);font-weight:800;opacity:.4;width:1.4em;flex:none}
+.rrow .t span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rrow .t u{text-decoration:none;font-size:.68em;font-weight:700;padding:.15em .6em;border-radius:99px;background:var(--tomato);color:var(--base);flex:none}
+.rrow .t u.b{background:var(--black);color:var(--cheesy)}
+.rbar{height:clamp(16px,2.8vh,26px);border-radius:99px;background:color-mix(in srgb,currentColor 8%,transparent);position:relative}
+.rbar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;width:0;min-width:6px;background:var(--black);transition:width 1.6s var(--ease) calc(.7s + var(--k) * 80ms)}
+.rbar i.hot{background:var(--tomato)}
+.active .rbar i{width:var(--w)}
+.rbar b{position:absolute;top:50%;transform:translateY(-50%);left:calc(var(--w) + 10px);font-family:var(--display);font-size:clamp(.66rem,.88vw,.86rem);font-weight:800;letter-spacing:-.03em;white-space:nowrap;opacity:0;transition:opacity .6s var(--ease) calc(1.5s + var(--k) * 80ms)}
+.rbar b.in{left:auto;right:12px;color:var(--base)}
+.active .rbar b{opacity:1}
+.rrow .n{text-align:right}
+
+/* Follower */
+.bigrow{display:flex;align-items:flex-end;gap:clamp(18px,3vw,56px);flex-wrap:wrap}
+.hugef{font-family:var(--display);font-weight:900;font-size:clamp(3.4rem,12.4vw,12rem);letter-spacing:-.06em;line-height:.9;color:var(--accent)}
+.from{font-family:var(--display);font-weight:700;font-size:clamp(1rem,2vw,1.9rem);opacity:.7;padding-bottom:1.1vw}
+.bars2{margin-top:clamp(16px,2.8vh,30px);display:grid;gap:11px;max-width:min(900px,100%)}
+.hbar{display:grid;grid-template-columns:86px 1fr;gap:14px;align-items:center;font-size:.85rem;font-weight:600}
+.hbar .track{height:28px;border-radius:99px;background:color-mix(in srgb,currentColor 10%,transparent);overflow:hidden}
+.hbar .fill{display:flex;align-items:center;justify-content:flex-end;padding-right:12px;height:100%;border-radius:99px;width:0;background:var(--accent);color:var(--bg);font-family:var(--display);font-size:.72rem;font-weight:700;transition:width 1.7s var(--ease) calc(.9s + var(--k,0) * 200ms)}
+.active .hbar .fill{width:var(--w)}
+
+/* Funnel */
+.funnel{display:grid;gap:10px;margin-top:clamp(14px,2.8vh,30px);max-width:1000px}
+.fstep{height:clamp(44px,7.6vh,68px);border-radius:99px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 clamp(16px,2vw,28px);background:var(--black);color:var(--cheesy);width:0;min-width:min(100%,0px);white-space:nowrap;overflow:hidden;transition:width 1.5s var(--ease) calc(.8s + var(--k) * 180ms)}
+.active .fstep{width:var(--w)}
+.fstep b{font-family:var(--display);font-weight:900;font-size:clamp(.95rem,1.8vw,1.7rem);letter-spacing:-.04em}
+.fstep span{font-size:clamp(.7rem,.9vw,.88rem);font-weight:600;opacity:.85}
+.fcards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.4vw,18px);margin-top:clamp(12px,2.2vh,24px);max-width:1000px}
+.fcards .card b{display:block;font-family:var(--display);font-weight:900;font-size:clamp(1.4rem,2.8vw,2.7rem);letter-spacing:-.05em;line-height:1}
+.fcards .card span{display:block;margin-top:6px;font-size:clamp(.74rem,.92vw,.9rem);opacity:.85;line-height:1.3}
+.fcards .card.warn{background:var(--tomato);color:var(--base)}
+
+/* Interaktionen */
+.theme{display:grid;gap:clamp(10px,1.8vh,18px);margin-top:clamp(16px,3vh,34px);max-width:1000px}
+.trow{display:grid;grid-template-columns:minmax(110px,20%) 1fr auto;gap:clamp(12px,2vw,28px);align-items:center}
+.trow h5{font-family:var(--display);font-size:clamp(.78rem,1.1vw,1.05rem);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.tbar{height:clamp(28px,4.6vh,44px);border-radius:99px;background:color-mix(in srgb,currentColor 10%,transparent);overflow:hidden}
+.tbar i{display:flex;align-items:center;justify-content:flex-end;padding-right:16px;height:100%;width:0;min-width:0;border-radius:99px;background:var(--black);color:var(--cheesy);font-family:var(--display);font-weight:800;font-size:clamp(.74rem,1.05vw,1rem);transition:width 1.6s var(--ease) calc(.8s + var(--k) * 160ms)}
+.tbar i.hot{background:var(--tomato);color:var(--base)}
+.tbar i{white-space:nowrap}
+.active .tbar i{width:max(var(--w),5.4em)}
+.trow .cm{font-size:clamp(.72rem,.92vw,.88rem);font-weight:600;white-space:nowrap;padding:.4em .9em;border-radius:99px;background:color-mix(in srgb,currentColor 12%,transparent)}
+.callrow{display:flex;gap:clamp(12px,2vw,28px);flex-wrap:wrap;margin-top:clamp(14px,2.6vh,28px)}
+
+/* Content Typen */
+.split{display:flex;height:clamp(40px,7vh,64px);border-radius:99px;overflow:hidden;margin-top:clamp(14px,2.6vh,28px);max-width:1000px;background:color-mix(in srgb,currentColor 10%,transparent)}
+.split i{display:block;height:100%;width:0;transition:width 1.6s var(--ease) .9s}
+.active .split i{width:var(--w)}
+.legend{display:flex;gap:clamp(10px,2vw,26px);flex-wrap:wrap;margin-top:12px;font-size:clamp(.74rem,.95vw,.92rem);font-weight:600}
+.legend span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--c);margin-right:7px}
+.sbars{display:flex;align-items:flex-end;gap:3px;height:clamp(70px,14vh,140px);margin-top:12px;max-width:1000px}
+.sbars i{flex:1;border-radius:5px 5px 2px 2px;background:var(--black);height:0;transition:height 1.1s var(--ease) calc(.8s + var(--k) * 25ms)}
+.active .sbars i{height:calc(var(--v) / 729 * 100%)}
+.sbars i:first-child{background:var(--tomato)}
+
+/* Vertical bars */
+.vbars{display:grid;gap:clamp(5px,.9vw,14px);align-items:end;height:clamp(180px,36vh,360px);margin-top:clamp(26px,4.4vh,50px)}
+.vcol{height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.vcol i{display:block;position:relative;border-radius:14px 14px 4px 4px;background:var(--black);height:0;transition:height 1.3s var(--ease) calc(.7s + var(--k) * 90ms)}
+.vcol i.hot{background:var(--tomato)}
+.active .vcol i{height:var(--h)}
+.vcol b{position:absolute;left:0;right:0;top:-1.6em;text-align:center;font-family:var(--display);font-weight:800;font-size:clamp(.66rem,1vw,.98rem);letter-spacing:-.03em}
+.vcol em{font-style:normal;margin-top:9px;text-align:center;font-size:clamp(.64rem,.86vw,.82rem);font-weight:600;opacity:.85}
+.gender{display:flex;height:clamp(40px,6.4vh,58px);border-radius:99px;overflow:hidden;max-width:520px;margin-top:12px;font-family:var(--display);font-weight:800;font-size:clamp(.74rem,1vw,.95rem)}
+.gender i{display:flex;align-items:center;padding:0 18px;font-style:normal;width:0;white-space:nowrap;overflow:hidden;transition:width 1.6s var(--ease) 1s}
+.gender .m{background:var(--black);color:var(--cheesy)}
+.gender .f{background:var(--tomato);color:var(--base);justify-content:flex-end}
+.active .gender i{width:var(--w)}
+
+/* Gleiche Caption */
+.bubbles{display:flex;align-items:flex-end;justify-content:flex-start;gap:clamp(12px,2.6vw,44px);margin-top:clamp(12px,2.6vh,30px);flex-wrap:wrap}
+.bgroup{display:grid;gap:14px}
+.bgroup h6{font-family:var(--display);font-size:clamp(.72rem,.98vw,.94rem);letter-spacing:-.02em;font-weight:700}
+.bgroup h6 span{display:block;font-family:var(--body);font-weight:500;opacity:.7;margin-top:3px;letter-spacing:0}
+.bgrow{display:flex;align-items:flex-end;gap:clamp(10px,1.8vw,26px)}
+.bub{display:grid;justify-items:center;gap:10px}
+.circ{border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:900;letter-spacing:-.05em;background:var(--cheesy);color:var(--black);transform:scale(0);transition:transform 1.3s cubic-bezier(.3,1.5,.4,1) calc(.8s + var(--k) * 200ms)}
+.active .circ{transform:scale(1)}
+.circ.big{background:var(--tomato);color:var(--base)}
+.circ.low{background:color-mix(in srgb,var(--base) 22%,transparent);color:var(--base)}
+.bub small{font-weight:700;font-size:clamp(.7rem,.9vw,.88rem);text-align:center}
+
+/* Panels */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,28px);margin-top:clamp(16px,3vh,32px)}
+.panel{border-radius:32px;padding:clamp(16px,2.2vw,34px)}
+.panel.good{background:var(--veggie);color:var(--black)}
+.panel.bad{background:var(--black);color:var(--base)}
+.panel h3{font-family:var(--display);font-size:clamp(1rem,1.7vw,1.6rem);letter-spacing:-.03em;font-weight:800;margin-bottom:clamp(8px,1.8vh,18px)}
+.panel ul{list-style:none;display:grid;gap:clamp(7px,1.4vh,14px)}
+.panel li{display:grid;grid-template-columns:auto 1fr;gap:12px;font-size:clamp(.8rem,1.08vw,1.04rem);line-height:1.36}
+.panel li b{font-weight:800}
+.panel li::before{content:"";width:12px;height:12px;border-radius:50%;margin-top:.4em;background:var(--tomato)}
+.panel.good li::before{background:var(--black)}
+
+/* Empfehlungen */
+.recs{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.4vw,20px);margin-top:clamp(16px,3vh,32px)}
+.rec{background:var(--base);color:var(--black);border-radius:26px;padding:clamp(14px,1.6vw,24px);display:flex;flex-direction:column;gap:9px;min-height:clamp(120px,24vh,220px)}
+.rec:nth-child(3n+2){background:var(--black);color:var(--cheesy)}
+.rec:nth-child(5){background:var(--cheesy);color:var(--black)}
+.rec .n{font-family:var(--display);font-weight:900;font-size:clamp(1.3rem,2.3vw,2.2rem);letter-spacing:-.05em;color:var(--tomato)}
+.rec:nth-child(3n+2) .n{color:var(--cheesy-d)}
+.rec:nth-child(5) .n{color:var(--tomato)}
+.rec h4{font-family:var(--display);font-size:clamp(.72rem,.98vw,.94rem);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.rec p{font-size:clamp(.7rem,.86vw,.84rem);line-height:1.35;opacity:.84}
+
+/* Ende */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.8vw,26px);margin-top:clamp(16px,3.2vh,34px);max-width:1200px}
+.way{background:var(--base);color:var(--black);border-radius:30px;padding:clamp(16px,2vw,30px)}
+.way:nth-child(2){background:var(--cheesy)}
+.way b{font-family:var(--display);font-size:clamp(.88rem,1.3vw,1.2rem);letter-spacing:-.03em;font-weight:800;display:block;margin-bottom:8px}
+.way p{font-size:clamp(.8rem,1.02vw,.98rem);line-height:1.45}
+.end{font-family:var(--display);font-weight:900;font-size:clamp(1.4rem,3vw,2.8rem);letter-spacing:-.04em;margin-top:clamp(16px,3.6vh,36px);color:var(--accent)}
+
+@media (max-width:860px){
+  .slide{justify-content:flex-start;overflow-y:auto;padding-top:96px;padding-bottom:110px}
+  .cols,.vs,.hit{grid-template-columns:1fr}
+  .stats,.fcards,.three,.recs{grid-template-columns:1fr 1fr}
+  .three{grid-template-columns:1fr}
+  .trow{grid-template-columns:1fr;gap:6px}
+  .dots{display:none}
+  .mega{font-size:clamp(2.6rem,15vw,6rem)}
+  .nav{right:16px}
+  .rrow{grid-template-columns:1fr 1fr}
+  .rrow .n{display:none}
+  .rrow.head{display:none}
+  .rrow .t{grid-column:1/-1}
+  .rbar{grid-column:1/-1}
+  .vbars{height:clamp(190px,30vh,260px)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01s!important;transition-delay:0s!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="progress"><i id="prog"></i></div>
+<div class="logo" aria-hidden="true"><img class="w" src="logo-weiss.png" alt=""><img class="k" src="logo-schwarz.png" alt=""></div>
+
+<main class="stage" id="stage">
+
+<!-- 1 Titel -->
+<section class="slide" data-bg="#BE2337" data-ink="#F4F4ED" data-accent="#FFC31E" data-logo="w">
+  <div class="kicker r" style="--i:0">Social Media Analyse · Insights 02.09. bis 01.10.2026</div>
+  <h1 class="mega">
+    <span class="line"><span class="r" style="--i:1">Instagram</span></span>
+    <span class="line"><span class="r" style="--i:2">Analyse<em>.</em></span></span>
+  </h1>
+  <p class="lead r" style="--i:4">@the_pizzary mit den echten Insights der letzten 30 Tage: Reichweite, Follower, Inhalte und Publikum.</p>
+  <div class="row r" style="--i:5;margin-top:clamp(18px,3.4vh,34px)">
+    <span class="pill">1,74 Mio Views</span><span class="pill">+633 Follower</span><span class="pill">18.834 Profilbesuche</span>
+  </div>
+</section>
+
+<!-- 2 Datenbasis -->
+<section class="slide" data-bg="#F4F4ED" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Datenbasis</div>
+  <h2 class="h2"><span class="line"><span class="r" style="--i:1">Was wir wissen</span></span><span class="line"><span class="r" style="--i:2">und was <em>noch fehlt</em></span></span></h2>
+  <div class="cols">
+    <div class="r" style="--i:3">
+      <div class="colhead"><span class="tick">✓</span>Aus den Insights, 30 Tage</div>
+      <div class="chips">
+        <span class="chip">Views</span><span class="chip">Erreichte Accounts</span><span class="chip">Netto Follower</span><span class="chip">Interaktionen</span>
+        <span class="chip">Profilbesuche</span><span class="chip">Bio Link Klicks</span><span class="chip">Alle Reels, Stories, Posts</span>
+        <span class="chip">Likes, Kommentare, Shares, Saves</span><span class="chip">Alter, Geschlecht, Länder</span><span class="chip">Aktive Zeiten</span>
+      </div>
+    </div>
+    <div class="r" style="--i:4">
+      <div class="colhead"><span class="tick" style="background:var(--tomato);color:var(--base)">×</span>Noch nicht in den Daten</div>
+      <div class="chips">
+        <span class="chip no">Städte, Anteil Berlin</span><span class="chip no">Sehdauer pro Reel</span><span class="chip no">Bezahlt gegen organisch</span>
+        <span class="chip no">Follower Verlauf vor September</span><span class="chip no">Aktive Zeiten Di, Do, Fr, Sa</span>
+      </div>
+    </div>
+  </div>
+  <p class="small r" style="--i:5;margin-top:clamp(16px,3.2vh,36px);max-width:74ch">Zwei Reels wurden geboostet, ihre Zahlen enthalten bezahlte Reichweite. Der Follower Stand vom 01.09. ist aus „+62,7 Prozent seit 1. September“ zurückgerechnet.</p>
+</section>
+
+<!-- 3 Views -->
+<section class="slide" data-bg="#0B0B0B" data-ink="#F4F4ED" data-accent="#FFC31E" data-logo="w">
+  <div class="kicker r" style="--i:0">Views · letzte 30 Tage</div>
+  <div class="huge"><span class="line"><span class="r" style="--i:1" data-count="1739936" data-dec="0">0</span></span></div>
+  <div class="area r" style="--i:2" id="area">
+    <svg viewBox="0 0 1000 220" preserveAspectRatio="none" aria-hidden="true">
+      <path class="fl" id="afill" d=""/>
+      <path class="ln" id="aline" d="" pathLength="1" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <span class="tag" style="left:calc(13.8% + 12px);top:-4px">Peak ca. 435K an einem Tag (ca. 06.09.)</span>
+    <span class="tag" style="right:2%;bottom:34%;background:transparent;color:var(--ink);border:1.5px solid var(--accent)">danach Basisniveau</span>
+  </div>
+  <div class="axis r" style="--i:3"><span>02.09.</span><span>16.09.</span><span>01.10.</span></div>
+  <div class="stats r" style="--i:4">
+    <div class="stat"><b>794.875</b><span>erreichte Accounts</span></div>
+    <div class="stat"><b>484 mal</b><span>mehr Accounts als Follower</span></div>
+    <div class="stat"><b>Ø 58K</b><span>Views pro Tag</span></div>
+    <div class="stat"><b>98 %</b><span>der Views kommen aus Reels</span></div>
+  </div>
+  <p class="small r" style="--i:5;margin-top:10px">Kurvenform nach dem Instagram Graph nachgezeichnet, nicht exakt.</p>
+</section>
+
+<!-- 4 Hit Reel -->
+<section class="slide" data-bg="#FFC31E" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Das Hit Reel</div>
+  <h2 class="h2" style="max-width:26ch"><span class="line"><span class="r" style="--i:1">Ein Reel.</span></span><span class="line"><span class="r" style="--i:2"><em>1,1 Mio</em> Views.</span></span></h2>
+  <div class="hit">
+    <div class="donutwrap r" style="--i:3">
+      <div class="donut"></div>
+      <div class="donutnum">63 %<small>aller Views<br>aus diesem Reel</small></div>
+    </div>
+    <div>
+      <p class="lead r" style="--i:4;margin-top:0">„Einmaliges American Style Pi…“, vor dem Laden, Pizzastück in der Hand, drei Wochen alt.</p>
+      <div class="hstats" style="margin-top:clamp(12px,2.4vh,26px)">
+        <div class="card r" style="--i:5"><b>1,9K</b><span>Likes</span></div>
+        <div class="card r" style="--i:6"><b>968</b><span>Kommentare</span></div>
+        <div class="card r" style="--i:7"><b>2,1K</b><span>Shares</span></div>
+        <div class="card r" style="--i:8"><b>331</b><span>neue Follower durch dieses Reel</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 Top Reels -->
+<section class="slide" data-bg="#F4F4ED" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Top 10 Reels nach Views</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Fünf Reels machen <em>85 Prozent</em></span></span></h2>
+  <div class="rtable r" style="--i:2">
+    <div class="rrow head"><span>Reel</span><span>Views</span><span class="n">Likes</span><span class="n">Shares</span></div>
+    <div class="rrow"><div class="t"><em>1</em><span>Einmaliges American Style Pi…</span><u>Hit</u></div><div class="rbar"><i class="hot" style="--w:100%;--k:0"></i><b class="in" style="--k:0">1,1 Mio</b></div><span class="n">1,9K</span><span class="n">2,1K</span></div>
+    <div class="rrow"><div class="t"><em>2</em><span>Endlich mal keine neapolitani…</span></div><div class="rbar"><i style="--w:11.5%;--k:1"></i><b style="--w:11.5%;--k:1">126,9K</b></div><span class="n">89</span><span class="n">31</span></div>
+    <div class="rrow"><div class="t"><em>3</em><span>Neu eröffnet in Berlin</span></div><div class="rbar"><i style="--w:8.7%;--k:2"></i><b style="--w:8.7%;--k:2">95,5K</b></div><span class="n">1,9K</span><span class="n">2,9K</span></div>
+    <div class="rrow"><div class="t"><em>4</em><span>Mit dieser Pizza Presse…</span></div><div class="rbar"><i style="--w:7.4%;--k:3"></i><b style="--w:7.4%;--k:3">81,7K</b></div><span class="n">61</span><span class="n">32</span></div>
+    <div class="rrow"><div class="t"><em>5</em><span>Neues Pizza Konzept</span><u class="b">Boost</u></div><div class="rbar"><i style="--w:6.3%;--k:4"></i><b style="--w:6.3%;--k:4">69,3K</b></div><span class="n">180</span><span class="n">193</span></div>
+    <div class="rrow"><div class="t"><em>6</em><span>Teig frisch jeden Tag (27.09.)</span></div><div class="rbar"><i style="--w:3.3%;--k:5"></i><b style="--w:3.3%;--k:5">36,0K</b></div><span class="n">59</span><span class="n">18</span></div>
+    <div class="rrow"><div class="t"><em>7</em><span>Ein Tag als Mitarbeiter (13.09.)</span></div><div class="rbar"><i style="--w:2.2%;--k:6"></i><b style="--w:2.2%;--k:6">24,5K</b></div><span class="n">56</span><span class="n">19</span></div>
+    <div class="rrow"><div class="t"><em>8</em><span>Ein Tag als Mitarbeiter (23.09.)</span></div><div class="rbar"><i style="--w:1.9%;--k:7"></i><b style="--w:1.9%;--k:7">21,0K</b></div><span class="n">300</span><span class="n">58</span></div>
+    <div class="rrow"><div class="t"><em>9</em><span>Einzigartiges Pizza…</span></div><div class="rbar"><i style="--w:1.2%;--k:8"></i><b style="--w:1.2%;--k:8">12,6K</b></div><span class="n">42</span><span class="n">9</span></div>
+    <div class="rrow"><div class="t"><em>10</em><span>Unser neues Menu, 16,90 €</span><u class="b">Boost</u></div><div class="rbar"><i style="--w:1.1%;--k:9"></i><b style="--w:1.1%;--k:9">12,3K</b></div><span class="n">54</span><span class="n">6</span></div>
+  </div>
+  <p class="small r" style="--i:3;margin-top:clamp(8px,1.6vh,16px)">22 Reels im Zeitraum. Median ca. 9,8K Views pro Reel, Durchschnitt ca. 75K, verzerrt durch das Hit Reel.</p>
+</section>
+
+<!-- 6 Follower -->
+<section class="slide" data-bg="#0B0B0B" data-ink="#F4F4ED" data-accent="#FFC31E" data-logo="w">
+  <div class="kicker r" style="--i:0">Follower Entwicklung</div>
+  <div class="bigrow">
+    <div class="from r" style="--i:1">68 →</div>
+    <div class="hugef"><span class="line"><span class="r" style="--i:2" data-count="1643" data-dec="0">0</span></span></div>
+  </div>
+  <div class="bars2 r" style="--i:4">
+    <div class="hbar"><span>12.04.</span><div class="track"><div class="fill" style="--w:4.2%;--k:0"></div></div></div>
+    <div class="hbar"><span>01.09.</span><div class="track"><div class="fill" style="--w:61.5%;--k:1">ca. 1.010</div></div></div>
+    <div class="hbar"><span>01.10.</span><div class="track"><div class="fill" style="--w:100%;--k:2">1.643</div></div></div>
+  </div>
+  <div class="stats r" style="--i:5">
+    <div class="stat"><b>+633</b><span>netto im September, ca. 21 pro Tag</span></div>
+    <div class="stat"><b>ca. 7 pro Tag</b><span>von April bis August</span></div>
+    <div class="stat"><b>+177</b><span>Peak Tag, ca. 06.09.</span></div>
+    <div class="stat"><b>331</b><span>Follows durch das Hit Reel</span></div>
+  </div>
+</section>
+
+<!-- 7 Funnel -->
+<section class="slide" data-bg="#7D82D9" data-ink="#0B0B0B" data-accent="#F5F5AF" data-logo="b">
+  <div class="kicker r" style="--i:0">Vom View zum Kunden</div>
+  <h2 class="h2" style="max-width:28ch"><span class="line"><span class="r" style="--i:1">Viele sehen. <em style="color:var(--base)">Wenige</em> kommen.</span></span></h2>
+  <div class="funnel r" style="--i:2">
+    <div class="fstep" style="--w:100%;--k:0"><b>1.739.936</b><span>Views</span></div>
+    <div class="fstep" style="--w:78%;--k:1"><b>794.875</b><span>erreichte Accounts</span></div>
+    <div class="fstep" style="--w:56%;--k:2"><b>18.834</b><span>Profilbesuche, 2,4 % der erreichten Accounts</span></div>
+  </div>
+  <div class="fcards r" style="--i:4">
+    <div class="card"><b>+633</b><span>Netto Follower, 3,4 % der Profilbesuche</span></div>
+    <div class="card"><b>581</b><span>Klicks auf den Bio Link, 3,1 % der Profilbesuche</span></div>
+    <div class="card warn"><b>0</b><span>Taps auf die Business Adresse. Der Weg zum Laden fehlt im Profil.</span></div>
+  </div>
+  <p class="small r" style="--i:5;margin-top:10px">Darstellung nicht maßstäblich.</p>
+</section>
+
+<!-- 8 Interaktionen -->
+<section class="slide" data-bg="#F5F5AF" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">17.262 Interaktionen</div>
+  <h2 class="h2" style="max-width:26ch"><span class="line"><span class="r" style="--i:1">Geteilt und gespeichert</span></span><span class="line"><span class="r" style="--i:2">schlägt <em>Like</em></span></span></h2>
+  <div class="theme">
+    <div class="trow r" style="--i:3"><h5>Likes</h5><div class="tbar"><i style="--w:100%;--k:0">ca. 6,0K</i></div><div class="cm">5,6K aus Reels</div></div>
+    <div class="trow r" style="--i:4"><h5>Shares</h5><div class="tbar"><i class="hot" style="--w:92%;--k:1">5,5K</i></div><div class="cm">fast so viele wie Likes</div></div>
+    <div class="trow r" style="--i:5"><h5>Saves</h5><div class="tbar"><i class="hot" style="--w:63%;--k:2">3,8K</i></div><div class="cm">Reels</div></div>
+    <div class="trow r" style="--i:6"><h5>Kommentare</h5><div class="tbar"><i style="--w:22%;--k:3">1,3K</i></div><div class="cm">Reels</div></div>
+    <div class="trow r" style="--i:7"><h5>Reposts</h5><div class="tbar"><i style="--w:4%;--k:4">139</i></div><div class="cm">Reels</div></div>
+  </div>
+  <div class="callrow r" style="--i:8">
+    <span class="pill">Shares + Saves = 9,3K, mehr als Likes</span><span class="pill">ca. 1 % Interaktionen pro View</span><span class="pill">Reels liefern 17K von 17,2K</span>
+  </div>
+</section>
+
+<!-- 9 Content Typen -->
+<section class="slide" data-bg="#DE7DCE" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Reels, Stories, Posts</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Reels tragen alles. <em style="color:var(--base)">Stories</em> halten Kontakt.</span></span></h2>
+  <div class="split r" style="--i:2">
+    <i style="--w:97.7%;background:var(--black)"></i><i style="--w:.9%;background:var(--base)"></i><i style="--w:.4%;background:var(--tomato)"></i>
+  </div>
+  <div class="legend r" style="--i:3"><span style="--c:var(--black)">Reels 1,7 Mio (98 %)</span><span style="--c:var(--base)">Stories 15K</span><span style="--c:var(--tomato)">Posts 6,6K</span><span style="--c:transparent">Live 0</span></div>
+  <div class="stats r" style="--i:4">
+    <div class="stat"><b>22</b><span>Reels in 30 Tagen, ca. 5 pro Woche</span></div>
+    <div class="stat"><b>30</b><span>Stories, fast täglich</span></div>
+    <div class="stat"><b>Ø ca. 420</b><span>Views pro Story, 26 % der Follower</span></div>
+    <div class="stat"><b>8</b><span>Antworten auf Stories</span></div>
+  </div>
+  <div class="sbars r" style="--i:5" id="sbars"></div>
+  <p class="small r" style="--i:6;margin-top:8px">Alle 30 Stories nach Views sortiert, von 729 bis 308. Die beste Story war „Available now“.</p>
+</section>
+
+<!-- 10 Publikum -->
+<section class="slide" data-bg="#F4F4ED" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Publikum · Follower</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Männer zwischen <em>25 und 44</em></span></span></h2>
+  <div class="vbars r" style="--i:2;grid-template-columns:repeat(7,1fr)">
+    <div class="vcol"><i style="--h:2%;--k:0"><b>0,8 %</b></i><em>13 bis 17</em></div>
+    <div class="vcol"><i style="--h:21.5%;--k:1"><b>8,6 %</b></i><em>18 bis 24</em></div>
+    <div class="vcol"><i style="--h:63.8%;--k:2"><b>25,5 %</b></i><em>25 bis 34</em></div>
+    <div class="vcol"><i class="hot" style="--h:100%;--k:3"><b>40,0 %</b></i><em>35 bis 44</em></div>
+    <div class="vcol"><i style="--h:46%;--k:4"><b>18,4 %</b></i><em>45 bis 54</em></div>
+    <div class="vcol"><i style="--h:14.3%;--k:5"><b>5,7 %</b></i><em>55 bis 64</em></div>
+    <div class="vcol"><i style="--h:2.5%;--k:6"><b>1,0 %</b></i><em>65 plus</em></div>
+  </div>
+  <div class="cols" style="margin-top:clamp(16px,3vh,32px);gap:clamp(16px,3vw,48px)">
+    <div class="r" style="--i:3"><div class="colhead" style="font-size:clamp(.8rem,1.1vw,1rem)">Geschlecht</div><div class="gender"><i class="m" style="--w:74.5%">74,5 % Männer</i><i class="f" style="--w:25.5%">25,5 %</i></div></div>
+    <p class="lead r" style="--i:4;margin-top:0;font-size:clamp(.9rem,1.2vw,1.15rem)">65,5 % der Follower sind zwischen 25 und 34 oder 35 und 44. Frauen sind mit einem Viertel klar unterrepräsentiert.</p>
+  </div>
+</section>
+
+<!-- 11 Länder + Zeiten -->
+<section class="slide" data-bg="#AFCDAF" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Standorte und Aktivzeiten</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Deutschlandweit, <em>abends</em> aktiv</span></span></h2>
+  <div class="cols">
+    <div>
+      <div class="colhead r" style="--i:2;font-size:clamp(.8rem,1.1vw,1rem)">Top Länder</div>
+      <div class="theme" style="margin-top:12px;gap:9px">
+        <div class="trow r" style="--i:3;grid-template-columns:minmax(80px,28%) 1fr"><h5>Deutschland</h5><div class="tbar"><i style="--w:100%;--k:0">86,8 %</i></div></div>
+        <div class="trow r" style="--i:4;grid-template-columns:minmax(80px,28%) 1fr"><h5>Österreich</h5><div class="tbar"><i style="--w:12%;--k:1">3,6 %</i></div></div>
+        <div class="trow r" style="--i:5;grid-template-columns:minmax(80px,28%) 1fr"><h5>Schweiz</h5><div class="tbar"><i style="--w:9%;--k:2">2,2 %</i></div></div>
+        <div class="trow r" style="--i:6;grid-template-columns:minmax(80px,28%) 1fr"><h5>Bosnien und Herz.</h5><div class="tbar"><i style="--w:8%;--k:3">2,0 %</i></div></div>
+        <div class="trow r" style="--i:7;grid-template-columns:minmax(80px,28%) 1fr"><h5>Italien</h5><div class="tbar"><i style="--w:5%;--k:4">0,5 %</i></div></div>
+      </div>
+      <p class="small r" style="--i:8;margin-top:12px">Der Anteil Berlin fehlt noch, der Städte Tab war nicht im Screenshot.</p>
+    </div>
+    <div>
+      <div class="colhead r" style="--i:2;font-size:clamp(.8rem,1.1vw,1rem)">Follower aktiv, Sonntag</div>
+      <div class="vbars r" style="--i:3;grid-template-columns:repeat(8,1fr);height:clamp(130px,26vh,250px);margin-top:clamp(22px,3.6vh,40px)">
+        <div class="vcol"><i style="--h:41%;--k:0"></i><em>0</em></div>
+        <div class="vcol"><i style="--h:16%;--k:1"></i><em>3</em></div>
+        <div class="vcol"><i style="--h:39%;--k:2"></i><em>6</em></div>
+        <div class="vcol"><i style="--h:83%;--k:3"></i><em>9</em></div>
+        <div class="vcol"><i style="--h:91%;--k:4"></i><em>12</em></div>
+        <div class="vcol"><i style="--h:92%;--k:5"></i><em>15</em></div>
+        <div class="vcol"><i class="hot" style="--h:100%;--k:6"></i><em>18</em></div>
+        <div class="vcol"><i style="--h:88%;--k:7"></i><em>21 Uhr</em></div>
+      </div>
+      <p class="small r" style="--i:8;margin-top:12px">Sonntag, Montag und Mittwoch sind zwischen 18 und 21 Uhr am aktivsten. Die anderen Tage fehlen noch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 Gleiche Caption -->
+<section class="slide" data-bg="#0B0B0B" data-ink="#F4F4ED" data-accent="#FFC31E" data-logo="w">
+  <div class="kicker r" style="--i:0">Gleiche Caption, anderer Erfolg</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Derselbe Titel. Bis zu <em>10 mal</em> Reichweite.</span></span></h2>
+  <div class="bubbles">
+    <div class="bgroup r" style="--i:2">
+      <h6>„Ein Tag als The Pizzary Mitarbeiter“<span>drei Reels, drei Ergebnisse</span></h6>
+      <div class="bgrow">
+        <div class="bub"><div class="circ" style="--k:0;width:clamp(100px,13vw,200px);height:clamp(100px,13vw,200px);font-size:clamp(1.1rem,2.2vw,2.2rem)">24,5K</div><small>13.09.</small></div>
+        <div class="bub"><div class="circ" style="--k:1;width:clamp(92px,12vw,186px);height:clamp(92px,12vw,186px);font-size:clamp(1.1rem,2.1vw,2.1rem)">21,0K</div><small>23.09.<br>300 Likes</small></div>
+        <div class="bub"><div class="circ low" style="--k:2;width:clamp(56px,6.2vw,96px);height:clamp(56px,6.2vw,96px);font-size:clamp(.8rem,1.3vw,1.3rem)">5,6K</div><small>21.09.</small></div>
+      </div>
+    </div>
+    <div class="bgroup r" style="--i:3">
+      <h6>„Mit dieser Pizza Presse…“<span>zwei Reels, Faktor 10</span></h6>
+      <div class="bgrow">
+        <div class="bub"><div class="circ big" style="--k:3;width:clamp(150px,22vw,330px);height:clamp(150px,22vw,330px);font-size:clamp(1.5rem,3.6vw,3.6rem)">81,7K</div><small>vor ca. 2 Wochen</small></div>
+        <div class="bub"><div class="circ low" style="--k:4;width:clamp(52px,6.6vw,100px);height:clamp(52px,6.6vw,100px);font-size:clamp(.8rem,1.3vw,1.3rem)">8,3K</div><small>19.09.</small></div>
+      </div>
+    </div>
+  </div>
+  <p class="lead r" style="--i:5;font-weight:600">Nicht Titel oder Format entscheiden, sondern Hook, Bild und Moment. Das Muster der Gewinner wird zur Vorlage.</p>
+</section>
+
+<!-- 13 Fazit -->
+<section class="slide" data-bg="#F4F4ED" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Fazit</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">Große <em>Aussage</em> schlägt Alltag.</span></span></h2>
+  <div class="vs">
+    <div class="panel good r" style="--i:2">
+      <h3>Das zieht</h3>
+      <ul>
+        <li><span><b>Klare Behauptung als Hook.</b> „Einmaliges American Style…“ 1,1 Mio, „Endlich mal keine neapolitanische…“ 127K Views.</span></li>
+        <li><span><b>Person und Laden im Bild.</b> Die vier stärksten Reels zeigen Menschen und den Standort.</span></li>
+        <li><span><b>Berlin im Hook.</b> „Neu eröffnet in Berlin“: 95,5K Views, 2 % Likes, 3 % Shares, die beste Qualität.</span></li>
+        <li><span><b>Prozess mit Gesicht.</b> Teig am 27.09. mit 36K Views als bester Alltags Reel.</span></li>
+      </ul>
+    </div>
+    <div class="panel bad r" style="--i:3">
+      <h3>Das zieht nicht</h3>
+      <ul>
+        <li><span><b>Alltag, Deal, Team, Business.</b> 3,8K bis 12K Views, der Mittags Deal nur 3,8K.</span></li>
+        <li><span><b>Abhängigkeit vom Hit.</b> 63 Prozent der Views aus einem Reel, danach nur Basisniveau.</span></li>
+        <li><span><b>Der Weg zum Laden.</b> 0 Adress Taps, nur 581 Bio Link Klicks bei 18.834 Besuchen.</span></li>
+        <li><span><b>Frauen und Berlin.</b> 25,5 % Frauen, nur 86,8 % Deutschland ohne bekannten Berlin Anteil.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 Hebel -->
+<section class="slide" data-bg="#AFCDAF" data-ink="#0B0B0B" data-accent="#BE2337" data-logo="b">
+  <div class="kicker r" style="--i:0">Die nächsten 30 Tage</div>
+  <h2 class="h2" style="max-width:30ch"><span class="line"><span class="r" style="--i:1">8 Hebel für <em>mehr Kunden</em></span></span></h2>
+  <div class="recs">
+    <div class="rec r" style="--i:2"><span class="n">01</span><h4>Hit Formel wiederholen</h4><p>Person, Pizzastück, Laden im Bild, große Behauptung als Hook. Pro Woche 3 neue Varianten.</p></div>
+    <div class="rec r" style="--i:3"><span class="n">02</span><h4>Berlin in den Hook</h4><p>„Neu eröffnet in Berlin“ hat die beste Share Rate. Standort in Overlay und Caption.</p></div>
+    <div class="rec r" style="--i:4"><span class="n">03</span><h4>Adresse im Profil</h4><p>Business Adresse und Karten Verknüpfung einrichten. Heute 0 Adress Taps.</p></div>
+    <div class="rec r" style="--i:5"><span class="n">04</span><h4>Besucher zu Followern</h4><p>18.834 Besuche, nur 3,4 % Follow. Hit Reels anpinnen, Bio mit Öffnungszeiten und Deal.</p></div>
+    <div class="rec r" style="--i:6"><span class="n">05</span><h4>Posten zwischen 18 und 21 Uhr</h4><p>Beste Zeit laut Insights. Erst So, Mo, Mi nutzen, andere Tage nachliefern.</p></div>
+    <div class="rec r" style="--i:7"><span class="n">06</span><h4>Frauen und Gruppen</h4><p>Nur 25,5 % Frauen. Mehr Reels für Dates, Freundesgruppen und Familien.</p></div>
+    <div class="rec r" style="--i:8"><span class="n">07</span><h4>Shares als Ziel</h4><p>Shares und Saves sind stärker als Likes. Aufruf: „Schick das an jemanden fürs Mittagessen“.</p></div>
+    <div class="rec r" style="--i:9"><span class="n">08</span><h4>Stories zum Dialog</h4><p>420 Views pro Story, aber 8 Antworten. Fragen, Umfragen und Tagesangebote einbauen.</p></div>
+  </div>
+</section>
+
+<!-- 15 Nächster Schritt -->
+<section class="slide" data-bg="#BE2337" data-ink="#F4F4ED" data-accent="#FFC31E" data-logo="w">
+  <div class="kicker r" style="--i:0">Noch offen</div>
+  <h2 class="h2" style="max-width:26ch"><span class="line"><span class="r" style="--i:1">Drei Screenshots fehlen</span></span><span class="line"><span class="r" style="--i:2">zur <em>kompletten</em> Analyse</span></span></h2>
+  <div class="three">
+    <div class="way r" style="--i:3"><b>Städte</b><p>Insights, Zielgruppe, Tab „Towns/cities“. Zeigt den Anteil Berlin.</p></div>
+    <div class="way r" style="--i:4"><b>Sehdauer</b><p>Die Top 5 Reels einzeln öffnen: Wiedergabezeit und Halteverlauf.</p></div>
+    <div class="way r" style="--i:5"><b>Boost Daten</b><p>Die zwei geboosteten Reels: Ausgaben, bezahlt gegen organisch.</p></div>
+  </div>
+  <div class="end r" style="--i:6">Deine Pizza. Deine Regeln.</div>
+</section>
+
+</main>
+
+<div class="dots" id="dots" aria-label="Folien"></div>
+<div class="nav">
+  <button id="prev" aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <span class="count" id="count">01 / 15</span>
+  <button id="next" aria-label="Weiter"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var N=slides.length, cur=0, lock=false;
+  var blobs=[].slice.call(document.querySelectorAll('.blob'));
+  var vw=function(n){return n+'vw'}, vh=function(n){return n+'vh'};
+
+  var cfg=[
+    [[78,28,64,'rgba(255,195,30,.55)'],[8,92,48,'rgba(222,125,206,.45)'],[95,100,30,'rgba(245,245,175,.35)']],
+    [[92,12,40,'rgba(190,35,55,.16)'],[4,98,52,'rgba(125,130,217,.28)'],[60,104,24,'rgba(255,195,30,.28)']],
+    [[88,70,60,'rgba(190,35,55,.55)'],[12,18,40,'rgba(255,195,30,.20)'],[50,110,36,'rgba(125,130,217,.30)']],
+    [[92,86,60,'rgba(190,35,55,.35)'],[4,8,38,'rgba(255,255,255,.35)'],[56,104,26,'rgba(222,125,206,.45)']],
+    [[96,96,46,'rgba(255,195,30,.35)'],[2,6,32,'rgba(125,130,217,.28)'],[50,50,0,'rgba(0,0,0,0)']],
+    [[10,92,52,'rgba(190,35,55,.55)'],[94,14,44,'rgba(255,195,30,.22)'],[50,50,0,'rgba(0,0,0,0)']],
+    [[18,95,62,'rgba(245,245,175,.45)'],[94,8,44,'rgba(222,125,206,.45)'],[70,60,22,'rgba(11,11,11,.10)']],
+    [[10,10,52,'rgba(190,35,55,.18)'],[96,90,60,'rgba(125,130,217,.35)'],[60,0,26,'rgba(255,255,255,.4)']],
+    [[88,40,66,'rgba(245,245,175,.5)'],[6,100,44,'rgba(190,35,55,.30)'],[40,-4,24,'rgba(255,255,255,.30)']],
+    [[96,4,50,'rgba(244,244,237,.45)'],[2,96,46,'rgba(190,35,55,.18)'],[48,106,30,'rgba(245,245,175,.40)']],
+    [[8,92,50,'rgba(222,125,206,.35)'],[96,6,40,'rgba(190,35,55,.14)'],[60,50,0,'rgba(0,0,0,0)']],
+    [[94,92,56,'rgba(190,35,55,.55)'],[4,10,36,'rgba(125,130,217,.28)'],[56,56,0,'rgba(0,0,0,0)']],
+    [[96,4,50,'rgba(244,244,237,.45)'],[2,96,46,'rgba(190,35,55,.18)'],[60,50,0,'rgba(0,0,0,0)']],
+    [[8,92,50,'rgba(244,244,237,.45)'],[96,6,40,'rgba(190,35,55,.14)'],[48,104,28,'rgba(255,195,30,.35)']],
+    [[80,70,70,'rgba(255,195,30,.55)'],[6,10,44,'rgba(222,125,206,.40)'],[40,106,34,'rgba(125,130,217,.35)']]
+  ];
+
+  var vals=[2,4,20,54,435,200,78,68,38,40,47,66,35,26,20,14,14,16,17,15,14,16,24,31,24,18,31,22,12,10], max=435;
+  var pts=vals.map(function(v,i){return [i/(vals.length-1)*1000, 205-v/max*190]});
+  var d='M'+pts[0][0]+' '+pts[0][1];
+  for(var i=1;i<pts.length;i++){var mx=(pts[i-1][0]+pts[i][0])/2,my=(pts[i-1][1]+pts[i][1])/2;d+=' Q'+pts[i-1][0]+' '+pts[i-1][1]+' '+mx+' '+my}
+  d+=' T'+pts[pts.length-1][0]+' '+pts[pts.length-1][1];
+  document.getElementById('aline').setAttribute('d',d);
+  document.getElementById('afill').setAttribute('d',d+' L1000 220 L0 220 Z');
+
+  var st=[729,606,543,539,493,464,460,456,438,436,430,422,421,411,407,406,395,392,391,382,376,374,373,372,370,351,337,332,313,308], sb='';
+  st.forEach(function(v,i){sb+='<i style="--v:'+v+';--k:'+i+'"></i>'});
+  document.getElementById('sbars').innerHTML=sb;
+
+  var dots=document.getElementById('dots');
+  slides.forEach(function(s,i){var b=document.createElement('button');b.setAttribute('aria-label','Folie '+(i+1));b.addEventListener('click',function(){go(i)});dots.appendChild(b)});
+  var dotEls=[].slice.call(dots.children);
+
+  function fmt(v,dec){return v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec})}
+  function runCount(el){
+    var to=parseFloat(el.dataset.count),dec=parseInt(el.dataset.dec||'0',10),pre=el.dataset.pre||'',suf=el.dataset.suf||'';
+    var t0=null,dur=2100,delay=650;
+    cancelAnimationFrame(el._raf);
+    function step(ts){
+      if(t0===null)t0=ts;
+      var t=Math.min(1,Math.max(0,(ts-t0-delay)/dur)),e=1-Math.pow(1-t,4);
+      el.textContent=pre+fmt(to*e,dec)+suf;
+      if(t<1)el._raf=requestAnimationFrame(step);
+    }
+    el._raf=requestAnimationFrame(step);
+  }
+  function resetCount(el){cancelAnimationFrame(el._raf);el.textContent=(el.dataset.pre||'')+fmt(0,parseInt(el.dataset.dec||'0',10))+(el.dataset.suf||'')}
+
+  function go(n){
+    n=Math.max(0,Math.min(N-1,n));
+    var prev=cur; cur=n;
+    slides.forEach(function(s,i){
+      s.classList.toggle('active',i===n);
+      s.classList.toggle('before',i<n);
+      s.querySelectorAll('[data-count]').forEach(function(el){ if(i===n){runCount(el)} else if(i!==prev||prev===n){resetCount(el)} });
+    });
+    if(prev!==n){slides[prev].querySelectorAll('[data-count]').forEach(function(el){setTimeout(function(){if(cur!==prev)resetCount(el)},1300)})}
+    var s=slides[n], b=document.body;
+    b.style.setProperty('--bg',s.dataset.bg);
+    b.style.setProperty('--ink',s.dataset.ink);
+    b.style.setProperty('--accent',s.dataset.accent);
+    b.classList.toggle('logo-b',s.dataset.logo==='b');
+    var c=cfg[n]||cfg[0];
+    blobs.forEach(function(bl,i){
+      var q=c[i]||[50,50,0,'rgba(0,0,0,0)'];
+      bl.style.setProperty('--x',vw(q[0]));bl.style.setProperty('--y',vh(q[1]));
+      bl.style.setProperty('--s','min('+q[2]+'vw,'+(q[2]*1.15)+'vh)');bl.style.setProperty('--c',q[3]);
+    });
+    document.getElementById('prog').style.width=((n+1)/N*100)+'%';
+    document.getElementById('count').textContent=String(n+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    dotEls.forEach(function(d,i){d.classList.toggle('on',i===n)});
+    document.getElementById('prev').style.visibility=n===0?'hidden':'visible';
+    document.getElementById('next').style.visibility=n===N-1?'hidden':'visible';
+    try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+  }
+  function next(){go(cur+1)} function prev(){go(cur-1)}
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();next()}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();prev()}
+    else if(e.key==='Home'){go(0)} else if(e.key==='End'){go(N-1)}
+  });
+  window.addEventListener('wheel',function(e){
+    if(lock||Math.abs(e.deltaY)<24)return;
+    var sl=e.target.closest&&e.target.closest('.slide');
+    if(sl&&sl.scrollHeight>sl.clientHeight+4)return;
+    lock=true;(e.deltaY>0?next:prev)();setTimeout(function(){lock=false},1000);
+  },{passive:true});
+  var sx=null,sy=null;
+  window.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+  window.addEventListener('touchend',function(e){
+    if(sx===null)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){dx<0?next():prev()}sx=null;
+  },{passive:true});
+
+  var start=parseInt((location.hash||'').replace('#',''),10);
+  slides.forEach(function(s){s.querySelectorAll('[data-count]').forEach(resetCount)});
+  setTimeout(function(){go(isNaN(start)?0:start-1)},60);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,3510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pizzary — Marketing Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #EBEBEB;
+      --card-dark: #1A1A1A;
+      --card-mid: #242424;
+      --card-light: #FFFFFF;
+      --orange: #FF6200;
+      --orange-light: #FF8533;
+      --orange-glow: rgba(255, 98, 0, 0.18);
+      --tiktok: #8B5CF6;
+      --tiktok-glow: rgba(139, 92, 246, 0.18);
+      --green: #22C55E;
+      --red: #EF4444;
+      --text-white: #FFFFFF;
+      --text-dim: #8A8A8A;
+      --text-mid: #B0B0B0;
+      --text-dark: #1A1A1A;
+      --radius: 18px;
+      --radius-sm: 10px;
+      --shadow: 0 2px 20px rgba(0,0,0,0.08);
+      --shadow-dark: 0 4px 32px rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      background: var(--card-light);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      height: 64px;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--text-dark);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--orange);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .nav-platform-badges {
+      display: flex;
+      gap: 8px;
+      margin-left: 8px;
+    }
+
+    .platform-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .platform-badge:hover { opacity: .8; }
+
+    .badge-ig {
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      color: white;
+    }
+
+    .badge-tt {
+      background: #1C1C1E;
+      color: white;
+    }
+
+    .badge-tt svg { color: #69C9D0; }
+
+    .nav-center { flex: 1; }
+
+    .nav-search {
+      max-width: 320px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .nav-search input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 24px;
+      padding: 8px 16px 8px 38px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text-dark);
+      outline: none;
+    }
+
+    .nav-search svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-date {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      transition: background .2s;
+    }
+
+    .icon-btn:hover { background: #DCDCDC; }
+
+    /* ── TABS ── */
+    .tab-bar {
+      background: var(--card-light);
+      padding: 0 28px;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .tab-btn {
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover { color: var(--text-dark); }
+
+    .tab-btn.active {
+      color: var(--orange);
+      border-bottom-color: var(--orange);
+    }
+
+    /* ── LAYOUT ── */
+    .page { display: none; padding: 24px 28px 32px; }
+    .page.active { display: block; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .grid-60-40 { display: grid; grid-template-columns: 60fr 40fr; gap: 16px; }
+    .grid-55-45 { display: grid; grid-template-columns: 55fr 45fr; gap: 16px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb24 { margin-bottom: 24px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card-light);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-dark {
+      background: var(--card-dark);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow-dark);
+      color: var(--text-white);
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-card {
+      background: var(--card-light);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .kpi-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 20px;
+    }
+
+    .badge-up { background: rgba(34,197,94,.12); color: var(--green); }
+    .badge-down { background: rgba(239,68,68,.12); color: var(--red); }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-dark);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* ── CHART HEADERS ── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .card-title h3 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 98, 0, 0.15);
+      color: var(--orange);
+    }
+
+    /* ── GROWTH CHART ── */
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ── PLATFORM COMPARISON ── */
+    .platform-section { margin-bottom: 20px; }
+
+    .platform-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .platform-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .platform-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .ig-icon {
+      background: linear-gradient(135deg, #f09433, #dc2743, #bc1888);
+    }
+
+    .tt-icon {
+      background: #1C1C1E;
+      border: 1px solid #333;
+    }
+
+    .platform-stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .platform-stat-row:last-child { border-bottom: none; }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .stat-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .stat-val.orange { color: var(--orange); }
+    .stat-val.purple { color: var(--tiktok); }
+    .stat-val.green { color: var(--green); }
+
+    .platform-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 18px 0;
+    }
+
+    /* ── VIDEO RANKING ── */
+    .ranking-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ranking-table thead th {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 0 12px 12px;
+      text-align: left;
+    }
+
+    .ranking-table thead th:last-child { text-align: right; }
+
+    .ranking-row {
+      border-radius: var(--radius-sm);
+      transition: background .15s;
+      cursor: pointer;
+    }
+
+    .ranking-row:hover td { background: rgba(255,255,255,0.04); }
+
+    .ranking-row td {
+      padding: 11px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .ranking-row:last-child td { border-bottom: none; }
+
+    .rank-num {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-dim);
+      min-width: 28px;
+    }
+
+    .rank-num.top3 { color: var(--orange); }
+
+    .video-thumb {
+      width: 52px;
+      height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--card-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .video-info { display: flex; flex-direction: column; gap: 3px; }
+
+    .video-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+      max-width: 240px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .video-meta {
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .plat-chip {
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .chip-ig {
+      background: linear-gradient(135deg, #f09433, #dc2743);
+      color: white;
+    }
+
+    .chip-tt {
+      background: var(--tiktok);
+      color: white;
+    }
+
+    .metric-cell {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .trend-up { color: var(--green); font-size: 11px; font-weight: 700; }
+    .trend-new { color: var(--orange); font-size: 11px; font-weight: 700; }
+    .trend-down { color: var(--red); font-size: 11px; font-weight: 700; }
+
+    .mini-sparkline {
+      width: 60px;
+      height: 24px;
+    }
+
+    /* ── HASHTAG BAR ── */
+    .hashtag-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hashtag-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hashtag-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hashtag-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .hashtag-reach {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .hashtag-bar-track {
+      height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .hashtag-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--orange);
+      transition: width .6s ease;
+    }
+
+    /* ── HEATMAP ── */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 36px repeat(24, 1fr);
+      gap: 3px;
+    }
+
+    .heatmap-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .heatmap-hour {
+      font-size: 9px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .heatmap-cell {
+      height: 18px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .heat-1 { background: rgba(255, 98, 0, 0.15); }
+    .heat-2 { background: rgba(255, 98, 0, 0.30); }
+    .heat-3 { background: rgba(255, 98, 0, 0.50); }
+    .heat-4 { background: rgba(255, 98, 0, 0.70); }
+    .heat-5 { background: rgba(255, 98, 0, 0.90); }
+
+    /* ── CONTENT PILLARS ── */
+    .pillar-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+    .pillar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .pillar-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .pillar-info { flex: 1; }
+
+    .pillar-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .pillar-freq { font-size: 11px; color: var(--text-dim); }
+
+    .pillar-pct {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-white);
+    }
+
+    /* ── STRATEGIE TAB ── */
+    .strategy-card {
+      background: var(--card-light);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .strategy-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .cal-day-header {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .cal-cell {
+      min-height: 80px;
+      background: #F7F7F7;
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      font-size: 11px;
+    }
+
+    .cal-date {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .cal-post {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cal-post-chip {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chip-planned { background: rgba(255,98,0,.12); color: var(--orange); }
+    .chip-done { background: rgba(34,197,94,.12); color: var(--green); }
+    .chip-draft { background: rgba(139,92,246,.12); color: var(--tiktok); }
+
+    .cal-cell.today {
+      background: rgba(255,98,0,.06);
+      border: 1.5px solid rgba(255,98,0,.25);
+    }
+
+    .funnel-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 10px;
+    }
+
+    .funnel-step {
+      flex: 1;
+      padding: 14px 18px;
+      text-align: center;
+      position: relative;
+    }
+
+    .funnel-step-label { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+    .funnel-step-value { font-size: 20px; font-weight: 800; color: var(--text-dark); }
+    .funnel-step-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+    .funnel-arrow {
+      font-size: 18px;
+      color: var(--text-dim);
+      padding: 0 4px;
+    }
+
+    .next-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .next-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--orange);
+      background: rgba(255,98,0,.04);
+    }
+
+    .next-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .next-step-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    .next-step-tag {
+      margin-left: auto;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ── SCROLL ── */
+    .scroll-x { overflow-x: auto; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    /* ── INSIGHT BUBBLE ── */
+    .insight-bubble {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--orange-glow);
+      border: 1px solid rgba(255,98,0,.2);
+      margin-top: 14px;
+    }
+
+    .insight-icon { font-size: 16px; flex-shrink: 0; }
+
+    .insight-text {
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+
+    .insight-text strong { color: var(--text-white); }
+
+    /* ── GOAL LIST ── */
+    .goal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .goal-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+
+    .goal-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .goal-dot.active { background: var(--orange); }
+
+    .line-separator {
+      height: 1px;
+      background: rgba(0,0,0,0.07);
+      margin: 20px 0;
+    }
+
+    .orange-text { color: var(--orange); }
+    .green-text { color: var(--green); }
+    .purple-text { color: var(--tiktok); }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE / MOBILE
+    ════════════════════════════════════════ */
+
+    /* Tablet */
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-60-40 { grid-template-columns: 1fr; }
+      .grid-55-45 { grid-template-columns: 1fr; }
+      .grid-5 { grid-template-columns: repeat(3, 1fr) !important; }
+    }
+
+    /* Large phone / small tablet */
+    @media (max-width: 860px) {
+      .nav { padding: 0 16px; gap: 12px; height: 58px; }
+      .nav-center { display: none; }
+      .nav-date { display: none; }
+      .nav-platform-badges { display: none; }
+      .nav-right { margin-left: auto; }
+      .nav-logo span { font-size: 16px; }
+
+      .tab-bar {
+        padding: 0 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tab-bar::-webkit-scrollbar { display: none; }
+      .tab-btn { padding: 12px 13px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+
+      .page { padding: 16px 14px 28px; }
+
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-5 { grid-template-columns: repeat(2, 1fr) !important; }
+      #toppingGrid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    /* Phone */
+    @media (max-width: 560px) {
+      .nav { padding: 0 12px; }
+      .nav-logo-icon { width: 30px; height: 30px; font-size: 15px; }
+      .nav-logo span { font-size: 15px; }
+
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+      .grid-5 { grid-template-columns: 1fr !important; }
+      #toppingGrid { grid-template-columns: 1fr !important; }
+
+      .card, .card-dark { padding: 16px; }
+      .kpi-card { padding: 16px 16px; }
+      .kpi-value { font-size: 26px; }
+      .page { padding: 14px 11px 24px; }
+
+      /* Search & filter inputs full width */
+      #vloggerSearch, #toppingSearch { width: 100% !important; }
+
+      /* Vlogger cards: stack stats below */
+      .vlogger-card {
+        grid-template-columns: 48px 1fr;
+        gap: 12px;
+        padding: 14px;
+      }
+      .vl-avatar { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+      .vl-name-row { flex-wrap: wrap; }
+      .vl-stats {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top: 1px solid rgba(255,255,255,.07);
+        padding-top: 12px;
+      }
+      .vl-stats > div:first-child { text-align: left !important; }
+
+      /* Calendars tighter on phone */
+      .cal-grid { gap: 2px; }
+      .cal-cell { padding: 4px 2px; min-height: 44px; }
+      .cal-lbl { font-size: 7.5px; }
+      .cal-hd { font-size: 8px; }
+
+      /* Ranking table: smaller text + allow scroll */
+      .ranking-table thead th { font-size: 10px; padding: 0 8px 10px; }
+      .ranking-row td { font-size: 12px; padding: 9px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">🍕</div>
+    <span>The Pizzary</span>
+  </a>
+
+  <div class="nav-platform-badges">
+    <div class="platform-badge badge-ig">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      @steve_thepizzary
+    </div>
+    <div class="platform-badge badge-tt">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="#69C9D0"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.83 1.55V6.79a4.85 4.85 0 01-1.06-.1z"/></svg>
+      @the_pizzary
+    </div>
+  </div>
+
+  <div class="nav-center">
+    <div class="nav-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Metriken suchen, filtern …" />
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <span class="nav-date">Di, 03. Jun 2026</span>
+    <button class="icon-btn" title="Benachrichtigungen">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <button class="icon-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ── TAB BAR ── -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('overview', this)">Übersicht</button>
+  <button class="tab-btn" onclick="showTab('content', this)">Content Performance</button>
+  <button class="tab-btn" onclick="showTab('strategy', this)">Strategie</button>
+  <button class="tab-btn" onclick="showTab('outreach', this)">💬 Outreach</button>
+  <button class="tab-btn" onclick="showTab('vlogger', this)">🎬 Vlogger</button>
+  <button class="tab-btn" onclick="showTab('plan', this)">📅 Plan</button>
+  <button class="tab-btn" onclick="showTab('analyse', this)">📈 Analyse</button>
+  <button class="tab-btn" onclick="showTab('notizen', this)">📝 Notizen</button>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     TAB 1: ÜBERSICHT
+════════════════════════════════════════════════ -->
+<div id="tab-overview" class="page active">
+
+  <!-- KPI ROW -->
+  <div class="grid-4 mb16">
+    <div class="kpi-card" style="border:2px solid var(--orange);">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#f09433,#dc2743,#bc1888)">
+          <span style="font-size:14px;">👑</span>
+        </div>
+        <span class="kpi-badge" style="background:var(--orange);color:white;">Instagram</span>
+      </div>
+      <div class="kpi-value orange-text">555</div>
+      <div class="kpi-label">@steve_thepizzary IG</div>
+      <div class="kpi-sub">Founder · "100 Tage" Serie · LIVE</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.1)">👁</div>
+        <span class="kpi-badge badge-up">12 Reels</span>
+      </div>
+      <div class="kpi-value orange-text">36,8K</div>
+      <div class="kpi-label">Gesamt Views IG</div>
+      <div class="kpi-sub">@steve_thepizzary · alle Reels</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:#1C1C1E">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#69C9D0"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.83 1.55V6.79a4.85 4.85 0 01-1.06-.1z"/></svg>
+        </div>
+        <span class="kpi-badge badge-up">36 Videos</span>
+      </div>
+      <div class="kpi-value" style="color:var(--tiktok)">128</div>
+      <div class="kpi-label">@the_pizzary TT</div>
+      <div class="kpi-sub">801 Likes · Ø 22,3 / Video · LIVE</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(34,197,94,.12)">🌐</div>
+        <span class="kpi-badge badge-up">2 Accounts</span>
+      </div>
+      <div class="kpi-value green-text">683</div>
+      <div class="kpi-label">Gesamt-Reichweite</div>
+      <div class="kpi-sub">555 IG + 128 TT · LIVE</div>
+    </div>
+  </div>
+
+  <!-- GROWTH + PLATFORM COMPARISON -->
+  <div class="grid-60-40 mb16">
+
+    <!-- GROWTH CHART -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot"></div>
+          <h3>Follower-Wachstum</h3>
+        </div>
+        <span class="card-tag">+32% Mon</span>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--orange)"></div>
+          Instagram
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--tiktok)"></div>
+          TikTok
+        </div>
+      </div>
+      <div style="height: 220px; position: relative;">
+        <canvas id="growthChart"></canvas>
+      </div>
+    </div>
+
+    <!-- PLATFORM COMPARISON -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot" style="background:var(--orange)"></div>
+          <h3>Plattform-Vergleich</h3>
+        </div>
+        <span style="font-size:12px; color:var(--text-dim)">Jun 2026</span>
+      </div>
+
+      <!-- Instagram Stats -->
+      <div class="platform-section">
+        <div class="platform-header">
+          <div class="platform-name">
+            <div class="platform-icon ig-icon">📸</div>
+            Instagram
+          </div>
+          <span style="font-size:11px; color:var(--text-dim)">@the_pizzary</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">@the_pizzary</span>
+          <span class="stat-val orange">192</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">@steve_thepizzary</span>
+          <span class="stat-val orange">555</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Combined IG</span>
+          <span class="stat-val">747</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Aktive Reels</span>
+          <span class="stat-val">~24</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Status</span>
+          <span class="stat-val green">SEHR AKTIV</span>
+        </div>
+      </div>
+
+      <div class="platform-divider"></div>
+
+      <!-- TikTok Stats -->
+      <div class="platform-section">
+        <div class="platform-header">
+          <div class="platform-name">
+            <div class="platform-icon tt-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#69C9D0"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.83 1.55V6.79a4.85 4.85 0 01-1.06-.1z"/></svg>
+            </div>
+            TikTok
+          </div>
+          <span style="font-size:11px; color:var(--text-dim)">@the_pizzary</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Follower</span>
+          <span class="stat-val purple">128</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Gesamt Likes</span>
+          <span class="stat-val">801</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Ø Likes / Video</span>
+          <span class="stat-val">22,3</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Following</span>
+          <span class="stat-val">1</span>
+        </div>
+        <div class="platform-stat-row">
+          <span class="stat-label">Videos gesamt</span>
+          <span class="stat-val">36 Videos</span>
+        </div>
+      </div>
+
+      <div class="insight-bubble">
+        <span class="insight-icon">💡</span>
+        <span class="insight-text"><strong>Steve's Founder-Account ist der Star (555 IG-Follower)</strong> mit der "100 Tage" Content-Serie. The Pizzary IG folgt mit 192. Persönliche Story schlägt Brand-Content.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEATMAP + ENGAGEMENT CHART -->
+  <div class="grid-55-45">
+
+    <!-- POSTING HEATMAP -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot"></div>
+          <h3>Beste Posting-Zeiten</h3>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim)">Berlin · Food-Content Benchmark</span>
+      </div>
+
+      <div class="heatmap-grid" id="heatmapGrid">
+        <!-- rendered by JS -->
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-top:14px;">
+        <span style="font-size:11px; color:var(--text-dim)">Niedrig</span>
+        <div style="display:flex; gap:3px;">
+          <div style="width:14px;height:8px;border-radius:2px;background:rgba(255,98,0,.15)"></div>
+          <div style="width:14px;height:8px;border-radius:2px;background:rgba(255,98,0,.30)"></div>
+          <div style="width:14px;height:8px;border-radius:2px;background:rgba(255,98,0,.50)"></div>
+          <div style="width:14px;height:8px;border-radius:2px;background:rgba(255,98,0,.70)"></div>
+          <div style="width:14px;height:8px;border-radius:2px;background:rgba(255,98,0,.90)"></div>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim)">Hoch</span>
+      </div>
+    </div>
+
+    <!-- ENGAGEMENT DOUGHNUT + GOALS -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot" style="background:var(--orange)"></div>
+          <h3>Reichweiten-Mix</h3>
+        </div>
+      </div>
+      <div style="height: 160px; position:relative; margin: 0 auto; max-width: 200px;">
+        <canvas id="reachDonut"></canvas>
+      </div>
+      <div class="goal-list" style="margin-top: 16px;">
+        <div class="goal-item">
+          <div class="goal-dot" style="background:var(--orange)"></div>
+          <span>@steve_thepizzary IG</span>
+          <span style="margin-left:auto;font-weight:700;color:var(--orange)">81% · 555</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot active"></div>
+          <span>@the_pizzary TT</span>
+          <span style="margin-left:auto;font-weight:700;color:var(--tiktok)">19% · 128</span>
+        </div>
+      </div>
+
+      <div class="insight-bubble" style="margin-top:14px">
+        <span class="insight-icon">🎯</span>
+        <span class="insight-text"><strong>Opening Aug 2026:</strong> Ziel 2.000 Cross-Platform Follower (aktuell 683 · +193% nötig in 2 Monaten)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     TAB 2: CONTENT PERFORMANCE
+════════════════════════════════════════════════ -->
+<div id="tab-content" class="page">
+
+  <!-- VIDEO RANKING -->
+  <div class="card-dark mb16">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-dot"></div>
+        <h3>Video-Ranking — 12 Reels</h3>
+      </div>
+      <span class="card-tag">IG · Alle Accounts · Echtdaten</span>
+    </div>
+
+    <div style="margin-bottom:12px; padding:10px 14px; background:rgba(255,98,0,.08); border-radius:10px; border-left:3px solid var(--orange); display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:13px;">👁</span>
+      <span style="font-size:12px; color:var(--text-mid);">Views für <strong style="color:var(--orange);">4 Videos</strong> bestätigt. Für alle anderen: Views aus deinen <strong style="color:white;">Instagram Insights</strong> direkt ins Feld eintragen. Liste sortiert sich automatisch neu.</span>
+    </div>
+
+    <div class="scroll-x">
+      <table class="ranking-table">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th>Video</th>
+            <th>Account</th>
+            <th style="text-align:right">👁 Views</th>
+            <th style="text-align:right">❤️ Likes</th>
+            <th style="text-align:right">💬 Komm.</th>
+            <th style="text-align:right">📊 Eng.</th>
+            <th style="text-align:right">📅 Datum</th>
+          </tr>
+        </thead>
+        <tbody id="rankingBody">
+          <!-- rendered by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HASHTAG + CONTENT TYPE -->
+  <div class="grid-2">
+
+    <!-- HASHTAG PERFORMANCE -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot"></div>
+          <h3>Hashtag-Performance</h3>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim)">nach Reichweite</span>
+      </div>
+      <div class="hashtag-row" id="hashtagRows">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+
+    <!-- CONTENT TYPE BREAKDOWN -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot" style="background:var(--tiktok)"></div>
+          <h3>Content-Typen</h3>
+        </div>
+      </div>
+      <div style="height:200px; position:relative; max-width:220px; margin:0 auto 16px;">
+        <canvas id="contentTypeChart"></canvas>
+      </div>
+      <div id="contentTypeLegend" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     TAB 3: STRATEGIE
+════════════════════════════════════════════════ -->
+<div id="tab-strategy" class="page">
+
+  <!-- CONTENT CALENDAR -->
+  <div class="strategy-card mb16">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <div class="strategy-title" style="margin:0;">📅 Content-Kalender — Juni 2026</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="padding:6px 12px; background:rgba(255,98,0,.12); color:var(--orange); border-radius:20px; font-size:11px; font-weight:700;">🚀 5 Posts / Woche</div>
+        <div style="padding:6px 12px; background:rgba(34,197,94,.12); color:var(--green); border-radius:20px; font-size:11px; font-weight:700;">Start: 1. Juni</div>
+      </div>
+    </div>
+
+    <!-- POSTING RHYTHM LEGEND -->
+    <div class="grid-5" style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px;">
+      <div style="padding:10px 12px; background:#F7F7F7; border-radius:10px; border-left:3px solid var(--orange);">
+        <div style="font-size:9px; font-weight:800; color:var(--text-dim); letter-spacing:.05em;">MONTAG</div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-dark); margin-top:2px;">Steve IG</div>
+        <div style="font-size:10px; color:var(--text-dim);">Tag X / 100 Serie</div>
+      </div>
+      <div style="padding:10px 12px; background:#F7F7F7; border-radius:10px; border-left:3px solid var(--tiktok);">
+        <div style="font-size:9px; font-weight:800; color:var(--text-dim); letter-spacing:.05em;">MITTWOCH</div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-dark); margin-top:2px;">Pizzary TT</div>
+        <div style="font-size:10px; color:var(--text-dim);">Produkt / Maschine</div>
+      </div>
+      <div style="padding:10px 12px; background:#F7F7F7; border-radius:10px; border-left:3px solid var(--orange);">
+        <div style="font-size:9px; font-weight:800; color:var(--text-dim); letter-spacing:.05em;">FREITAG</div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-dark); margin-top:2px;">Pizzary IG</div>
+        <div style="font-size:10px; color:var(--text-dim);">Visual Highlight</div>
+      </div>
+      <div style="padding:10px 12px; background:#F7F7F7; border-radius:10px; border-left:3px solid var(--tiktok);">
+        <div style="font-size:9px; font-weight:800; color:var(--text-dim); letter-spacing:.05em;">SAMSTAG</div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-dark); margin-top:2px;">Pizzary TT</div>
+        <div style="font-size:10px; color:var(--text-dim);">Reactive / Hook</div>
+      </div>
+      <div style="padding:10px 12px; background:#F7F7F7; border-radius:10px; border-left:3px solid var(--orange);">
+        <div style="font-size:9px; font-weight:800; color:var(--text-dim); letter-spacing:.05em;">SONNTAG</div>
+        <div style="font-size:11px; font-weight:700; color:var(--text-dark); margin-top:2px;">Steve IG</div>
+        <div style="font-size:10px; color:var(--text-dim);">Wochenfazit</div>
+      </div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+
+  <!-- MARKETING FUNNEL + NEXT STEPS -->
+  <div class="grid-2 mb16">
+
+    <!-- FUNNEL -->
+    <div class="strategy-card">
+      <div class="strategy-title">Marketing-Funnel</div>
+      <div style="display:flex; align-items:stretch; gap:0; background:#F7F7F7; border-radius:12px; overflow:hidden; margin-bottom:16px;">
+        <div class="funnel-step" style="background:rgba(255,98,0,.08); border-right:1px solid rgba(0,0,0,.05)">
+          <div class="funnel-step-label">Awareness</div>
+          <div class="funnel-step-value orange-text">12.4K</div>
+          <div class="funnel-step-sub">Gesamt-Reach</div>
+        </div>
+        <div class="funnel-step" style="border-right:1px solid rgba(0,0,0,.05)">
+          <div class="funnel-step-label">Engagement</div>
+          <div class="funnel-step-value">2.1K</div>
+          <div class="funnel-step-sub">Interaktionen</div>
+        </div>
+        <div class="funnel-step" style="background:rgba(34,197,94,.05)">
+          <div class="funnel-step-label">Conversion</div>
+          <div class="funnel-step-value green-text">246</div>
+          <div class="funnel-step-sub">Follower-Gains</div>
+        </div>
+      </div>
+
+      <div class="section-label">Content-Säulen (5 Posts/Woche)</div>
+      <div class="pillar-list">
+        <div class="pillar-item">
+          <div class="pillar-color" style="background:#3B82F6"></div>
+          <div class="pillar-info">
+            <div class="pillar-name">Founder-Story (Steve IG)</div>
+            <div class="pillar-freq">2x / Woche · Mo + So</div>
+          </div>
+          <div class="pillar-pct">40%</div>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-color" style="background:var(--orange)"></div>
+          <div class="pillar-info">
+            <div class="pillar-name">Produkt / Maschine</div>
+            <div class="pillar-freq">1x / Woche · Mi (TT)</div>
+          </div>
+          <div class="pillar-pct">20%</div>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-color" style="background:var(--green)"></div>
+          <div class="pillar-info">
+            <div class="pillar-name">Visual Highlight (Pizzary IG)</div>
+            <div class="pillar-freq">1x / Woche · Fr</div>
+          </div>
+          <div class="pillar-pct">20%</div>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-color" style="background:var(--tiktok)"></div>
+          <div class="pillar-info">
+            <div class="pillar-name">Community / Reactive</div>
+            <div class="pillar-freq">1x / Woche · Sa (TT)</div>
+          </div>
+          <div class="pillar-pct">20%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXT STEPS -->
+    <div class="strategy-card">
+      <div class="strategy-title">🚀 Nächste Schritte</div>
+      <div class="next-steps-list">
+        <div class="next-step-item" style="border-left-color:var(--green);">
+          <div class="next-step-num" style="background:var(--green);">★</div>
+          <div class="next-step-text"><strong>Ab 1. Juni: 5 Posts / Woche fest etabliert.</strong> Rhythmus Mo/Mi/Fr/Sa/So. Steve IG führt mit "Tag X / 100" Serie. Pizzary TT/IG ergänzen. Kein Posting Di + Do = Prep-Tage.</div>
+          <span class="next-step-tag" style="background:rgba(34,197,94,.12);color:var(--green)">START 1. JUNI</span>
+        </div>
+        <div class="next-step-item">
+          <div class="next-step-num">1</div>
+          <div class="next-step-text"><strong>Opening-Trailer 60 Sek:</strong> Steve's Story + Maschine + Zimmerstraße 91 + Aug 2026. Auf allen 4 Accounts. Bezahlt boosten (€200-500).</div>
+          <span class="next-step-tag" style="background:rgba(239,68,68,.1);color:var(--red)">Juli 2026</span>
+        </div>
+        <div class="next-step-item">
+          <div class="next-step-num">2</div>
+          <div class="next-step-text"><strong>TikTok-Serie "Berliner Typen":</strong> Charakter-Personas (Schnauze, Lea, Murat, Uwe, Olga, Tina) als Mi-Slots im Juni.</div>
+          <span class="next-step-tag" style="background:rgba(255,98,0,.1);color:var(--orange)">Diese Woche</span>
+        </div>
+        <div class="next-step-item">
+          <div class="next-step-num">3</div>
+          <div class="next-step-text"><strong>Steve's IG-Reels auf TT cross-posten:</strong> 554 IG-Reach → 16 TT-Follower. Sofortiger Multiplikator möglich. Reels 1:1 übertragen.</div>
+          <span class="next-step-tag" style="background:rgba(255,98,0,.1);color:var(--orange)">Diese Woche</span>
+        </div>
+        <div class="next-step-item">
+          <div class="next-step-num">4</div>
+          <div class="next-step-text">ASMR Close-Up Serie: Topping-Auswahl auf Pizza — Saves auf Instagram maximieren. #SaveForLater Trigger einbauen.</div>
+          <span class="next-step-tag" style="background:rgba(139,92,246,.1);color:var(--tiktok)">KW 19</span>
+        </div>
+        <div class="next-step-item">
+          <div class="next-step-num">5</div>
+          <div class="next-step-text">Die Taube als Maskottchen: 15-Sek Loop-Video für TikTok & Reels. Ziel: natürlicher Share-Trigger durch Überraschungseffekt.</div>
+          <span class="next-step-tag" style="background:rgba(34,197,94,.1);color:var(--green)">KW 20</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT SÄULEN CHART -->
+  <div class="strategy-card">
+    <div class="strategy-title">Viral-Protokoll — Algorithmus-Checkliste</div>
+    <div class="grid-5" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px;">
+      <div style="padding:16px; background:#F7F7F7; border-radius:12px; text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px">⏱️</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Watch Time</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4">Ziel: >70% Completion Rate. Videos: 15–30 Sek oder 60–90 Sek.</div>
+      </div>
+      <div style="padding:16px; background:#F7F7F7; border-radius:12px; text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px">🔁</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Re-Watches</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4">Loop-Struktur: Ende führt zurück zum Anfang. Ungelöste Fragen im Hook.</div>
+      </div>
+      <div style="padding:16px; background:#F7F7F7; border-radius:12px; text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px">💬</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Comments</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4">Polarisierende Fragen. "Team Schnauze oder Team Lea?" Widerspruch erzeugen.</div>
+      </div>
+      <div style="padding:16px; background:#F7F7F7; border-radius:12px; text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px">📤</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Shares</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4">"Das muss mein Freund sehen" Moment. Die Taube = natürlicher Share-Trigger.</div>
+      </div>
+      <div style="padding:16px; background:rgba(255,98,0,.06); border-radius:12px; text-align:center; border:1.5px solid rgba(255,98,0,.2)">
+        <div style="font-size:24px;margin-bottom:6px">🔖</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--orange)">Saves (IG #1)</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4">Info-Dichte erhöhen. Topping-Guides + Signature-Pizza-Übersichten = Save-Magneten.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════ -->
+<script>
+/* ── DATA ── */
+const data = {
+  growth: {
+    labels: ['27. Apr','04. Mai','11. Mai','18. Mai','25. Mai','28. Mai','03. Jun'],
+    instagram: [180, 280, 370, 450, 520, 554, 555],
+    tiktok:    [12, 38, 64, 88, 110, 122, 128]
+  },
+
+  videos: [
+    // views = bestätigt via Instagram API (28. Mai 2026)
+    // Nur @steve_thepizzary IG + @the_pizzary TT
+    { title:'Sofa, PlayStation, Party.',            account:'@steve_thepizzary', platform:'IG', date:'18. Dez 2025', views:20000, likes:40, comments:2,  url:'https://www.instagram.com/reel/DSawk3QiJRL/' },
+    { title:'Gute Pizza entsteht nicht zufällig.', account:'@steve_thepizzary', platform:'IG', date:'22. Dez 2025', views:3081,  likes:34, comments:5,  url:'https://www.instagram.com/reel/DSk6cFfiE9V/' },
+    { title:'Die Presse ist vorgeheizt.',          account:'@steve_thepizzary', platform:'IG', date:'16. Dez 2025', views:2392,  likes:52, comments:9,  url:'https://www.instagram.com/reel/DSVYvGnCKjq/' },
+    { title:'Erster Arbeitstag nach Feiertagen.',  account:'@steve_thepizzary', platform:'IG', date:'05. Jan 2026', views:2334,  likes:25, comments:5,  url:'https://www.instagram.com/reel/DTI61AOCI0H/' },
+    { title:'Hier entsteht Zukunft.',              account:'@steve_thepizzary', platform:'IG', date:'06. Jan 2026', views:1885,  likes:49, comments:15, url:'https://www.instagram.com/reel/DTKoyo3iOt1/' },
+    { title:'Jahresrückblick 2025.',               account:'@steve_thepizzary', platform:'IG', date:'Dez 2025',     views:1783,  likes:21, comments:4,  url:'https://www.instagram.com/reel/DSz2N7CiF4i/' },
+    { title:'Mit oder ohne Alkohol.',              account:'@steve_thepizzary', platform:'IG', date:'19. Jan 2026', views:1342,  likes:21, comments:5,  url:'https://www.instagram.com/reel/DTtEaPHCKW3/' },
+    { title:'Berlin ist nicht glatt.',             account:'@steve_thepizzary', platform:'IG', date:'25. Feb 2026', views:917,   likes:27, comments:4,  url:'https://www.instagram.com/reel/DVMR2TiDtD3/' },
+    { title:'Elf Monate Entscheidung.',            account:'@steve_thepizzary', platform:'IG', date:'26. Feb 2026', views:910,   likes:16, comments:0,  url:'https://www.instagram.com/reel/DVO2nujjh5S/' },
+    { title:'100 Tage bis zur ersten Pizza.',      account:'@steve_thepizzary', platform:'IG', date:'08. Apr 2026', views:814,   likes:30, comments:1,  url:'https://www.instagram.com/reel/DW3P-S2D9-m/' },
+    { title:'Tag 2 von 100.',                      account:'@steve_thepizzary', platform:'IG', date:'09. Apr 2026', views:688,   likes:13, comments:3,  url:'https://www.instagram.com/reel/DW506sRAfTr/' },
+    { title:'Tag 3 von 100.',                      account:'@steve_thepizzary', platform:'IG', date:'10. Apr 2026', views:679,   likes:12, comments:1,  url:'https://www.instagram.com/reel/DW9hYdRDq1G/' },
+    { title:'TikTok · @the_pizzary',              account:'@the_pizzary',      platform:'TT', date:'2026',         views:null,  likes:55, comments:null, url:'https://www.tiktok.com/@the_pizzary' },
+  ],
+
+  hashtags: [
+    { name:'#ThePizzary', reach:8400 },
+    { name:'#BerlinFood', reach:6200 },
+    { name:'#PizzaRevolution', reach:4800 },
+    { name:'#BuildYourPizza', reach:3900 },
+    { name:'#FoodStartup', reach:3100 },
+    { name:'#BerlinMitte', reach:2700 },
+    { name:'#PizzaPress', reach:1800 },
+    { name:'#StartupJourney', reach:1400 }
+  ],
+
+  contentTypes: {
+    labels: ['Produkt/USP', 'Founder-Story', 'Behind-the-Scenes', 'Community', 'Trending/Viral'],
+    values: [35, 25, 20, 12, 8],
+    colors: ['#FF6200','#3B82F6','#22C55E','#8B5CF6','#F59E0B']
+  },
+
+  // Heatmap: [day][hour] heat level 0-5
+  heatmap: {
+    days: ['Mo','Di','Mi','Do','Fr','Sa','So'],
+    // Data represents Berlin Food audience activity patterns
+    matrix: [
+      [0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,3,3,4,5,4,3,2,1], // Mo
+      [0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,3,3,4,5,4,3,2,1], // Di
+      [0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,3,3,4,5,4,3,2,1], // Mi
+      [0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,3,3,4,5,4,3,2,1], // Do
+      [0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,3,4,4,5,5,4,3,2,1], // Fr
+      [0,0,0,0,0,1,2,2,3,3,3,3,3,3,3,3,4,4,5,5,4,3,2,1], // Sa
+      [0,0,0,0,0,1,2,2,3,3,3,3,3,3,3,3,4,4,4,5,5,3,2,1], // So
+    ]
+  },
+
+  calendar: {
+    // Juni 2026 startet Montag · 5 Posts/Woche · Mo/Mi/Fr/Sa/So
+    // Rhythmus: Mo Steve IG · Mi Pizzary TT · Fr Pizzary IG · Sa Pizzary TT · So Steve IG
+    posts: {
+      // ── WOCHE 1 (Mo 1 – So 7) ──
+      1:  [{ text:'Steve IG · Tag 90/100',           type:'planned', plat:'IG'    }],
+      3:  [{ text:'Pizzary TT · Maschine ASMR',      type:'planned', plat:'TT'    }],
+      5:  [{ text:'Pizzary IG · Weekly Highlight',   type:'planned', plat:'IG'    }],
+      6:  [{ text:'Pizzary TT · Topping Battle',     type:'planned', plat:'TT'    }],
+      7:  [{ text:'Steve IG · So-Reflexion',         type:'planned', plat:'IG'    }],
+
+      // ── WOCHE 2 (Mo 8 – So 14) ──
+      8:  [{ text:'Steve IG · Tag 83/100',           type:'planned', plat:'IG'    }],
+      10: [{ text:'Pizzary TT · 180 Sek Demo',       type:'planned', plat:'TT'    }],
+      12: [{ text:'Pizzary IG · Behind Scenes',      type:'planned', plat:'IG'    }],
+      13: [{ text:'Pizzary TT · Signature Reveal',   type:'planned', plat:'TT'    }],
+      14: [{ text:'Steve IG · Lernkurve',            type:'planned', plat:'IG'    }],
+
+      // ── WOCHE 3 (Mo 15 – So 21) ──
+      15: [{ text:'Steve IG · Tag 76/100',           type:'draft',   plat:'IG'    }],
+      17: [{ text:'Pizzary TT · Berliner Typen',     type:'draft',   plat:'TT'    }],
+      19: [{ text:'Pizzary IG · Team-Vorstellung',   type:'draft',   plat:'IG'    }],
+      20: [{ text:'Pizzary TT · Taube Loop',         type:'draft',   plat:'TT'    }],
+      21: [{ text:'Steve IG · Founder Talk',         type:'draft',   plat:'IG'    }],
+
+      // ── WOCHE 4 (Mo 22 – So 28) ──
+      22: [{ text:'Steve IG · Tag 69/100',           type:'draft',   plat:'IG'    }],
+      24: [{ text:'Pizzary TT · Customer POV',       type:'draft',   plat:'TT'    }],
+      26: [{ text:'Pizzary IG · Standort Tour',      type:'draft',   plat:'IG'    }],
+      27: [{ text:'Pizzary TT · Trend Reactive',     type:'draft',   plat:'TT'    }],
+      28: [{ text:'Steve IG · Wochenfazit',          type:'draft',   plat:'IG'    }],
+
+      // ── WOCHE 5 (Mo 29 – Di 30) ──
+      29: [{ text:'Steve IG · Tag 62/100',           type:'draft',   plat:'IG'    }],
+    }
+  }
+};
+
+/* ── TAB SWITCHING ── */
+function showTab(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── CHART DEFAULTS ── */
+Chart.defaults.color = '#8A8A8A';
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+
+/* ── GROWTH CHART ── */
+function initGrowthChart() {
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  const grad1 = ctx.createLinearGradient(0, 0, 0, 220);
+  grad1.addColorStop(0, 'rgba(255,98,0,0.3)');
+  grad1.addColorStop(1, 'rgba(255,98,0,0)');
+
+  const grad2 = ctx.createLinearGradient(0, 0, 0, 220);
+  grad2.addColorStop(0, 'rgba(139,92,246,0.3)');
+  grad2.addColorStop(1, 'rgba(139,92,246,0)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.growth.labels,
+      datasets: [
+        {
+          label: 'Instagram',
+          data: data.growth.instagram,
+          borderColor: '#FF6200',
+          backgroundColor: grad1,
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.45,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#FF6200'
+        },
+        {
+          label: 'TikTok',
+          data: data.growth.tiktok,
+          borderColor: '#8B5CF6',
+          backgroundColor: grad2,
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.45,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#8B5CF6'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#1A1A1A',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#B0B0B0',
+          padding: 12,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} Follower`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+          ticks: { font: { size: 10 } }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+          ticks: { font: { size: 10 }, stepSize: 50 },
+          min: 0
+        }
+      }
+    }
+  });
+}
+
+/* ── REACH DONUT ── */
+function initReachDonut() {
+  const ctx = document.getElementById('reachDonut').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Instagram', 'TikTok'],
+      datasets: [{
+        data: [81, 19],
+        backgroundColor: ['#FF6200', '#8B5CF6'],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1A1A1A',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#B0B0B0',
+          padding: 10
+        }
+      }
+    }
+  });
+}
+
+/* ── HEATMAP ── */
+function renderHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  const hours = Array.from({length:24}, (_,i) => i);
+
+  // Header row (empty + hours)
+  grid.innerHTML = '<div class="heatmap-label"></div>';
+  // Show every other hour for space
+  hours.forEach(h => {
+    grid.innerHTML += `<div class="heatmap-hour">${h % 4 === 0 ? h+'h' : ''}</div>`;
+  });
+
+  // Data rows
+  data.heatmap.days.forEach((day, di) => {
+    grid.innerHTML += `<div class="heatmap-label">${day}</div>`;
+    data.heatmap.matrix[di].forEach(heat => {
+      grid.innerHTML += `<div class="heatmap-cell heat-${heat}"></div>`;
+    });
+  });
+}
+
+/* ── VIDEO RANKING TABLE ── */
+const VIDEO_VIEWS_KEY = 'pizzary_video_views_v1';
+
+function loadSavedViews() {
+  try { return JSON.parse(localStorage.getItem(VIDEO_VIEWS_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveView(title, views) {
+  const saved = loadSavedViews();
+  saved[title] = views;
+  localStorage.setItem(VIDEO_VIEWS_KEY, JSON.stringify(saved));
+}
+
+function getSortedVideos() {
+  const saved = loadSavedViews();
+  return data.videos.map(v => ({
+    ...v,
+    views: saved[v.title] !== undefined ? saved[v.title] : v.views
+  })).sort((a, b) => {
+    const av = a.views ?? -1;
+    const bv = b.views ?? -1;
+    if (bv !== av) return bv - av;
+    if (b.likes !== a.likes) return b.likes - a.likes;
+    return (b.comments ?? 0) - (a.comments ?? 0);
+  });
+}
+
+function updateViewInline(title, inputEl) {
+  const val = parseInt(inputEl.value.replace(/\D/g,''), 10);
+  if (!isNaN(val) && val >= 0) {
+    saveView(title, val);
+    renderRankingTable();
+  }
+}
+
+function renderRankingTable() {
+  const tbody = document.getElementById('rankingBody');
+  const emojiMap = { IG: '📸', TT: '🎵' };
+  const sorted = getSortedVideos();
+
+  tbody.innerHTML = sorted.map((v, i) => {
+    const rank = i + 1;
+    const followers = v.platform === 'TT' ? 128 : 555;
+    const comments = v.comments ?? 0;
+    const eng = (((v.likes + comments) / followers) * 100).toFixed(1) + '%';
+    const acColor = v.account === '@the_pizzary' ? 'var(--green)' : 'var(--orange)';
+    const isConfirmed = v.views !== null && v.views !== undefined && v.views > 0;
+    const viewsDisplay = isConfirmed
+      ? `<span style="color:var(--text-white); font-weight:700;">${v.views.toLocaleString('de')}</span>`
+      : `<input
+           type="text"
+           placeholder="eintragen"
+           onclick="event.stopPropagation()"
+           onkeydown="if(event.key==='Enter') updateViewInline('${v.title.replace(/'/g,"\\'")}', this)"
+           onblur="updateViewInline('${v.title.replace(/'/g,"\\'")}', this)"
+           style="width:80px; padding:3px 6px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:6px; color:var(--text-dim); font-family:inherit; font-size:11px; outline:none; cursor:text;"
+         />`;
+
+    return `<tr class="ranking-row" onclick="window.open('${v.url}','_blank')" style="cursor:pointer;">
+      <td><span class="rank-num ${rank <= 3 ? 'top3' : ''}">${rank}</span></td>
+      <td>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="video-thumb">${emojiMap[v.platform]}</div>
+          <div class="video-info">
+            <div class="video-title" style="text-decoration:underline; text-underline-offset:3px;">${v.title}</div>
+          </div>
+        </div>
+      </td>
+      <td><span style="font-size:11px; font-weight:700; color:${acColor};">${v.account}</span></td>
+      <td class="metric-cell">${viewsDisplay}</td>
+      <td class="metric-cell" style="color:var(--orange); font-weight:700;">${v.likes}</td>
+      <td class="metric-cell" style="color:var(--text-mid)">${comments}</td>
+      <td class="metric-cell" style="color:var(--green)">${eng}</td>
+      <td class="metric-cell" style="color:var(--text-dim); font-size:11px;">${v.date}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── HASHTAG BARS ── */
+function renderHashtags() {
+  const container = document.getElementById('hashtagRows');
+  const max = data.hashtags[0].reach;
+  container.innerHTML = data.hashtags.map(h => {
+    const pct = Math.round((h.reach / max) * 100);
+    return `<div class="hashtag-item">
+      <div class="hashtag-meta">
+        <span class="hashtag-name">${h.name}</span>
+        <span class="hashtag-reach">${h.reach.toLocaleString('de')} Reach</span>
+      </div>
+      <div class="hashtag-bar-track">
+        <div class="hashtag-bar-fill" style="width:${pct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── CONTENT TYPE CHART ── */
+function initContentTypeChart() {
+  const ctx = document.getElementById('contentTypeChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.contentTypes.labels,
+      datasets: [{
+        data: data.contentTypes.values,
+        backgroundColor: data.contentTypes.colors,
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1A1A1A',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#B0B0B0',
+          padding: 10,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}%` }
+        }
+      }
+    }
+  });
+
+  // Legend
+  const legend = document.getElementById('contentTypeLegend');
+  legend.innerHTML = data.contentTypes.labels.map((l, i) => `
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div style="width:10px;height:10px;border-radius:3px;background:${data.contentTypes.colors[i]};flex-shrink:0"></div>
+      <span style="font-size:12px;color:var(--text-mid);flex:1">${l}</span>
+      <span style="font-size:12px;font-weight:700;color:var(--text-white)">${data.contentTypes.values[i]}%</span>
+    </div>
+  `).join('');
+}
+
+/* ── CONTENT CALENDAR ── */
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const daysInMonth = 30;
+  // Juni 2026 startet Montag = index 0
+  const startDow = 0;
+
+  let html = days.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  // Empty cells before start
+  for (let i = 0; i < startDow; i++) {
+    html += '<div class="cal-cell" style="background:transparent;min-height:60px;"></div>';
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = false; // May not started yet
+    const posts = data.calendar.posts[d] || [];
+    const typeClass = { planned: 'chip-planned', done: 'chip-done', draft: 'chip-draft' };
+
+    const platColor = posts.length ? (posts[0].plat && posts[0].plat.includes('TT') ? 'var(--tiktok)' : 'var(--orange)') : 'transparent';
+    const cellStyle = posts.length ? `border-left:3px solid ${platColor};` : '';
+
+    html += `<div class="cal-cell ${isToday ? 'today' : ''}" style="${cellStyle}">
+      <div class="cal-date">${d}</div>
+      <div class="cal-post">
+        ${posts.map(p => `<div class="cal-post-chip ${typeClass[p.type]}" title="${p.plat || ''}">${p.text}</div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Fill remaining cells
+  const totalCells = startDow + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder > 0) {
+    for (let i = 0; i < 7 - remainder; i++) {
+      html += '<div class="cal-cell" style="background:transparent;min-height:60px;"></div>';
+    }
+  }
+
+  grid.innerHTML = html;
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  initGrowthChart();
+  initReachDonut();
+  renderHeatmap();
+  renderRankingTable();
+  renderHashtags();
+  initContentTypeChart();
+  renderCalendar();
+});
+</script>
+
+<!-- ════════════════════════════════════════════════
+     TAB 4: OUTREACH
+════════════════════════════════════════════════ -->
+<div id="tab-outreach" class="page">
+
+  <!-- INTRO ROW -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Outreach Hub</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text-dark);">Vorgefertigte Texte</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:3px;">Einfach anklicken → kopiert → einfügen. Kein KI-Sound, direkt und echt.</div>
+    </div>
+    <div style="display:flex; gap:8px;" id="outreachFilterRow">
+      <button class="outreach-filter active" onclick="filterOutreach('all', this)">Alle</button>
+      <button class="outreach-filter" onclick="filterOutreach('comment', this)">💬 Kommentare</button>
+      <button class="outreach-filter" onclick="filterOutreach('dm', this)">📩 Direkt-Nachrichten</button>
+    </div>
+  </div>
+
+  <!-- SECTION: KOMMENTARE -->
+  <div class="outreach-section" data-category="comment">
+    <div class="card-dark mb16">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot"></div>
+          <h3>💬 Kommentare unter Food-Vlogger-Videos</h3>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim);">Für Restaurant-Reviews · Allgemein einsetzbar</span>
+      </div>
+      <div style="font-size:12px; color:var(--text-dim); margin-bottom:16px; padding:10px 14px; background:rgba(255,255,255,0.04); border-radius:8px; border-left:3px solid var(--orange);">
+        💡 Passt zu jedem Food Video über Restaurants oder Essen. Klingt persönlich, ist aber für alle einsetzbar.
+      </div>
+      <div id="commentCards" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- SECTION: DIREKT-NACHRICHTEN -->
+  <div class="outreach-section" data-category="dm">
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot" style="background:var(--tiktok)"></div>
+          <h3>📩 Direkt-Nachrichten (PN) zum Connecten</h3>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim);">Kurz · Persönlich · Kein Pitch</span>
+      </div>
+      <div style="font-size:12px; color:var(--text-dim); margin-bottom:16px; padding:10px 14px; background:rgba(255,255,255,0.04); border-radius:8px; border-left:3px solid var(--tiktok);">
+        📌 Ziel: einfach connecten. Kein Pitch, kein Business-Talk. [Name] und [Thema] vor dem Senden anpassen.
+      </div>
+      <div id="dmCards" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  /* ── OUTREACH STYLES ── */
+  .outreach-filter {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .outreach-filter:hover { border-color: var(--orange); color: var(--orange); }
+  .outreach-filter.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+  .outreach-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: border-color .15s, background .15s;
+  }
+  .outreach-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,98,0,.3); }
+
+  .outreach-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--orange);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .outreach-num.dm { background: var(--tiktok); }
+
+  .outreach-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,98,0,.12);
+    color: var(--orange);
+    font-size: 11px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--orange); color: white; }
+  .copy-btn.copied { background: var(--green); color: white; }
+  .copy-btn.dm-btn { background: rgba(139,92,246,.12); color: var(--tiktok); }
+  .copy-btn.dm-btn:hover { background: var(--tiktok); color: white; }
+
+  .outreach-section { transition: opacity .2s; }
+  .outreach-section.hidden { display: none; }
+</style>
+
+<script>
+/* ── OUTREACH DATA ── */
+const outreachData = {
+  comments: [
+    {
+      id: 'c1',
+      text: `Alter ich bin jetzt richtig hungrig danke dafür 😩 warum schau ich sowas abends`
+    },
+    {
+      id: 'c2',
+      text: `Endlich mal jemand der auch sagt wenn was nicht so toll war. Direkt abonniert.`
+    },
+    {
+      id: 'c3',
+      text: `Okay die Adresse hab ich mir gespeichert. Nächste Woche teste ich das 📍`
+    },
+    {
+      id: 'c4',
+      text: `Deine Art zu erklären macht echt den Unterschied. Man merkt du warst wirklich da und weißt wovon du redest.`
+    },
+    {
+      id: 'c5',
+      text: `Ich folg dir jetzt wegen genau so einem Video. Keine Werbung, keine Übertreibung, einfach ehrlich. Mehr davon 🙌`
+    }
+  ],
+  dms: [
+    {
+      id: 'd1',
+      text: `Hey [Name], ich folg dir schon ne Weile. Ich bau gerade was in Berlin auf und schau mir viel an was in der Szene passiert. Wollte mich einfach mal vorstellen 👋`
+    },
+    {
+      id: 'd2',
+      text: `Hi [Name]! Ich bin Steve aus Berlin. Hab dein Video zu [Thema] gesehen, war richtig gut gemacht. Ich bin selbst in der Food Welt unterwegs und verfolge deinen Content. Gerne mal in Kontakt 🍕`
+    },
+    {
+      id: 'd3',
+      text: `Hey [Name] kurze Frage: wie lange machst du das schon? Frag weil ich gerade selbst aufbaue und ehrlich gesagt viel davon lerne wie du das machst.`
+    },
+    {
+      id: 'd4',
+      text: `Hi [Name]! Ich bin Steve, ich mach gerade ein neues Konzept in Berlin auf. Bin Fan von dem was du machst, wollte mich kurz melden. Kein Pitch, einfach nur hallo 😄`
+    },
+    {
+      id: 'd5',
+      text: `Hey [Name] ich verfolg deinen Content schon eine Weile. Das letzte Video war stark. Ich bin auch gerade dabei was aufzubauen und bin viel in der Szene unterwegs. Wäre cool mal zu quatschen.`
+    }
+  ]
+};
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Kopiert!`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = orig;
+    }, 2000);
+  });
+}
+
+function renderOutreachCards() {
+  const commentContainer = document.getElementById('commentCards');
+  const dmContainer = document.getElementById('dmCards');
+
+  commentContainer.innerHTML = outreachData.comments.map((item, i) => `
+    <div class="outreach-card" id="${item.id}">
+      <div class="outreach-num">${i + 1}</div>
+      <div class="outreach-text">"${item.text}"</div>
+      <button class="copy-btn" onclick="copyToClipboard(\`${item.text.replace(/`/g, '\\`')}\`, this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Kopieren
+      </button>
+    </div>
+  `).join('');
+
+  dmContainer.innerHTML = outreachData.dms.map((item, i) => `
+    <div class="outreach-card" id="${item.id}">
+      <div class="outreach-num dm">${i + 1}</div>
+      <div class="outreach-text">"${item.text}"</div>
+      <button class="copy-btn dm-btn" onclick="copyToClipboard(\`${item.text.replace(/`/g, '\\`')}\`, this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Kopieren
+      </button>
+    </div>
+  `).join('');
+}
+
+function filterOutreach(type, btn) {
+  document.querySelectorAll('.outreach-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.outreach-section').forEach(sec => {
+    if (type === 'all') {
+      sec.classList.remove('hidden');
+    } else {
+      sec.dataset.category === type
+        ? sec.classList.remove('hidden')
+        : sec.classList.add('hidden');
+    }
+  });
+}
+
+// Init outreach on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  renderOutreachCards();
+});
+</script>
+
+<!-- ════════════════════════════════════════════════
+     TAB 5: VLOGGER DATABASE
+════════════════════════════════════════════════ -->
+<div id="tab-vlogger" class="page">
+
+  <!-- HEADER ROW -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:14px;">
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Food Vlogger Datenbank</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text-dark);">Kuratierte Influencer-Liste</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:3px;">Aktiv. Verifiziert. Sortiert nach Relevanz für The Pizzary.</div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <input type="text" id="vloggerSearch" placeholder="🔍 Suche nach Name / Handle / Niche…" oninput="renderVloggers()" style="padding:9px 14px; border-radius:10px; border:1.5px solid rgba(0,0,0,.1); font-family:inherit; font-size:13px; width:280px; outline:none; background:white;" />
+      <select id="vloggerSort" onchange="renderVloggers()" style="padding:9px 14px; border-radius:10px; border:1.5px solid rgba(0,0,0,.1); font-family:inherit; font-size:13px; outline:none; background:white; cursor:pointer; font-weight:600;">
+        <option value="followers_desc">Follower ↓</option>
+        <option value="followers_asc">Follower ↑</option>
+        <option value="name">Name A–Z</option>
+        <option value="activity">Aktivität</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="grid-4 mb16">
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.12)">🎬</div>
+      </div>
+      <div class="kpi-value" id="statTotal">82</div>
+      <div class="kpi-label">Vlogger gesamt</div>
+      <div class="kpi-sub">Live verifiziert · 100% echte TT-Daten</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.12)">🏙️</div>
+      </div>
+      <div class="kpi-value orange-text" id="statBerlin">17</div>
+      <div class="kpi-label">Berlin-fokussiert</div>
+      <div class="kpi-sub">Lokaler Schwerpunkt</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(34,197,94,.12)">✅</div>
+      </div>
+      <div class="kpi-value green-text" id="statActive">22</div>
+      <div class="kpi-label">Sehr aktiv</div>
+      <div class="kpi-sub">Post in letzten 10 Tagen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(139,92,246,.12)">🍕</div>
+      </div>
+      <div class="kpi-value purple-text" id="statPizza">4</div>
+      <div class="kpi-label">Pizza-Niche</div>
+      <div class="kpi-sub">Direkter Match</div>
+    </div>
+  </div>
+
+  <!-- CATEGORY FILTER -->
+  <div class="card mb16" style="padding:14px 18px;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="vlogger-filter active" data-cat="all"      onclick="setVloggerFilter('all',this)">Alle <span class="vf-count">25</span></button>
+      <button class="vlogger-filter" data-cat="pizza"    onclick="setVloggerFilter('pizza',this)">🍕 Pizza & Italian</button>
+      <button class="vlogger-filter" data-cat="macro"    onclick="setVloggerFilter('macro',this)">🏙️ Berlin Macro</button>
+      <button class="vlogger-filter" data-cat="mid"      onclick="setVloggerFilter('mid',this)">📍 Berlin Mid</button>
+      <button class="vlogger-filter" data-cat="micro"    onclick="setVloggerFilter('micro',this)">💎 Berlin Micro</button>
+      <button class="vlogger-filter" data-cat="national" onclick="setVloggerFilter('national',this)">🇩🇪 National</button>
+    </div>
+  </div>
+
+  <!-- VLOGGER LIST -->
+  <div id="vloggerList" style="display:flex; flex-direction:column; gap:12px;"></div>
+
+  <!-- EMPTY STATE -->
+  <div id="vloggerEmpty" style="display:none; padding:48px; text-align:center; color:var(--text-dim); background:var(--card-light); border-radius:18px; margin-top:16px;">
+    <div style="font-size:42px; margin-bottom:8px;">🔍</div>
+    <div style="font-size:14px; font-weight:600;">Keine Vlogger gefunden</div>
+    <div style="font-size:12px; margin-top:4px;">Versuch eine andere Suche oder einen anderen Filter.</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════
+     TAB: PLAN — MARKETING JUNI + JULI 2026
+════════════════════════════════════════════════ -->
+<style>
+  /* ── PLAN STYLES ── */
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-hd   { font-size:9px; font-weight:700; text-align:center; color:var(--text-dim); padding:3px 0; }
+  .cal-cell { border-radius:7px; padding:5px 4px; min-height:48px; border:1px solid transparent; }
+  .cal-cell.empty { background:transparent !important; border-color:transparent !important; }
+  .cal-dn   { font-size:8px; font-weight:700; color:var(--text-dim); }
+  .cal-dot  { width:5px; height:5px; border-radius:50%; margin:2px 0; }
+  .cal-lbl  { font-size:8.5px; font-weight:600; color:var(--text-dark); line-height:1.3; }
+  .cal-nr   { font-size:7.5px; color:var(--orange); font-weight:800; margin-top:1px; }
+  .plan-pill{ background: var(--card-dark); border-radius:16px; padding:18px; border:1.5px solid rgba(255,255,255,.07); }
+  .tp-card  { background:rgba(255,255,255,.04); border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,.06); transition:border-color .2s, background .2s; }
+  .tp-card:hover { border-color:var(--orange); background:rgba(255,98,0,.04); }
+  .plan-leg { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .plan-li  { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:600; color:var(--text-dim); }
+  .plan-ld  { width:8px; height:8px; border-radius:50%; }
+</style>
+
+<div id="tab-plan" class="page">
+
+  <!-- HEADER -->
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Pre-Opening Content-Strategie</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text-dark);">Marketing Plan · Jun + Jul 2026</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:3px;">35 Topping-Pieces · Community-Aufbau · Algo-Momentum für Opening Aug 2026</div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <span style="padding:7px 13px; background:var(--orange); color:white; border-radius:10px; font-weight:700; font-size:12px;">🍕 35 Topping-Posts</span>
+      <span style="padding:7px 13px; background:rgba(239,68,68,.12); color:#EF4444; border:1.5px solid rgba(239,68,68,.3); border-radius:10px; font-weight:700; font-size:12px;">🚀 Opening Aug 2026</span>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="grid-4 mb16">
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.1)">🍕</div>
+        <span class="kpi-badge" style="background:rgba(255,98,0,.1); color:var(--orange);">Serie</span>
+      </div>
+      <div class="kpi-value orange-text">35</div>
+      <div class="kpi-label">Topping-Content Pieces</div>
+      <div class="kpi-sub">1 Topping/Tag · Fakt + Combo + Story</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(139,92,246,.1)">🤝</div>
+        <span class="kpi-badge" style="background:rgba(139,92,246,.12); color:#8B5CF6;">Community</span>
+      </div>
+      <div class="kpi-value purple-text">12</div>
+      <div class="kpi-label">Community-Posts</div>
+      <div class="kpi-sub">Vlogger · Collabs · Stitch · Q&amp;A</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(59,130,246,.1)">📖</div>
+        <span class="kpi-badge" style="background:rgba(59,130,246,.12); color:#3B82F6;">Story</span>
+      </div>
+      <div class="kpi-value" style="color:#3B82F6">10</div>
+      <div class="kpi-label">Gründer + Comment-Videos</div>
+      <div class="kpi-sub">Steve's Journey · Kommentar-Reaktionen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(239,68,68,.1)">🚀</div>
+        <span class="kpi-badge" style="background:rgba(239,68,68,.12); color:#EF4444;">Opening</span>
+      </div>
+      <div class="kpi-value" style="color:#EF4444">Aug</div>
+      <div class="kpi-label">Opening-Monat</div>
+      <div class="kpi-sub">Juli = voller Teaser-Modus</div>
+    </div>
+  </div>
+
+  <!-- 3 CONTENT PILLARS -->
+  <div class="grid-3 mb16">
+    <div class="plan-pill">
+      <div style="font-size:26px; margin-bottom:10px;">🍕</div>
+      <div style="font-size:15px; font-weight:800; color:var(--text-dark); margin-bottom:4px;">Topping-Serie</div>
+      <div style="font-size:10px; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">35 Content Pieces</div>
+      <div style="font-size:12px; color:var(--text-mid); line-height:1.75;">
+        Jeden Tag ein neues Topping. Format: <strong style="color:var(--text-dark)">Fakt-Check</strong> ("Wusstet ihr, dass Thunfisch + Zwiebeln…") + <strong style="color:var(--text-dark)">Beste Kombination</strong> + <strong style="color:var(--text-dark)">Warum wir Top-Qualität verwenden.</strong>
+      </div>
+      <div style="margin-top:12px; padding:9px 11px; background:rgba(255,98,0,.07); border-radius:9px; border-left:3px solid var(--orange);">
+        <div style="font-size:10px; font-weight:700; color:var(--orange);">ZIEL</div>
+        <div style="font-size:11px; color:var(--text-mid); margin-top:2px; line-height:1.5;">Algorithmus konditionieren: Wer nach Pizza sucht, sieht The Pizzary. Täglich. Jeden Tag.</div>
+      </div>
+    </div>
+    <div class="plan-pill">
+      <div style="font-size:26px; margin-bottom:10px;">🤝</div>
+      <div style="font-size:15px; font-weight:800; color:var(--text-dark); margin-bottom:4px;">Community + Vlogger</div>
+      <div style="font-size:10px; font-weight:700; color:#8B5CF6; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Internes Social-Media-Marketing</div>
+      <div style="font-size:12px; color:var(--text-mid); line-height:1.75;">
+        <strong style="color:var(--text-dark)">Stitch/Duet</strong> mit Food-Vloggern. Aktiv <strong style="color:var(--text-dark)">auf Kommentare reagieren</strong> in fremden Videos. In <strong style="color:var(--text-dark)">Pizza + Berlin Food</strong> Feeds auftauchen ohne bezahlte Werbung.
+      </div>
+      <div style="margin-top:12px; padding:9px 11px; background:rgba(139,92,246,.07); border-radius:9px; border-left:3px solid #8B5CF6;">
+        <div style="font-size:10px; font-weight:700; color:#8B5CF6;">ZIEL</div>
+        <div style="font-size:11px; color:var(--text-mid); margin-top:2px; line-height:1.5;">Wenn die Opening-Ankündigung kommt, kennt der Algo uns schon. Reichweite x3 zum Nulltarif.</div>
+      </div>
+    </div>
+    <div class="plan-pill">
+      <div style="font-size:26px; margin-bottom:10px;">📖</div>
+      <div style="font-size:15px; font-weight:800; color:var(--text-dark); margin-bottom:4px;">Gründer-Story + Comments</div>
+      <div style="font-size:10px; font-weight:700; color:#3B82F6; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">Authentizität + Bindung</div>
+      <div style="font-size:12px; color:var(--text-mid); line-height:1.75;">
+        Steve's Reise weiterführen. <strong style="color:var(--text-dark)">100-Tage-Serie</strong> bis Opening. Auf <strong style="color:var(--text-dark)">Kommentare mit eigenem Video reagieren</strong> (höchste Engagement-Rate). Follower fühlen sich als Mitgründer.
+      </div>
+      <div style="margin-top:12px; padding:9px 11px; background:rgba(59,130,246,.07); border-radius:9px; border-left:3px solid #3B82F6;">
+        <div style="font-size:10px; font-weight:700; color:#3B82F6;">ZIEL</div>
+        <div style="font-size:11px; color:var(--text-mid); margin-top:2px; line-height:1.5;">Day-1-Gäste. Wenn The Pizzary öffnet, waren die Follower von Anfang an dabei.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARS -->
+  <div class="grid-60-40 mb16">
+    <div class="card-dark" style="padding:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-size:14px; font-weight:800; color:var(--text-dark);">📅 Juni 2026</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:1px;">Serie-Start · Community Warm-up</div>
+        </div>
+        <span style="font-size:10px; color:var(--text-dim); background:rgba(255,255,255,.05); padding:3px 9px; border-radius:7px;">20 Topping-Posts · 30 Tage</span>
+      </div>
+      <div class="plan-leg">
+        <div class="plan-li"><div class="plan-ld" style="background:var(--orange)"></div>Topping</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#8B5CF6"></div>Community</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#3B82F6"></div>Gründer</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#22C55E"></div>Comments</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#555"></div>Pause</div>
+      </div>
+      <div id="calJuniGrid" class="cal-grid"></div>
+    </div>
+    <div class="card-dark" style="padding:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-size:14px; font-weight:800; color:var(--text-dark);">📅 Juli 2026</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:1px;">Serie-Finale · Opening-Countdown</div>
+        </div>
+        <span style="font-size:10px; color:var(--text-dim); background:rgba(255,255,255,.05); padding:3px 9px; border-radius:7px;">15 Topping-Posts · 31 Tage</span>
+      </div>
+      <div class="plan-leg">
+        <div class="plan-li"><div class="plan-ld" style="background:var(--orange)"></div>Topping</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#8B5CF6"></div>Community</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#EF4444"></div>Opening</div>
+        <div class="plan-li"><div class="plan-ld" style="background:#3B82F6"></div>Gründer</div>
+      </div>
+      <div id="calJuliGrid" class="cal-grid"></div>
+    </div>
+  </div>
+
+  <!-- TOPPING DATENBANK -->
+  <div class="card-dark" style="padding:20px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <div>
+        <div style="font-size:15px; font-weight:800; color:var(--text-dark);">🍕 Topping-Datenbank</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:2px;">35 Toppings · Je ein Fakt-Check + beste Kombination + Post-Titel</div>
+      </div>
+      <input type="text" id="toppingSearch" placeholder="🔍 Topping suchen..." oninput="filterToppings()" style="padding:8px 14px; border-radius:10px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--text-dark); font-family:inherit; font-size:12px; width:200px; outline:none;" />
+    </div>
+    <div id="toppingGrid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div>
+    <div id="toppingEmpty" style="display:none; text-align:center; padding:32px; color:var(--text-dim); font-size:13px;">Kein Topping gefunden.</div>
+  </div>
+
+</div>
+
+<style>
+  /* ── VLOGGER STYLES ── */
+  .vlogger-filter {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .18s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vlogger-filter:hover { border-color: var(--orange); color: var(--orange); }
+  .vlogger-filter.active { background: var(--orange); color: white; border-color: var(--orange); }
+  .vf-count {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(0,0,0,.08);
+    font-weight: 700;
+  }
+  .vlogger-filter.active .vf-count { background: rgba(255,255,255,.25); }
+
+  .vlogger-card {
+    background: var(--card-dark);
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: var(--text-white);
+    transition: transform .15s, box-shadow .15s;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .vlogger-card:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+
+  .vl-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--orange), #FF8533);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .vl-avatar.tt-bg { background: linear-gradient(135deg, var(--tiktok), #B084F8); }
+  .vl-avatar.ig-bg { background: linear-gradient(135deg, #f09433, #dc2743, #bc1888); }
+
+  .vl-info { min-width: 0; }
+  .vl-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .vl-name { font-size: 16px; font-weight: 800; color: var(--text-white); }
+  .vl-handle { font-size: 12px; color: var(--orange); font-weight: 600; }
+  .vl-cat-badge {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: rgba(255,98,0,.15);
+    color: var(--orange);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .vl-cat-badge.pizza { background: rgba(139,92,246,.18); color: var(--tiktok); }
+  .vl-cat-badge.macro { background: rgba(34,197,94,.15); color: var(--green); }
+  .vl-cat-badge.mid { background: rgba(255,98,0,.15); color: var(--orange); }
+  .vl-cat-badge.micro { background: rgba(245,158,11,.15); color: #F59E0B; }
+  .vl-cat-badge.national { background: rgba(59,130,246,.18); color: #3B82F6; }
+
+  .vl-niche {
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+  .vl-why {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .vl-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .vl-followers {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-white);
+  }
+  .vl-followers-label { font-size: 10px; color: var(--text-dim); }
+
+  .vl-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .vl-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(255,255,255,.04);
+  }
+  .vl-status.sehr_aktiv { color: var(--green); }
+  .vl-status.sehr_aktiv .vl-status-dot { background: var(--green); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+  .vl-status.aktiv { color: var(--orange); }
+  .vl-status.aktiv .vl-status-dot { background: var(--orange); box-shadow: 0 0 0 3px rgba(255,98,0,.15); }
+  .vl-status.wachsend { color: var(--tiktok); }
+  .vl-status.wachsend .vl-status-dot { background: var(--tiktok); box-shadow: 0 0 0 3px rgba(139,92,246,.15); }
+
+  .vl-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .vl-action-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .vl-action-btn.ig { background: linear-gradient(135deg, #f09433, #dc2743); color: white; }
+  .vl-action-btn.tt { background: #1C1C1E; color: white; border: 1px solid #444; }
+  .vl-action-btn.copy {
+    background: rgba(255,255,255,.08);
+    color: var(--text-white);
+  }
+  .vl-action-btn.copy:hover { background: var(--orange); }
+  .vl-action-btn.copy.copied { background: var(--green); }
+  .vl-action-btn:hover { transform: translateY(-1px); }
+
+  @media (max-width: 900px) {
+    .vlogger-card {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .vl-stats { align-items: flex-start; }
+  }
+</style>
+
+<script>
+/* ── VLOGGER DATA ── */
+const vloggerData = [
+  // ── PIZZA & ITALIAN ──
+  { id:'v1', name:'Luca Molisina', handle:'@lucamolisina', platforms:['tt'], followers:1100000, followersText:'1,1M', category:'pizza', categoryLabel:'Pizza', region:'IT/DE', niche:'Italienische Küche · Pasta · Pizza', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Größter Italo-Top-Creator. Authentische Pizza-Story.', ttUrl:'https://www.tiktok.com/@lucamolisina', avatar:'🍕', avatarBg:'tt-bg' },
+  { id:'v2', name:'Cucina Botanica', handle:'@cucinabotanica', platforms:['tt'], followers:252000, followersText:'252K', category:'pizza', categoryLabel:'Pizza', region:'IT/DE', niche:'Italienisch · Vegan', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Italienische Küche, riesige Reichweite, vegane Optionen.', ttUrl:'https://www.tiktok.com/@cucinabotanica', avatar:'🌿', avatarBg:'tt-bg' },
+  { id:'v3', name:"Vincenzo's Plate", handle:'@vincenzosplate', platforms:['tt'], followers:202800, followersText:'202K', category:'pizza', categoryLabel:'Pizza', region:'International', niche:'Italienisch · Pasta · Pizza', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Italo-Authority international, perfekt für Co-Pizza-Promo.', ttUrl:'https://www.tiktok.com/@vincenzosplate', avatar:'🍕', avatarBg:'tt-bg' },
+  { id:'v4', name:'Amelie Stanescu', handle:'@chez.amelie', platforms:['tt','ig'], followers:76700, followersText:'76,7K', category:'pizza', categoryLabel:'Pizza', region:'Berlin', niche:'Italienisch · Pizza · Berlin Spots', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Italienische Berlinerin mit klarem Pizza-Fokus. Direkter Niche-Match.', igUrl:'https://www.instagram.com/chez.amelie/', ttUrl:'https://www.tiktok.com/@chez.amelie', avatar:'🍕', avatarBg:'tt-bg' },
+  { id:'v5', name:'Hungry In Berlin (Ilaria)', handle:'@hungry_in_berlin', platforms:['ig'], followers:15000, followersText:'15K', category:'pizza', categoryLabel:'Pizza', region:'Berlin', niche:'Italienisch in Berlin · Italo-Spots', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Italienerin in Berlin, italienische Spots. Ideal für Pizzary.', igUrl:'https://www.instagram.com/hungry_in_berlin/', avatar:'🇮🇹', avatarBg:'ig-bg' },
+  { id:'v6', name:'Pastalove', handle:'@pastalove', platforms:['tt'], followers:14600, followersText:'14,6K', category:'pizza', categoryLabel:'Pizza', region:'DE', niche:'Pasta · Italienisch', activity:'aktiv', activityLabel:'aktiv', whyFit:'Italo-Küche, passt zum Pizzary-Vibe.', ttUrl:'https://www.tiktok.com/@pastalove', avatar:'🍝', avatarBg:'tt-bg' },
+  { id:'v7', name:'Pizza Peppe', handle:'@pizzapeppe', platforms:['tt'], followers:1180, followersText:'1,2K', category:'pizza', categoryLabel:'Pizza', region:'DE', niche:'Pizza · Italienisch', activity:'wachsend', activityLabel:'wachsend', whyFit:'Reiner Pizza-Account, perfekte Nische.', ttUrl:'https://www.tiktok.com/@pizzapeppe', avatar:'🍕', avatarBg:'tt-bg' },
+  { id:'v8', name:'Pasta Chef', handle:'@pasta_chef', platforms:['tt'], followers:114, followersText:'114', category:'pizza', categoryLabel:'Pizza', region:'DE', niche:'Pasta · Italienisch', activity:'wachsend', activityLabel:'wachsend', whyFit:'Pasta-Nische, frühe Collab günstig.', ttUrl:'https://www.tiktok.com/@pasta_chef', avatar:'🍝', avatarBg:'tt-bg' },
+
+  // ── BERLIN MACRO (50K+) ──
+  { id:'v9', name:'Nikolai Savic', handle:'@nikolaisavic', platforms:['tt','ig'], followers:5000000, followersText:'5M', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin/DE', niche:'Food Reviews · Mega-Creator', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berlin Mega-Creator. Größter Outreach-Hebel.', igUrl:'https://www.instagram.com/nikolaisavic/', ttUrl:'https://www.tiktok.com/@nikolaisavic', avatar:'⭐', avatarBg:'tt-bg' },
+  { id:'v10', name:'OKAN BERK', handle:'@okanberklive', platforms:['tt'], followers:498000, followersText:'498K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food · Reviews', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berliner Foodie mit fast 500K. Massive Reichweite.', ttUrl:'https://www.tiktok.com/@okanberklive', avatar:'🔥', avatarBg:'tt-bg' },
+  { id:'v11', name:'El Kampinski', handle:'@elkampinski', platforms:['tt','ig'], followers:342100, followersText:'342K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food · Halal · Streetfood', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berliner Foodie-Powerhouse, kollaboriert mit Blocki. Mitte-Audience.', igUrl:'https://www.instagram.com/elkampinski/', ttUrl:'https://www.tiktok.com/@elkampinski', avatar:'🥙', avatarBg:'tt-bg' },
+  { id:'v12', name:'Blocki', handle:'@blocki.tv', platforms:['tt'], followers:301700, followersText:'301K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Restaurant Reviews · Neueröffnungen', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'TikTok Award Winner 2024. Pflicht-Outreach für Opening.', ttUrl:'https://www.tiktok.com/@blocki.tv', avatar:'🏆', avatarBg:'tt-bg' },
+  { id:'v13', name:'Betels Food Feast', handle:'@betelsfoodfeast', platforms:['tt','ig'], followers:296400, followersText:'296K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food Reviews · gehypte Spots', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berlin-Restaurants Fokus, Award-Nominee. Beide Plattformen stark.', igUrl:'https://www.instagram.com/berlinfoodfeast/', ttUrl:'https://www.tiktok.com/@betelsfoodfeast', avatar:'🍽️', avatarBg:'tt-bg' },
+  { id:'v14', name:'Lucy Huxley', handle:'@lucyhuxleyxxx', platforms:['tt'], followers:281300, followersText:'281K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food · Schnell wachsend', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Schnellst-wachsender Berlin Food TikToker (+22% / Monat).', ttUrl:'https://www.tiktok.com/@lucyhuxleyxxx', avatar:'🚀', avatarBg:'tt-bg' },
+  { id:'v15', name:'Hasan Sonar', handle:'@hasan_sonar', platforms:['tt'], followers:250400, followersText:'250K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food Reviews', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berliner Foodtester mit hohem Engagement.', ttUrl:'https://www.tiktok.com/@hasan_sonar', avatar:'🍔', avatarBg:'tt-bg' },
+  { id:'v16', name:'Anderson Nguyen', handle:'@andersonnguyen.official', platforms:['tt'], followers:235600, followersText:'235K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Food Reviews · Famous Spots', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Testet Berlins berühmteste Spots. Viraler Output.', ttUrl:'https://www.tiktok.com/@andersonnguyen.official', avatar:'🎥', avatarBg:'tt-bg' },
+  { id:'v17', name:'Rabir (Asmar7979)', handle:'@rabir7979', platforms:['tt'], followers:177200, followersText:'177K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Top 20 Berlin Food TikTok.', ttUrl:'https://www.tiktok.com/@rabir7979', avatar:'🌟', avatarBg:'tt-bg' },
+  { id:'v18', name:'Monika Long', handle:'@monikalong', platforms:['tt'], followers:121300, followersText:'121K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Food', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Etablierte Berliner Foodie. Treue Community.', ttUrl:'https://www.tiktok.com/@monikalong', avatar:'🥘', avatarBg:'tt-bg' },
+  { id:'v19', name:'Gastro Berlin (Oliaha)', handle:'@gastroberlin', platforms:['tt','ig'], followers:94800, followersText:'94,8K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Berlin Gastro · Tipps · Neueröffnungen', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Spezialisierter Berlin-Gastro-Channel. Exklusiv Berlin.', igUrl:'https://www.instagram.com/gastroberlin/', ttUrl:'https://www.tiktok.com/@gastroberlin', avatar:'🍷', avatarBg:'ig-bg' },
+  { id:'v20', name:'Per Meurling · Berlin Food Stories', handle:'@berlinfoodstories', platforms:['tt','ig'], followers:15400, followersText:'15,4K', category:'macro', categoryLabel:'Berlin Macro', region:'Berlin', niche:'Food Journalism · Restaurant Discovery', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Seit 2012 #1 Quelle für Berlin Food. Keine bezahlten Reviews. Maximale Glaubwürdigkeit.', igUrl:'https://www.instagram.com/berlinfoodstories/', ttUrl:'https://www.tiktok.com/@berlinfoodstories', avatar:'📰', avatarBg:'ig-bg' },
+
+  // ── BERLIN MID (10K-50K) ──
+  { id:'v21', name:'Vivi', handle:'@whatvivieats', platforms:['ig'], followers:35000, followersText:'35K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Dessert · Brunch · Vegetarisch', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Ehrliche Reviews, ästhetische Bildsprache. Vegetarische Audience.', igUrl:'https://www.instagram.com/whatvivieats/', avatar:'🥗', avatarBg:'ig-bg' },
+  { id:'v22', name:'Lena Feeds You', handle:'@lenafeedsyou', platforms:['ig'], followers:34000, followersText:'34K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food · Affordable Eats · Voiceover', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Wöchentliche Reels mit Preisen + Ehrlichkeit. Berliner Food-Guide.', igUrl:'https://www.instagram.com/lenafeedsyou/', avatar:'🎙️', avatarBg:'ig-bg' },
+  { id:'v23', name:'Eda · Berlin Food', handle:'@edacim.d', platforms:['ig'], followers:23000, followersText:'23K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food · Activities · Hotels', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berlin Food + Lifestyle. Owner @wrapublic.rosenthalerplatz.', igUrl:'https://www.instagram.com/edacim.d/', avatar:'✨', avatarBg:'ig-bg' },
+  { id:'v24', name:'Zucker & Jagdwurst', handle:'@zuckerjagdwurst', platforms:['tt','ig'], followers:21100, followersText:'21,1K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Vegan · Berliner Duo · Kochbuch', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berliner Vegan-Duo. Glaubwürdig für vegane Topping-Optionen.', igUrl:'https://www.instagram.com/zuckerjagdwurst/', ttUrl:'https://www.tiktok.com/@zuckerjagdwurst', avatar:'🌭', avatarBg:'tt-bg' },
+  { id:'v25', name:'What To Eat In Berlin', handle:'@whattoeatinberlin', platforms:['ig'], followers:21000, followersText:'21K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Restaurant Diving · Food + Wine', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Postet nur was sie liebt. Wenn sie postet, hat das Gewicht.', igUrl:'https://www.instagram.com/whattoeatinberlin/', avatar:'🍷', avatarBg:'ig-bg' },
+  { id:'v26', name:'Munch With My', handle:'@munchwithmy', platforms:['tt'], followers:18500, followersText:'18,5K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berliner Foodie im Mid-Tier.', ttUrl:'https://www.tiktok.com/@munchwithmy', avatar:'🍴', avatarBg:'tt-bg' },
+  { id:'v27', name:'Bat of Berlin', handle:'@batofberlin', platforms:['tt'], followers:15500, followersText:'15,5K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food · Restaurant Reviews', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berlin Spots Reviewer.', ttUrl:'https://www.tiktok.com/@batofberlin', avatar:'🦇', avatarBg:'tt-bg' },
+  { id:'v28', name:'Naomi · Berlin Food', handle:'@naomisberlinfood', platforms:['tt','ig'], followers:14100, followersText:'14,1K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food · Reels · Restaurant Tipps', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Beide Plattformen stark. Hohe Berliner Aktivität.', igUrl:'https://www.instagram.com/naomisberlinfood/', ttUrl:'https://www.tiktok.com/@naomisberlinfood', avatar:'📍', avatarBg:'ig-bg' },
+  { id:'v29', name:'Alles Klara', handle:'@food_in_berlin', platforms:['ig'], followers:14000, followersText:'14K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Restaurant Hunter · Lokale Spots', activity:'aktiv', activityLabel:'aktiv', whyFit:'Konstant Berlin-fokussiert. Treue Community.', igUrl:'https://www.instagram.com/food_in_berlin/', avatar:'🗺️', avatarBg:'ig-bg' },
+  { id:'v30', name:'Fancy Food Guy', handle:'@fancyfoodguy', platforms:['tt'], followers:12800, followersText:'12,8K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berlin Food · Stylvolle Picks', activity:'aktiv', activityLabel:'aktiv', whyFit:'Stilvolle Foodie-Empfehlungen.', ttUrl:'https://www.tiktok.com/@fancyfoodguy', avatar:'🎩', avatarBg:'tt-bg' },
+  { id:'v31', name:'Steffen Henssler', handle:'@steffenhenssler', platforms:['tt','ig'], followers:11500, followersText:'11,5K', category:'mid', categoryLabel:'Berlin Mid', region:'DE', niche:'Star-Koch · Restaurant Authority', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Star-Koch, Authority. 1M IG-Reach für DE.', igUrl:'https://www.instagram.com/steffen_henssler/', ttUrl:'https://www.tiktok.com/@steffenhenssler', avatar:'⭐', avatarBg:'ig-bg' },
+  { id:'v32', name:'Foodvergnügen', handle:'@foodvergnuegen', platforms:['ig'], followers:11500, followersText:'11,5K', category:'mid', categoryLabel:'Berlin Mid', region:'Berlin', niche:'Berliner Cafés · Restaurants · Bars', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Engagierte Reels, info-reiche Captions, ehrlicher Ansatz.', igUrl:'https://www.instagram.com/foodvergnuegen/', avatar:'😋', avatarBg:'ig-bg' },
+
+  // ── BERLIN MICRO (<10K) ──
+  { id:'v33', name:'Felicitas Then', handle:'@felicitas.then', platforms:['tt','ig'], followers:9624, followersText:'9,6K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'MasterChef Jurorin · Köchin', activity:'aktiv', activityLabel:'aktiv', whyFit:'MasterChef-Jurorin. Glaubwürdige Food-Authority.', igUrl:'https://www.instagram.com/felicitasthen/', ttUrl:'https://www.tiktok.com/@felicitas.then', avatar:'🏆', avatarBg:'ig-bg' },
+  { id:'v34', name:'Yummy Pilgrim', handle:'@yummypilgrim', platforms:['tt'], followers:8726, followersText:'8,7K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin/DE', niche:'Food Travel · Berlin Touchpoints', activity:'aktiv', activityLabel:'aktiv', whyFit:'Foodtravel mit Berlin-Touchpoints.', ttUrl:'https://www.tiktok.com/@yummypilgrim', avatar:'🌍', avatarBg:'tt-bg' },
+  { id:'v35', name:'Berlin Food Spots', handle:'@berlin.foodspots', platforms:['tt','ig'], followers:8469, followersText:'8,5K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Spots · Restaurants', activity:'aktiv', activityLabel:'aktiv', whyFit:'Reine Berlin-Spots-Sammlung.', igUrl:'https://www.instagram.com/berlin.foodspots/', ttUrl:'https://www.tiktok.com/@berlin.foodspots', avatar:'📌', avatarBg:'tt-bg' },
+  { id:'v36', name:'Tricky Tine', handle:'@trickytine', platforms:['tt'], followers:7175, followersText:'7,2K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Food Blog · Etabliert', activity:'aktiv', activityLabel:'aktiv', whyFit:'Etablierte deutsche Food-Bloggerin.', ttUrl:'https://www.tiktok.com/@trickytine', avatar:'📝', avatarBg:'tt-bg' },
+  { id:'v37', name:'BeanMama', handle:'@beanmama', platforms:['tt'], followers:6897, followersText:'6,9K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Food', activity:'aktiv', activityLabel:'aktiv', whyFit:'Wachsende Berliner Foodie-Stimme.', ttUrl:'https://www.tiktok.com/@beanmama', avatar:'🫘', avatarBg:'tt-bg' },
+  { id:'v38', name:'Katha (UGC)', handle:'@___kattha__', platforms:['ig'], followers:6800, followersText:'6,8K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Foodie · UGC Creator', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'UGC-Erfahrung. Könnte später für Branded Content arbeiten.', igUrl:'https://www.instagram.com/___kattha__/', avatar:'🌻', avatarBg:'ig-bg' },
+  { id:'v39', name:'Was isst Hanna (Hanna Reder)', handle:'@wasissthanna', platforms:['tt','ig'], followers:6545, followersText:'6,5K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berliner Köchin · Foodstylistin', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berliner Köchin, Restaurant-Affinität.', igUrl:'https://www.instagram.com/wasissthanna/', ttUrl:'https://www.tiktok.com/@wasissthanna', avatar:'👩\u200d🍳', avatarBg:'tt-bg' },
+  { id:'v40', name:'Berlin Tastes', handle:'@berlin.tastes', platforms:['ig'], followers:5400, followersText:'5,4K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Hidden Gems · Neue Spots · Mitte', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Fokus auf Mitte-Spots. Perfekt für Zimmerstraße.', igUrl:'https://www.instagram.com/berlin.tastes/', avatar:'💎', avatarBg:'ig-bg' },
+  { id:'v41', name:'Loving Food Berlin', handle:'@lovingfood.berlin', platforms:['tt'], followers:5315, followersText:'5,3K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Food Blogger', activity:'aktiv', activityLabel:'aktiv', whyFit:'Klare Berlin-Positionierung.', ttUrl:'https://www.tiktok.com/@lovingfood.berlin', avatar:'❤️', avatarBg:'tt-bg' },
+  { id:'v42', name:'Eat Berlin Mitte', handle:'@eatberlinmitte', platforms:['ig'], followers:4200, followersText:'4,2K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin Mitte', niche:'Berlin Mitte Spezialist', activity:'aktiv', activityLabel:'aktiv', whyFit:'Exakter Standort-Match. Hyperlokal Mitte.', igUrl:'https://www.instagram.com/eatberlinmitte/', avatar:'📍', avatarBg:'ig-bg' },
+  { id:'v43', name:'My Belly Gulu Gulu (Ka)', handle:'@mybellygulugulu', platforms:['ig'], followers:4000, followersText:'~4K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Cafés · Coffee Connoisseur', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berlin Cafés & Hidden Spots Expertin.', igUrl:'https://www.instagram.com/mybellygulugulu/', avatar:'🫖', avatarBg:'ig-bg' },
+  { id:'v44', name:'Oliaha', handle:'@oliaha', platforms:['tt'], followers:3536, followersText:'3,5K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Stimme hinter Gastro Berlin', activity:'aktiv', activityLabel:'aktiv', whyFit:'Person hinter @gastroberlin. Persönlicher Kanal.', ttUrl:'https://www.tiktok.com/@oliaha', avatar:'🍴', avatarBg:'tt-bg' },
+  { id:'v45', name:'Tim Mälzer', handle:'@tim_maelzer', platforms:['tt'], followers:2748, followersText:'2,7K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Star-Koch · Promi', activity:'aktiv', activityLabel:'aktiv', whyFit:'Deutscher Promi-Koch. Hohe Awareness.', ttUrl:'https://www.tiktok.com/@tim_maelzer', avatar:'🍳', avatarBg:'tt-bg' },
+  { id:'v46', name:'Berliner Döner', handle:'@berlinerdoner', platforms:['tt'], followers:2290, followersText:'2,3K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Döner · Streetfood', activity:'aktiv', activityLabel:'aktiv', whyFit:'Streetfood-Audience für Pizza-Crossover.', ttUrl:'https://www.tiktok.com/@berlinerdoner', avatar:'🥙', avatarBg:'tt-bg' },
+  { id:'v47', name:'Eats with Eric', handle:'@eatswitheric', platforms:['tt'], followers:1730, followersText:'1,7K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin/International', niche:'Desserts · Asian Inspired', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berlin-basiert, Asian-Desserts, modern.', ttUrl:'https://www.tiktok.com/@eatswitheric', avatar:'🍰', avatarBg:'tt-bg' },
+  { id:'v48', name:'Healthy with Kay', handle:'@healthywithkay', platforms:['tt'], followers:1502, followersText:'1,5K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin/DE', niche:'Healthy Food', activity:'aktiv', activityLabel:'aktiv', whyFit:'Healthy-Food Nische für Salat/Bowls Crossover.', ttUrl:'https://www.tiktok.com/@healthywithkay', avatar:'🥗', avatarBg:'tt-bg' },
+  { id:'v49', name:"Bobby's Kitchen", handle:'@bobbys.kitchen', platforms:['tt'], followers:1247, followersText:'1,2K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Cooking', activity:'aktiv', activityLabel:'aktiv', whyFit:'Solides Micro-Profil mit DE-Audience.', ttUrl:'https://www.tiktok.com/@bobbys.kitchen', avatar:'👨\u200d🍳', avatarBg:'tt-bg' },
+  { id:'v50', name:'Berlin Bites', handle:'@berlin.bites', platforms:['tt'], followers:1171, followersText:'1,2K', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Quick Reviews · Junge Audience', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Junges Berliner Publikum. Schnelle Reviews.', ttUrl:'https://www.tiktok.com/@berlin.bites', avatar:'⚡', avatarBg:'tt-bg' },
+  { id:'v51', name:'Foodfellas', handle:'@foodfellas', platforms:['tt'], followers:1134, followersText:'1,1K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Food', activity:'aktiv', activityLabel:'aktiv', whyFit:'Wachsendes DE-Foodprofil.', ttUrl:'https://www.tiktok.com/@foodfellas', avatar:'🤝', avatarBg:'tt-bg' },
+  { id:'v52', name:'Kochgenuss', handle:'@kochgenuss', platforms:['tt'], followers:1102, followersText:'1,1K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Kochen', activity:'aktiv', activityLabel:'aktiv', whyFit:'Kochen-Nische allgemein.', ttUrl:'https://www.tiktok.com/@kochgenuss', avatar:'🍲', avatarBg:'tt-bg' },
+  { id:'v53', name:'Olivia Kitchen', handle:'@oliviakitchen', platforms:['tt'], followers:1040, followersText:'1K', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Kitchen Content', activity:'aktiv', activityLabel:'aktiv', whyFit:'Cooking-Micro-Account.', ttUrl:'https://www.tiktok.com/@oliviakitchen', avatar:'🍴', avatarBg:'tt-bg' },
+  { id:'v54', name:'Imbiss King', handle:'@imbissking', platforms:['tt'], followers:764, followersText:'764', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Imbiss · Streetfood', activity:'wachsend', activityLabel:'wachsend', whyFit:'Imbiss-Spezialist. Pizza-Slice Storytelling.', ttUrl:'https://www.tiktok.com/@imbissking', avatar:'👑', avatarBg:'tt-bg' },
+  { id:'v55', name:'Sasibella', handle:'@sasibella', platforms:['tt'], followers:717, followersText:'717', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Food Blogger', activity:'aktiv', activityLabel:'aktiv', whyFit:'DE-Foodblogger.', ttUrl:'https://www.tiktok.com/@sasibella', avatar:'🌷', avatarBg:'tt-bg' },
+  { id:'v56', name:'Cooking with Fla', handle:'@cookingwithfla', platforms:['tt'], followers:503, followersText:'503', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Cooking', activity:'wachsend', activityLabel:'wachsend', whyFit:'Wachsender Cooking-Account.', ttUrl:'https://www.tiktok.com/@cookingwithfla', avatar:'🍳', avatarBg:'tt-bg' },
+  { id:'v57', name:'Berlin Blogger', handle:'@berlin.blogger', platforms:['tt'], followers:430, followersText:'430', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Lifestyle · Food', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berlin-Lifestyle mit Food-Mix.', ttUrl:'https://www.tiktok.com/@berlin.blogger', avatar:'🏙️', avatarBg:'tt-bg' },
+  { id:'v58', name:'Food.Berlin', handle:'@food.berlin', platforms:['tt'], followers:356, followersText:'356', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Food · Pure Niche', activity:'wachsend', activityLabel:'wachsend', whyFit:'Pure Berlin-Food-Nische, frühe Collab günstig.', ttUrl:'https://www.tiktok.com/@food.berlin', avatar:'📍', avatarBg:'tt-bg' },
+  { id:'v59', name:'Schubeck', handle:'@schubeck', platforms:['tt'], followers:267, followersText:'267', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Kochen · Promi-Affinität', activity:'wachsend', activityLabel:'wachsend', whyFit:'Promi-affin (Schuhbeck-Fanbase).', ttUrl:'https://www.tiktok.com/@schubeck', avatar:'⭐', avatarBg:'tt-bg' },
+  { id:'v60', name:'The Culinary Explorer', handle:'@theculinaryexplorer', platforms:['tt'], followers:264, followersText:'264', category:'micro', categoryLabel:'Berlin Micro', region:'DE', niche:'Culinary Travel', activity:'wachsend', activityLabel:'wachsend', whyFit:'Junger Foodie-Account.', ttUrl:'https://www.tiktok.com/@theculinaryexplorer', avatar:'🔍', avatarBg:'tt-bg' },
+  { id:'v61', name:'Berlin Foodie', handle:'@berlin.foodie', platforms:['tt'], followers:229, followersText:'229', category:'micro', categoryLabel:'Berlin Micro', region:'Berlin', niche:'Berlin Food', activity:'wachsend', activityLabel:'wachsend', whyFit:'Klare Berlin-Positionierung.', ttUrl:'https://www.tiktok.com/@berlin.foodie', avatar:'📷', avatarBg:'tt-bg' },
+
+  // ── NATIONAL DE ──
+  { id:'v62', name:'That Dude Can Cook', handle:'@thatdudecancook', platforms:['tt'], followers:4300000, followersText:'4,3M', category:'national', categoryLabel:'National', region:'International', niche:'Cooking · Pasta · Pizza', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Globaler Pizza/Italo-Affiner. Mass-Reach.', ttUrl:'https://www.tiktok.com/@thatdudecancook', avatar:'🌎', avatarBg:'tt-bg' },
+  { id:'v63', name:'Foodie Beats', handle:'@foodie.beats', platforms:['tt'], followers:2800000, followersText:'2,8M', category:'national', categoryLabel:'National', region:'DE', niche:'Food · Viral Content', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Größter deutscher Food-TikToker.', ttUrl:'https://www.tiktok.com/@foodie.beats', avatar:'🔥', avatarBg:'tt-bg' },
+  { id:'v64', name:'Baked by Melissa', handle:'@bakedbymelissa', platforms:['tt'], followers:2800000, followersText:'2,8M', category:'national', categoryLabel:'National', region:'International', niche:'Backen · Cupcakes · Süßes', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Mass-Reichweite, Cross-Audience-Potenzial.', ttUrl:'https://www.tiktok.com/@bakedbymelissa', avatar:'🧁', avatarBg:'tt-bg' },
+  { id:'v65', name:'Hello Melle', handle:'@hellomelle', platforms:['tt'], followers:1900000, followersText:'1,9M', category:'national', categoryLabel:'National', region:'DE', niche:'Food Mega-Reach', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'DE-Food-Megastar.', ttUrl:'https://www.tiktok.com/@hellomelle', avatar:'💛', avatarBg:'tt-bg' },
+  { id:'v66', name:"Melike's Kitchen", handle:'@melikes.kitchen', platforms:['tt','ig'], followers:1000000, followersText:'1M', category:'national', categoryLabel:'National', region:'DE', niche:'Kitchen · Rezepte', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'1M+ Reichweite. Build-Your-Own DIY Crossover.', igUrl:'https://www.instagram.com/melikes.kitchen/', ttUrl:'https://www.tiktok.com/@melikes.kitchen', avatar:'🍳', avatarBg:'tt-bg' },
+  { id:'v67', name:'Edeka', handle:'@edeka', platforms:['tt'], followers:418200, followersText:'418K', category:'national', categoryLabel:'National', region:'DE', niche:'Retailer · Food Marketing', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Retail-Megaaccount.', ttUrl:'https://www.tiktok.com/@edeka', avatar:'🛒', avatarBg:'tt-bg' },
+  { id:'v68', name:"Sally's Welt", handle:'@sallyswelt', platforms:['tt','ig'], followers:361300, followersText:'361K', category:'national', categoryLabel:'National', region:'DE', niche:'Backen · Kochen', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'DE-Backen-Ikone.', igUrl:'https://www.instagram.com/sallyswelt/', ttUrl:'https://www.tiktok.com/@sallyswelt_official', avatar:'🎂', avatarBg:'ig-bg' },
+  { id:'v69', name:'Chefkoch', handle:'@chefkoch', platforms:['tt'], followers:359200, followersText:'359K', category:'national', categoryLabel:'National', region:'DE', niche:'Rezepte Plattform', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Größte Rezeptplattform DE.', ttUrl:'https://www.tiktok.com/@chefkoch', avatar:'👨\u200d🍳', avatarBg:'tt-bg' },
+  { id:'v70', name:'FoodBoom', handle:'@foodboom', platforms:['tt'], followers:221000, followersText:'221K', category:'national', categoryLabel:'National', region:'DE', niche:'Food Content · Verlag', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Großer DE-Foodcontent-Verlag.', ttUrl:'https://www.tiktok.com/@foodboom', avatar:'💥', avatarBg:'tt-bg' },
+  { id:'v71', name:'Yum Tam Tam', handle:'@yumtamtam', platforms:['tt'], followers:132100, followersText:'132K', category:'national', categoryLabel:'National', region:'DE', niche:'Rezepte · Mainstream', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Rezepte-Mainstream.', ttUrl:'https://www.tiktok.com/@yumtamtam', avatar:'😋', avatarBg:'tt-bg' },
+  { id:'v72', name:'Karo (Kochen mit K)', handle:'@kochen_mit_k', platforms:['ig'], followers:101500, followersText:'101,5K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Schnelle Rezepte · Easy Cooking', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Schnellst-wachsender Berlin Food Creator (+16,8% / Monat).', igUrl:'https://www.instagram.com/kochen_mit_k/', avatar:'📈', avatarBg:'ig-bg' },
+  { id:'v73', name:'HelloFresh DE', handle:'@hellofresh', platforms:['tt'], followers:65700, followersText:'65,7K', category:'national', categoryLabel:'National', region:'Berlin/DE', niche:'Kochbox · Berlin HQ', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berlin-HQ Kochbox-Brand.', ttUrl:'https://www.tiktok.com/@hellofresh', avatar:'🥕', avatarBg:'tt-bg' },
+  { id:'v74', name:"Anna's Cooking", handle:'@annascooking_', platforms:['tt'], followers:58600, followersText:'58,6K', category:'national', categoryLabel:'National', region:'DE', niche:'Cooking', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Solides Mid-Macro-Profil.', ttUrl:'https://www.tiktok.com/@annascooking_', avatar:'👩\u200d🍳', avatarBg:'tt-bg' },
+  { id:'v75', name:'Maggi Kochstudio', handle:'@maggikochstudio', platforms:['tt'], followers:56200, followersText:'56,2K', category:'national', categoryLabel:'National', region:'DE', niche:'Rezepte · Brand', activity:'aktiv', activityLabel:'aktiv', whyFit:'Etablierte Brand-Foodaudience.', ttUrl:'https://www.tiktok.com/@maggikochstudio', avatar:'🥫', avatarBg:'tt-bg' },
+  { id:'v76', name:'Kevin Leeder (Veganer Wandel)', handle:'@veganer.wandel', platforms:['ig'], followers:42000, followersText:'42K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Vegan · Plant-Based', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Pizzary hat vegane Optionen (Lea Plant Based Queen).', igUrl:'https://www.instagram.com/veganer.wandel/', avatar:'🌱', avatarBg:'ig-bg' },
+  { id:'v77', name:'Marie Kocht Grün', handle:'@marie_kocht_gruen', platforms:['ig'], followers:33000, followersText:'33K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Vegetarisch · Grüne Küche', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Schnell wachsend (+17,5% / Monat). Vegetarische Custom-Pizzas.', igUrl:'https://www.instagram.com/marie_kocht_gruen/', avatar:'🥬', avatarBg:'ig-bg' },
+  { id:'v78', name:'Timo Franke (Plantymore)', handle:'@plantymore', platforms:['ig'], followers:32000, followersText:'32K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Vegan Expert · Autor', activity:'aktiv', activityLabel:'aktiv', whyFit:'Berliner Vegan-Autor, 10+ Jahre Erfahrung.', igUrl:'https://www.instagram.com/plantymore/', avatar:'🌿', avatarBg:'ig-bg' },
+  { id:'v79', name:'Klaus grillt', handle:'@klausgrillt', platforms:['tt'], followers:27800, followersText:'27,8K', category:'national', categoryLabel:'National', region:'DE', niche:'Grillen · BBQ', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Grill-Authority. Pizza-Ofen Crossover.', ttUrl:'https://www.tiktok.com/@klausgrillt', avatar:'🔥', avatarBg:'tt-bg' },
+  { id:'v80', name:'Antonia Elena', handle:'@antoniaelena.official', platforms:['ig'], followers:25000, followersText:'25K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Rezepte · Berlin', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Top 20 Berlin Food laut influData.', igUrl:'https://www.instagram.com/antoniaelena.official/', avatar:'🍳', avatarBg:'ig-bg' },
+  { id:'v81', name:'Vegan Berlin', handle:'@veganberlincom', platforms:['ig'], followers:20000, followersText:'20K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Vegan Berlin Guide', activity:'aktiv', activityLabel:'aktiv', whyFit:'Vegan-Berlin-Guide. Crossover-Audience.', igUrl:'https://www.instagram.com/veganberlincom/', avatar:'🥦', avatarBg:'ig-bg' },
+  { id:'v82', name:'Emmis Rezepte', handle:'@emmis.rezepte', platforms:['ig'], followers:18000, followersText:'18K', category:'national', categoryLabel:'National', region:'Berlin', niche:'Schnelle Rezepte · Familien', activity:'sehr_aktiv', activityLabel:'sehr aktiv', whyFit:'Berliner Rezepte-Creator, Familien-Audience.', igUrl:'https://www.instagram.com/emmis.rezepte/', avatar:'💕', avatarBg:'ig-bg' },
+];
+
+let currentVloggerFilter = 'all';
+
+function setVloggerFilter(cat, btn) {
+  currentVloggerFilter = cat;
+  document.querySelectorAll('.vlogger-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVloggers();
+}
+
+function renderVloggers() {
+  const list = document.getElementById('vloggerList');
+  const empty = document.getElementById('vloggerEmpty');
+  const search = document.getElementById('vloggerSearch').value.toLowerCase().trim();
+  const sort = document.getElementById('vloggerSort').value;
+
+  let filtered = vloggerData.slice();
+
+  // Category filter
+  if (currentVloggerFilter !== 'all') {
+    filtered = filtered.filter(v => v.category === currentVloggerFilter);
+  }
+
+  // Search filter
+  if (search) {
+    filtered = filtered.filter(v =>
+      v.name.toLowerCase().includes(search) ||
+      v.handle.toLowerCase().includes(search) ||
+      v.niche.toLowerCase().includes(search) ||
+      (v.region || '').toLowerCase().includes(search)
+    );
+  }
+
+  // Sort
+  const actOrder = { 'sehr_aktiv': 3, 'aktiv': 2, 'wachsend': 1 };
+  if (sort === 'followers_desc') filtered.sort((a,b) => b.followers - a.followers);
+  else if (sort === 'followers_asc') filtered.sort((a,b) => a.followers - b.followers);
+  else if (sort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'activity') filtered.sort((a,b) => actOrder[b.activity] - actOrder[a.activity] || b.followers - a.followers);
+
+  // Render
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = filtered.map(v => {
+    const platforms = [];
+    if (v.igUrl) platforms.push(`<a href="${v.igUrl}" target="_blank" rel="noopener" class="vl-action-btn ig">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Instagram</a>`);
+    if (v.ttUrl) platforms.push(`<a href="${v.ttUrl}" target="_blank" rel="noopener" class="vl-action-btn tt">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="#69C9D0"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.83 1.55V6.79a4.85 4.85 0 01-1.06-.1z"/></svg>
+      TikTok</a>`);
+
+    return `
+    <div class="vlogger-card">
+      <div class="vl-avatar ${v.avatarBg || ''}">${v.avatar}</div>
+      <div class="vl-info">
+        <div class="vl-name-row">
+          <span class="vl-name">${v.name}</span>
+          <span class="vl-cat-badge ${v.category}">${v.categoryLabel}</span>
+          <span class="vl-status ${v.activity}"><span class="vl-status-dot"></span>${v.activityLabel}</span>
+        </div>
+        <div class="vl-handle">${v.handle} · ${v.region}</div>
+        <div class="vl-niche" style="margin-top:6px;">${v.niche}</div>
+        <div class="vl-why">"${v.whyFit}"</div>
+      </div>
+      <div class="vl-stats">
+        <div style="text-align:right;">
+          <div class="vl-followers">${v.followersText}</div>
+          <div class="vl-followers-label">Follower</div>
+        </div>
+        <div class="vl-actions">
+          ${platforms.join('')}
+          <button class="vl-action-btn copy" onclick="copyToClipboard('${v.handle}', this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Handle
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateVloggerStats() {
+  document.getElementById('statTotal').textContent = vloggerData.length;
+  document.getElementById('statBerlin').textContent = vloggerData.filter(v => v.region && v.region.includes('Berlin')).length;
+  document.getElementById('statActive').textContent = vloggerData.filter(v => v.activity === 'sehr_aktiv').length;
+  document.getElementById('statPizza').textContent = vloggerData.filter(v => v.category === 'pizza').length;
+
+  // Update filter counts
+  const counts = { all: vloggerData.length };
+  ['pizza','macro','mid','micro','national'].forEach(c => {
+    counts[c] = vloggerData.filter(v => v.category === c).length;
+  });
+  document.querySelectorAll('.vlogger-filter').forEach(btn => {
+    const cat = btn.dataset.cat;
+    const span = btn.querySelector('.vf-count');
+    if (span) span.textContent = counts[cat];
+    else {
+      const c = document.createElement('span');
+      c.className = 'vf-count';
+      c.textContent = counts[cat];
+      btn.appendChild(c);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateVloggerStats();
+  renderVloggers();
+});
+</script>
+
+<!-- ════════════════════════════════════════════════
+     TAB 6: ANALYSE & AUSWERTUNG
+════════════════════════════════════════════════ -->
+<div id="tab-analyse" class="page">
+
+  <!-- HEADER -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:14px;">
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Tiefenanalyse</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text-dark);">Performance-Auswertung The Pizzary</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:3px;">Live-Daten · Benchmarks · Was funktioniert, was nicht.</div>
+    </div>
+    <div style="padding:8px 14px; background:rgba(34,197,94,.12); border-radius:20px; display:flex; align-items:center; gap:8px;">
+      <div style="width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 0 4px rgba(34,197,94,.2);"></div>
+      <span style="font-size:12px; font-weight:700; color:var(--green);">LIVE · Stand jetzt</span>
+    </div>
+  </div>
+
+  <!-- TOP STATS ROW -->
+  <div class="grid-4 mb16">
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.12)">👑</div>
+        <span class="kpi-badge" style="background:var(--orange);color:white;">TOP</span>
+      </div>
+      <div class="kpi-value orange-text">555</div>
+      <div class="kpi-label">@steve_thepizzary IG</div>
+      <div class="kpi-sub">Founder-Account · Größte Reichweite</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(34,197,94,.12)">🌐</div>
+        <span class="kpi-badge badge-up">+178%</span>
+      </div>
+      <div class="kpi-value green-text">881</div>
+      <div class="kpi-label">Cross-Platform Reach</div>
+      <div class="kpi-sub">4 Accounts · IG + TT kombiniert</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(139,92,246,.12)">📹</div>
+      </div>
+      <div class="kpi-value purple-text">39+</div>
+      <div class="kpi-label">Videos gesamt</div>
+      <div class="kpi-sub">32 TT + 7 TT (Steve) + Reels IG · LIVE</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-icon" style="background:rgba(255,98,0,.12)">📅</div>
+      </div>
+      <div class="kpi-value orange-text">~10</div>
+      <div class="kpi-label">Videos / Woche</div>
+      <div class="kpi-sub">Über alle Kanäle · Top-Tier-Frequenz</div>
+    </div>
+  </div>
+
+  <!-- GROWTH ANALYSIS + BENCHMARK -->
+  <div class="grid-60-40 mb16">
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot"></div>
+          <h3>📊 Wachstum vs. Benchmarks</h3>
+        </div>
+        <span class="card-tag">PHASE: BUILD-UP</span>
+      </div>
+      <div style="height: 240px; position: relative;">
+        <canvas id="benchmarkChart"></canvas>
+      </div>
+      <div class="insight-bubble" style="margin-top:14px">
+        <span class="insight-icon">📈</span>
+        <span class="insight-text"><strong>Du wächst 6x schneller</strong> als der durchschnittliche neue Berliner Food-Account in seinen ersten 3 Monaten. Trajektorie ist gesund.</span>
+      </div>
+    </div>
+
+    <!-- SWOT QUICK -->
+    <div class="card-dark">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-title-dot" style="background:var(--orange)"></div>
+          <h3>🎯 SWOT in 30 Sekunden</h3>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="padding:10px 12px; border-radius:8px; background:rgba(34,197,94,.08); border-left:3px solid var(--green);">
+          <div style="font-size:10px; font-weight:800; color:var(--green); letter-spacing:.05em; margin-bottom:3px;">STÄRKEN</div>
+          <div style="font-size:12px; color:var(--text-mid); line-height:1.45;">Steve's persönlicher Account funktioniert sehr gut (555). "100 Tage" Serie ist starker Hook. Frequenz konstant.</div>
+        </div>
+        <div style="padding:10px 12px; border-radius:8px; background:rgba(239,68,68,.08); border-left:3px solid var(--red);">
+          <div style="font-size:10px; font-weight:800; color:var(--red); letter-spacing:.05em; margin-bottom:3px;">SCHWÄCHEN</div>
+          <div style="font-size:12px; color:var(--text-mid); line-height:1.45;">Steve's TikTok (16) hängt komplett hinterher. Brand-Account TT engagement niedrig (Ø 22,3 Likes/Video). Kein viraler Hit.</div>
+        </div>
+        <div style="padding:10px 12px; border-radius:8px; background:rgba(255,98,0,.08); border-left:3px solid var(--orange);">
+          <div style="font-size:10px; font-weight:800; color:var(--orange); letter-spacing:.05em; margin-bottom:3px;">CHANCEN</div>
+          <div style="font-size:12px; color:var(--text-mid); line-height:1.45;">Steve's IG-Reels auf TikTok cross-posten = sofort 500+ Reach Multiplikator. "100 Tage bis Opening" Aug 2026 = klarer Spannungsbogen.</div>
+        </div>
+        <div style="padding:10px 12px; border-radius:8px; background:rgba(139,92,246,.08); border-left:3px solid var(--tiktok);">
+          <div style="font-size:10px; font-weight:800; color:var(--tiktok); letter-spacing:.05em; margin-bottom:3px;">RISIKEN</div>
+          <div style="font-size:12px; color:var(--text-mid); line-height:1.45;">Brand-Account verliert Anschluss zu Personal. Aug 2026 Opening = 3 Monate Zeit. Bei 881 zu 2.000 Cross-Platform-Ziel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENGAGEMENT ANALYSIS -->
+  <div class="card-dark mb16">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-dot"></div>
+        <h3>💜 Engagement-Analyse · Wie wir wirklich performen</h3>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div style="padding:18px; background:rgba(255,255,255,.04); border-radius:12px;">
+        <div style="font-size:11px; color:var(--text-dim); font-weight:700; letter-spacing:.05em; margin-bottom:6px;">LIKES/VIDEO TIKTOK</div>
+        <div style="font-size:32px; font-weight:800; color:var(--text-white); margin-bottom:6px;">22,3</div>
+        <div style="font-size:11px; color:var(--text-dim);">Berlin Food Mid Benchmark: 80–150</div>
+        <div style="margin-top:8px; padding:6px 10px; background:rgba(239,68,68,.12); border-radius:6px; font-size:11px; color:var(--red); font-weight:700;">⚠ Unter Benchmark</div>
+      </div>
+
+      <div style="padding:18px; background:rgba(255,255,255,.04); border-radius:12px;">
+        <div style="font-size:11px; color:var(--text-dim); font-weight:700; letter-spacing:.05em; margin-bottom:6px;">LIKES/FOLLOWER RATIO</div>
+        <div style="font-size:32px; font-weight:800; color:var(--orange); margin-bottom:6px;">5,83</div>
+        <div style="font-size:11px; color:var(--text-dim);">801 Likes ÷ 128 Follower</div>
+        <div style="margin-top:8px; padding:6px 10px; background:rgba(34,197,94,.12); border-radius:6px; font-size:11px; color:var(--green); font-weight:700;">✓ Hohe Loyalität</div>
+      </div>
+
+      <div style="padding:18px; background:rgba(255,255,255,.04); border-radius:12px;">
+        <div style="font-size:11px; color:var(--text-dim); font-weight:700; letter-spacing:.05em; margin-bottom:6px;">POSTING-FREQUENZ</div>
+        <div style="font-size:32px; font-weight:800; color:var(--text-white); margin-bottom:6px;">~8/W</div>
+        <div style="font-size:11px; color:var(--text-dim);">Top Berlin Creator: 5–10 / Woche</div>
+        <div style="margin-top:8px; padding:6px 10px; background:rgba(34,197,94,.12); border-radius:6px; font-size:11px; color:var(--green); font-weight:700;">✓ Top-Tier-Tempo</div>
+      </div>
+    </div>
+
+    <div class="insight-bubble" style="margin-top:16px;">
+      <span class="insight-icon">🧠</span>
+      <span class="insight-text">
+        <strong>Diagnose:</strong> Du machst die richtigen Dinge (Volumen, Frequenz) aber jedes Video bleibt unter dem Threshold für den FYP-Algo. Lösung: Bessere Hooks in den ersten 3 Sekunden. Mehr emotionale Trigger. Weniger generischer Content.
+      </span>
+    </div>
+  </div>
+
+  <!-- COMPETITOR COMPARISON -->
+  <div class="card-dark mb16">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-dot"></div>
+        <h3>🥊 Wettbewerbs-Vergleich · Wo wir stehen</h3>
+      </div>
+      <span style="font-size:11px; color:var(--text-dim);">Live vs. Top Berlin Food Creator</span>
+    </div>
+
+    <div class="scroll-x">
+    <table class="ranking-table">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th style="text-align:right">Follower</th>
+          <th style="text-align:right">Videos</th>
+          <th style="text-align:right">Ø Likes</th>
+          <th style="text-align:right">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="ranking-row" style="background:rgba(255,98,0,.12); border-left:3px solid var(--orange);">
+          <td style="padding-left:14px;"><strong style="color:var(--orange);">@steve_thepizzary IG (Top)</strong></td>
+          <td class="metric-cell" style="color:var(--orange)">554</td>
+          <td class="metric-cell" style="color:var(--orange)">12+</td>
+          <td class="metric-cell" style="color:var(--orange)">~25</td>
+          <td class="metric-cell"><span class="trend-new">PRE-OPENING ★</span></td>
+        </tr>
+        <tr class="ranking-row" style="background:rgba(255,98,0,.06);">
+          <td style="padding-left:14px;"><strong style="color:var(--orange);">@the_pizzary IG</strong></td>
+          <td class="metric-cell" style="color:var(--orange)">189</td>
+          <td class="metric-cell" style="color:var(--orange)">12+</td>
+          <td class="metric-cell" style="color:var(--orange)">~15</td>
+          <td class="metric-cell"><span class="trend-new">PRE-OPENING</span></td>
+        </tr>
+        <tr class="ranking-row" style="background:rgba(255,98,0,.06);">
+          <td style="padding-left:14px;"><strong style="color:var(--orange);">@the_pizzary TT</strong></td>
+          <td class="metric-cell" style="color:var(--orange)">122</td>
+          <td class="metric-cell" style="color:var(--orange)">32</td>
+          <td class="metric-cell" style="color:var(--orange)">22,2</td>
+          <td class="metric-cell"><span class="trend-new">PRE-OPENING</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@blocki.tv</td>
+          <td class="metric-cell" style="color:var(--text-white)">301.700</td>
+          <td class="metric-cell" style="color:var(--text-mid)">2.462</td>
+          <td class="metric-cell" style="color:var(--text-white)">~4.200</td>
+          <td class="metric-cell"><span class="trend-up">Top-Tier</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@elkampinski</td>
+          <td class="metric-cell" style="color:var(--text-white)">342.100</td>
+          <td class="metric-cell" style="color:var(--text-mid)">2.529</td>
+          <td class="metric-cell" style="color:var(--text-white)">~4.000</td>
+          <td class="metric-cell"><span class="trend-up">Top-Tier</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@betelsfoodfeast</td>
+          <td class="metric-cell" style="color:var(--text-white)">296.400</td>
+          <td class="metric-cell" style="color:var(--text-mid)">583</td>
+          <td class="metric-cell" style="color:var(--text-white)">~3.500</td>
+          <td class="metric-cell"><span class="trend-up">Top-Tier</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@chez.amelie (Pizza-Niche)</td>
+          <td class="metric-cell" style="color:var(--text-white)">76.700</td>
+          <td class="metric-cell" style="color:var(--text-mid)">2.098</td>
+          <td class="metric-cell" style="color:var(--text-white)">~2.000</td>
+          <td class="metric-cell"><span class="trend-up">Mid-Tier</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@naomisberlinfood</td>
+          <td class="metric-cell" style="color:var(--text-white)">14.100</td>
+          <td class="metric-cell" style="color:var(--text-mid)">217</td>
+          <td class="metric-cell" style="color:var(--text-white)">~250</td>
+          <td class="metric-cell"><span class="trend-up">Reachable</span></td>
+        </tr>
+        <tr class="ranking-row">
+          <td>@berlin.bites</td>
+          <td class="metric-cell" style="color:var(--text-white)">1.171</td>
+          <td class="metric-cell" style="color:var(--text-mid)">36</td>
+          <td class="metric-cell" style="color:var(--text-white)">~40</td>
+          <td class="metric-cell"><span class="trend-up">Vergleichbar</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="insight-bubble" style="margin-top:16px;">
+      <span class="insight-icon">🎯</span>
+      <span class="insight-text">
+        <strong>Realitätscheck:</strong> Du bist in der Phase von @berlin.bites (1.171 Follower) und brauchst 3–6 Monate konsistente Posting bis Mid-Tier (10K+). Aber: du hast ein konkretes Produkt-Opening als Hebel, das die anderen nicht hatten.
+      </span>
+    </div>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="card mb16">
+    <div class="strategy-title">⚡ Konkrete Action-Items basierend auf Daten</div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="next-step-item" style="border-left-color:var(--red);">
+        <div class="next-step-num" style="background:var(--red);">1</div>
+        <div class="next-step-text"><strong>Steve's TikTok hochziehen:</strong> Aktuell nur 16 Follower vs. 554 auf IG. Steve's IG-Reels 1:1 auf TikTok cross-posten. Sofort 500+ Reach-Multiplikator möglich.</div>
+        <span class="next-step-tag" style="background:rgba(239,68,68,.12);color:var(--red);">PRIO 1</span>
+      </div>
+
+      <div class="next-step-item">
+        <div class="next-step-num">2</div>
+        <div class="next-step-text"><strong>"100 Tage" Serie pushen:</strong> Funktioniert auf Steve's IG. Brand-Account @the_pizzary mit ergänzendem Content (Maschine, Zutaten, Team) parallel laufen lassen.</div>
+        <span class="next-step-tag" style="background:rgba(255,98,0,.12);color:var(--orange);">LAUFEND</span>
+      </div>
+
+      <div class="next-step-item">
+        <div class="next-step-num">3</div>
+        <div class="next-step-text"><strong>Vlogger-Outreach starten:</strong> 12 Berlin Macro-Vlogger im Vlogger-Tab anschreiben mit Aug-Opening-Einladung. Persönlich, kein Pitch. Use Outreach-Templates.</div>
+        <span class="next-step-tag" style="background:rgba(255,98,0,.12);color:var(--orange);">DIESE WOCHE</span>
+      </div>
+
+      <div class="next-step-item">
+        <div class="next-step-num">4</div>
+        <div class="next-step-text"><strong>Cross-Channel Strategie:</strong> Brand-Account TT (122) und Steve's IG (554) zusammenführen. In jedem Steve-Reel auf Brand-Account verweisen.</div>
+        <span class="next-step-tag" style="background:rgba(139,92,246,.12);color:var(--tiktok);">DIESE WOCHE</span>
+      </div>
+
+      <div class="next-step-item">
+        <div class="next-step-num">5</div>
+        <div class="next-step-text"><strong>Opening-Trailer 30-60 Sek:</strong> Hochwertige Produktion. Steve's Story + Maschine + Zimmerstraße 91 + Aug 2026. Auf beiden Kanälen + bezahlt boosten (€200-500).</div>
+        <span class="next-step-tag" style="background:rgba(34,197,94,.12);color:var(--green);">JULI 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROWTH PROJECTION -->
+  <div class="card-dark">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="card-title-dot"></div>
+        <h3>🔮 Prognose · Wenn du so weitermachst</h3>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:16px;">
+      <div style="padding:18px; background:rgba(34,197,94,.08); border-radius:12px; border:1px solid rgba(34,197,94,.2);">
+        <div style="font-size:10px; font-weight:800; color:var(--green); letter-spacing:.05em; margin-bottom:8px;">BEST CASE · AUG 2026</div>
+        <div style="font-size:24px; font-weight:800; color:var(--green); margin-bottom:6px;">3.500+</div>
+        <div style="font-size:11px; color:var(--text-mid); line-height:1.5;">Cross-Platform, falls 2-3 Macro-Influencer kommen und Steve's "100 Tage" Serie viral geht.</div>
+      </div>
+      <div style="padding:18px; background:rgba(255,98,0,.08); border-radius:12px; border:1px solid rgba(255,98,0,.2);">
+        <div style="font-size:10px; font-weight:800; color:var(--orange); letter-spacing:.05em; margin-bottom:8px;">REALISTIC · AUG 2026</div>
+        <div style="font-size:24px; font-weight:800; color:var(--orange); margin-bottom:6px;">1.800-2.200</div>
+        <div style="font-size:11px; color:var(--text-mid); line-height:1.5;">Aktueller Trend hochskaliert. Steve's Account führt, Brand zieht nach. Ziel: 2K.</div>
+      </div>
+      <div style="padding:18px; background:rgba(239,68,68,.08); border-radius:12px; border:1px solid rgba(239,68,68,.2);">
+        <div style="font-size:10px; font-weight:800; color:var(--red); letter-spacing:.05em; margin-bottom:8px;">WORST CASE · AUG 2026</div>
+        <div style="font-size:24px; font-weight:800; color:var(--red); margin-bottom:6px;">~1.200</div>
+        <div style="font-size:11px; color:var(--text-mid); line-height:1.5;">Bei stagnierender Brand-Account-Entwicklung und ausbleibenden Influencer-Kollaborationen.</div>
+      </div>
+    </div>
+
+    <div class="insight-bubble">
+      <span class="insight-icon">💎</span>
+      <span class="insight-text">
+        <strong>Bottom Line:</strong> @steve_thepizzary IG ist der Wachstums-Motor (555 Follower, 36,8K Views). Founder-First-Strategie funktioniert. TikTok @the_pizzary parallel skalieren. Mit Aug 2026 Opening sind 2.000+ Cross-Platform Follower realistisch erreichbar (aktuell 683).
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── BENCHMARK CHART ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const benchCanvas = document.getElementById('benchmarkChart');
+  if (!benchCanvas) return;
+  const ctx = benchCanvas.getContext('2d');
+
+  const grad1 = ctx.createLinearGradient(0, 0, 0, 240);
+  grad1.addColorStop(0, 'rgba(255,98,0,0.35)');
+  grad1.addColorStop(1, 'rgba(255,98,0,0)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['27. Apr','04. Mai','11. Mai','18. Mai','25. Mai','28. Mai','03. Jun'],
+      datasets: [
+        {
+          label: 'Steve IG (live)',
+          data: [180, 280, 370, 450, 520, 554, 555],
+          borderColor: '#FF6200',
+          backgroundColor: grad1,
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#FF6200',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+        },
+        {
+          label: 'The Pizzary TT (live)',
+          data: [12, 38, 64, 88, 110, 122, 128],
+          borderColor: '#8B5CF6',
+          borderWidth: 2.5,
+          fill: false,
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: '#8B5CF6',
+        },
+        {
+          label: 'Berlin Food Benchmark (Ø)',
+          data: [5, 8, 12, 16, 21, 26, 31, 38],
+          borderColor: '#8A8A8A',
+          borderWidth: 1.5,
+          borderDash: [5,5],
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#B0B0B0',
+            font: { size: 11 },
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 14,
+          }
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#1A1A1A',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: '#B0B0B0',
+          padding: 12,
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: {size:10} } },
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: {size:10} }, min: 0 }
+      }
+    }
+  });
+});
+</script>
+
+<!-- ── NOTIZEN TAB ── -->
+<div id="tab-notizen" class="page">
+
+  <!-- HEADER -->
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:14px;">
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px;">Ideen Board</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text-dark);">Notizen & Ideen</div>
+      <div style="font-size:13px; color:var(--text-dim); margin-top:3px;">Alle Ideen, Tasks und Gedanken zu The Pizzary auf einem Fleck.</div>
+    </div>
+    <div id="notizen-count-badge" style="padding:8px 16px; background:var(--orange-glow); border-radius:20px; font-size:12px; font-weight:700; color:var(--orange);">0 Notizen</div>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="card-dark" style="margin-bottom:20px; padding:20px;">
+    <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+      <input id="notiz-titel" type="text" placeholder="Titel der Notiz…"
+        style="flex:1; min-width:180px; padding:10px 14px; border-radius:10px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-size:14px; font-weight:600; outline:none;"
+        onkeydown="if(event.key==='Enter') addNotiz()" />
+      <select id="notiz-tag" style="padding:10px 14px; border-radius:10px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-size:13px; font-weight:600; outline:none; cursor:pointer;">
+        <option value="idee">💡 Idee</option>
+        <option value="content">🎬 Content</option>
+        <option value="marketing">📣 Marketing</option>
+        <option value="opening">🚀 Opening</option>
+        <option value="tech">⚙️ Technik</option>
+        <option value="todo">✅ Todo</option>
+      </select>
+    </div>
+    <textarea id="notiz-text" placeholder="Beschreibung, Details, Links…"
+      rows="3"
+      style="width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-size:13px; line-height:1.6; outline:none; resize:vertical; margin-bottom:12px;"></textarea>
+    <button onclick="addNotiz()"
+      style="padding:10px 22px; background:var(--orange); color:#fff; border:none; border-radius:10px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:.15s;"
+      onmouseover="this.style.background='var(--orange-light)'" onmouseout="this.style.background='var(--orange)'">
+      + Notiz speichern
+    </button>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;" id="notizen-filter-bar">
+    <button class="filter-btn active" onclick="filterNotizen('all', this)">Alle</button>
+    <button class="filter-btn" onclick="filterNotizen('idee', this)">💡 Idee</button>
+    <button class="filter-btn" onclick="filterNotizen('content', this)">🎬 Content</button>
+    <button class="filter-btn" onclick="filterNotizen('marketing', this)">📣 Marketing</button>
+    <button class="filter-btn" onclick="filterNotizen('opening', this)">🚀 Opening</button>
+    <button class="filter-btn" onclick="filterNotizen('tech', this)">⚙️ Technik</button>
+    <button class="filter-btn" onclick="filterNotizen('todo', this)">✅ Todo</button>
+  </div>
+
+  <!-- NOTIZEN LIST -->
+  <div id="notizen-list"></div>
+
+  <!-- EMPTY STATE -->
+  <div id="notizen-empty" style="text-align:center; padding:60px 20px; display:none;">
+    <div style="font-size:48px; margin-bottom:12px;">📋</div>
+    <div style="font-size:16px; font-weight:700; color:var(--text-dark); margin-bottom:6px;">Noch keine Notizen</div>
+    <div style="font-size:13px; color:var(--text-dim);">Erste Idee oben eintragen.</div>
+  </div>
+
+</div>
+
+<script>
+// ── NOTIZEN ENGINE ──
+const NOTIZEN_KEY = 'pizzary_notizen_v1';
+let notizenFilter = 'all';
+
+const tagMeta = {
+  idee:      { label:'💡 Idee',      color:'#FF6200', bg:'rgba(255,98,0,.15)' },
+  content:   { label:'🎬 Content',   color:'#8B5CF6', bg:'rgba(139,92,246,.15)' },
+  marketing: { label:'📣 Marketing', color:'#F59E0B', bg:'rgba(245,158,11,.15)' },
+  opening:   { label:'🚀 Opening',   color:'#22C55E', bg:'rgba(34,197,94,.15)' },
+  tech:      { label:'⚙️ Technik',   color:'#64748B', bg:'rgba(100,116,139,.15)' },
+  todo:      { label:'✅ Todo',      color:'#3B82F6', bg:'rgba(59,130,246,.15)' },
+};
+
+function loadNotizen() {
+  try { return JSON.parse(localStorage.getItem(NOTIZEN_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveNotizen(arr) {
+  localStorage.setItem(NOTIZEN_KEY, JSON.stringify(arr));
+}
+
+function addNotiz() {
+  const titel = document.getElementById('notiz-titel').value.trim();
+  const text  = document.getElementById('notiz-text').value.trim();
+  const tag   = document.getElementById('notiz-tag').value;
+  if (!titel && !text) return;
+  const arr = loadNotizen();
+  arr.unshift({
+    id: Date.now(),
+    titel: titel || '(kein Titel)',
+    text,
+    tag,
+    done: false,
+    ts: new Date().toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit'})
+  });
+  saveNotizen(arr);
+  document.getElementById('notiz-titel').value = '';
+  document.getElementById('notiz-text').value  = '';
+  renderNotizen();
+}
+
+function deleteNotiz(id) {
+  const arr = loadNotizen().filter(n => n.id !== id);
+  saveNotizen(arr);
+  renderNotizen();
+}
+
+function toggleDone(id) {
+  const arr = loadNotizen().map(n => n.id === id ? {...n, done: !n.done} : n);
+  saveNotizen(arr);
+  renderNotizen();
+}
+
+function filterNotizen(val, btn) {
+  notizenFilter = val;
+  document.querySelectorAll('#notizen-filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNotizen();
+}
+
+function renderNotizen() {
+  const all     = loadNotizen();
+  const visible = notizenFilter === 'all' ? all : all.filter(n => n.tag === notizenFilter);
+  const list    = document.getElementById('notizen-list');
+  const empty   = document.getElementById('notizen-empty');
+  const badge   = document.getElementById('notizen-count-badge');
+
+  badge.textContent = all.length + (all.length === 1 ? ' Notiz' : ' Notizen');
+
+  if (visible.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = visible.map(n => {
+    const m = tagMeta[n.tag] || tagMeta.idee;
+    return `
+    <div style="background:var(--card-dark); border-radius:var(--radius-sm); padding:18px 20px; margin-bottom:12px; border-left:3px solid ${m.color}; opacity:${n.done ? '.45' : '1'}; transition:.2s;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+            <div style="font-size:15px; font-weight:700; color:#fff; text-decoration:${n.done ? 'line-through' : 'none'};">${escHtml(n.titel)}</div>
+            <span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:${m.bg}; color:${m.color};">${m.label}</span>
+          </div>
+          ${n.text ? `<div style="font-size:13px; color:var(--text-mid); line-height:1.6; white-space:pre-wrap;">${escHtml(n.text)}</div>` : ''}
+          <div style="font-size:11px; color:var(--text-dim); margin-top:8px;">${n.ts}</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0;">
+          <button onclick="toggleDone(${n.id})" title="${n.done ? 'Als offen markieren' : 'Als erledigt markieren'}"
+            style="width:32px; height:32px; border:none; border-radius:8px; background:rgba(255,255,255,.07); color:${n.done ? 'var(--green)' : 'var(--text-dim)'}; font-size:15px; cursor:pointer; transition:.15s;"
+            onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">
+            ${n.done ? '↩' : '✓'}
+          </button>
+          <button onclick="deleteNotiz(${n.id})" title="Löschen"
+            style="width:32px; height:32px; border:none; border-radius:8px; background:rgba(239,68,68,.12); color:var(--red); font-size:14px; cursor:pointer; transition:.15s;"
+            onmouseover="this.style.background='rgba(239,68,68,.25)'" onmouseout="this.style.background='rgba(239,68,68,.12)'">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init beim Laden
+document.addEventListener('DOMContentLoaded', () => { renderNotizen(); });
+</script>
+
+<!-- ════ PLAN TAB — JavaScript ════ -->
+<script>
+/* ─── TOPPING DATA (35 Toppings) ─── */
+const planToppings = [
+  { nr:1,  emoji:'🍅', name:'Tomatensauce',      fact:'San Marzano Tomaten haben 25% mehr Zucker als normale Tomaten. Das Geheimnis für unsere perfekte Basis.',                                     combo:'San Marzano · Büffelmozzarella · Basilikum',  title:'Das Geheimnis unserer Tomatensauce.' },
+  { nr:2,  emoji:'🧀', name:'Mozzarella',         fact:'Echter Mozzarella ist kein Käse – er ist frische Pasta Filata. Schmeckt am besten 24h nach der Herstellung.',                               combo:'Kirschtomaten · Oregano · Olivenöl',          title:'Warum Mozzarella nicht gleich Mozzarella ist.' },
+  { nr:3,  emoji:'🌿', name:'Basilikum',          fact:'Basilikum verliert 80% seines Aromas beim Backen. Deshalb kommt er immer erst nach dem Ofen drauf.',                                        combo:'Rucola · Parmesan · Zitronenabrieb',          title:'Das kostet uns Überwindung – und ist trotzdem richtig.' },
+  { nr:4,  emoji:'🐟', name:'Thunfisch',          fact:'Wir nutzen Albacore-Thunfisch, die einzige Premium-Sorte. Fest, mild und null Dosengeschmack.',                                             combo:'Rote Zwiebeln · Kapern · Zitrone',            title:'Nicht jeder Thunfisch ist gleich. Dieser schon.' },
+  { nr:5,  emoji:'🧅', name:'Rote Zwiebeln',      fact:'Rote Zwiebeln karamellisieren beim Backen von allein. Roh süß – gebacken intensiv und komplex.',                                           combo:'Thunfisch · Kapern · Zitronenzeste',          title:'Zwiebeln: Das meistunterschätzte Topping.' },
+  { nr:6,  emoji:'🫒', name:'Kapern',             fact:'Kapern enthalten mehr Quercetin als fast jedes andere Lebensmittel. Umami pur – und gut für die Zellen.',                                  combo:'Thunfisch · Sardellen · Tomaten',             title:'Die unbekannteste Zutat mit der größten Wirkung.' },
+  { nr:7,  emoji:'🫒', name:'Oliven',             fact:'Kalamata-Oliven haben 40% mehr Polyphenole als schwarze Standardoliven. Qualität schmeckt man.',                                           combo:'Gorgonzola · Walnuss · Honig',               title:'Welche Olive auf welche Pizza? Der Guide.' },
+  { nr:8,  emoji:'🥩', name:'Salami',             fact:'Echte Salami braucht mindestens 3 Monate Reifung. Alles darunter ist einfach Aufschnitt.',                                                 combo:'Jalapeños · Honig-Drizzle · Paprika',        title:'Salami ist nicht gleich Salami. Wir erklären den Unterschied.' },
+  { nr:9,  emoji:'🥓', name:'Speck',              fact:'Südtiroler Speck wird 22 Wochen in den Alpen luftgetrocknet. Das schmeckt man nach dem ersten Bissen.',                                    combo:'Rucola · Parmesan · Rote Zwiebeln',          title:'Warum Speck + Rucola eine Liebesgeschichte ist.' },
+  { nr:10, emoji:'🍄', name:'Champignons',        fact:'Champignons enthalten mehr Umami als die meisten Fleischsorten. Getrocknete Pilze sind 10x intensiver.',                                  combo:'Trüffelöl · Parmesan · Thymian',             title:'Das Topping das Fleischliebhaber vergessen lässt.' },
+  { nr:11, emoji:'🌶️', name:'Jalapeños',          fact:'Frische Jalapeños sind 2x schärfer als gepickelte. Wir lassen euch selbst wählen: fresh oder mild.',                                      combo:'Hähnchen · Paprika · Ranch',                 title:'Wie scharf ist scharf genug? Ihr entscheidet.' },
+  { nr:12, emoji:'🫑', name:'Paprika',             fact:'Rote Paprika hat 3x mehr Vitamin C als eine Orange. Kalorienarm, natürlich süß, geschmacksstark.',                                        combo:'Mozzarella · Basilikum · Oregano',           title:'Rot, Gelb, Grün – welche Paprika auf welche Pizza?' },
+  { nr:13, emoji:'🧄', name:'Knoblauch',          fact:'Roh vs. geröstet: komplett verschiedene Geschmacksprofile. Roh = scharf & direkt. Geröstet = süß & komplex.',                            combo:'Spinat · Ricotta · Muskat',                  title:'Knoblauch richtig einsetzen: Das Tutorial.' },
+  { nr:14, emoji:'🥬', name:'Rucola',             fact:'Rucola gehört nach dem Backen auf die Pizza. Die Restwärme zieht das Aroma raus ohne es zu zerstören.',                                   combo:'Prosciutto · Parmesan · Zitronenabrieb',     title:'Warum Rucola immer erst nach dem Ofen kommt.' },
+  { nr:15, emoji:'🥚', name:'Ei',                 fact:'5 Minuten vor Schluss in den Ofen: das Eigelb muss noch laufen. Das ist der Moment der alles ausmacht.',                                  combo:'Speck · Trüffelöl · Schnittlauch',           title:'Das Ei auf der Pizza: alles eine Frage des Timings.' },
+  { nr:16, emoji:'🧀', name:'Parmesan',           fact:'Echter Parmigiano Reggiano reift mindestens 24 Monate. Günstige Alternativen können das nie ersetzen.',                                   combo:'Rucola · Kirschtomaten · Basilikum',         title:'Warum echter Parmesan sich lohnt. Der Unterschied ist krass.' },
+  { nr:17, emoji:'🍖', name:'Prosciutto',         fact:'Prosciutto di Parma: nur Schweine aus Parma & Emilia-Romagna. Luftgetrocknet, niemals geräuchert.',                                       combo:'Rucola · Parmesan · Feige',                  title:'Prosciutto vs. Schinken: Das ist kein Vergleich.' },
+  { nr:18, emoji:'🧀', name:'Gorgonzola',         fact:'Gorgonzola ist über 800 Jahre alt. Die Schimmelkulturen kommen noch immer original aus der Lombardei.',                                   combo:'Birne · Walnuss · Honig',                    title:'Gorgonzola polarisiert. Deshalb lieben wir ihn.' },
+  { nr:19, emoji:'🐃', name:'Büffelmozzarella',   fact:'Echter Büffelmozzarella kommt nur aus Kampanien. Cremiger, milchiger und viel frischer als Kuh-Mozzarella.',                             combo:'San Marzano · Basilikum · Olivenöl',         title:'Büffelmozzarella vs. Standard: Der Unterschied im Blindtest.' },
+  { nr:20, emoji:'🧀', name:'Ricotta',            fact:'Ricotta bedeutet "nochmal gekocht". Er wird aus Molke gemacht – dem, was beim Käsen übrig bleibt.',                                       combo:'Spinat · Muskat · Knoblauch',                title:'Ricotta auf Pizza: die unterschätzte Textur.' },
+  { nr:21, emoji:'🌱', name:'Spinat',             fact:'Spinat verliert 90% seines Volumens beim Erhitzen. Was riesig aussieht ist nach dem Backen kaum noch da.',                               combo:'Ricotta · Knoblauch · Muskat',               title:'Der Spinat-Trick: Warum wir 3x mehr nehmen als es nötig scheint.' },
+  { nr:22, emoji:'🥛', name:'Stracciatella',      fact:'Stracciatella ist das cremige Herz der Burrata. Kalt auf die heiße Pizza. Der Temperatur-Kontrast macht es.',                            combo:'Kirschtomaten · Basilikum · Chili-Öl',       title:'Kalt trifft heiß. Einmal probiert – süchtig.' },
+  { nr:23, emoji:'🌶️', name:"'Nduja",             fact:"'Nduja aus Kalabrien ist das schärfste streichbare Wurstprodukt Italiens. Fettig, explosiv, süchtig machend.",                           combo:'Büffelmozzarella · Honig · Rucola',          title:"'Nduja: Das Topping das alles verändert." },
+  { nr:24, emoji:'🍯', name:'Honig-Drizzle',      fact:'Ein Teelöffel Honig nach dem Backen hebt das Salz-Süß-Verhältnis auf ein neues Level. Der Profi-Trick.',                                combo:'Gorgonzola · Walnuss · Feige',               title:'Honig auf Pizza? Einmal probiert, nie mehr ohne.' },
+  { nr:25, emoji:'🌶️', name:'Chili-Öl',           fact:'Selbst gemachtes Chili-Öl ist 3x intensiver als das Gekaufte. Wir machen unseres täglich frisch.',                                      combo:'Mozzarella · Sardellen · Knoblauch',         title:'Unser Chili-Öl: Der Finishing-Touch der alles zusammenbringt.' },
+  { nr:26, emoji:'🌿', name:'Artischocken',       fact:'Marinierte Artischocken enthalten mehr Antioxidantien als Blaubeeren. Unterschätztes Superfood-Topping.',                               combo:'Parmesan · Zitronenabrieb · Knoblauch',      title:'Artischocken: Das Mediterranean-Topping das fehlt.' },
+  { nr:27, emoji:'🥦', name:'Brokkoli',           fact:'Brokkoli muss 30 Sekunden blanchiert werden bevor er auf die Pizza kommt. Sonst bleibt er zu roh – immer.',                            combo:'Ricotta · Knoblauch · Chiliflocken',         title:'Brokkoli richtig vorbereiten: Der Unterschied ist krass.' },
+  { nr:28, emoji:'🍗', name:'Hähnchen',           fact:'Hähnchen muss vorher gegart sein. Safety first. Wir marinieren in Olivenöl, Zitrone, Knoblauch und Thymian.',                          combo:'Paprika · Jalapeños · BBQ-Sauce',            title:'Hähnchen auf Pizza: So macht man es wirklich richtig.' },
+  { nr:29, emoji:'🐟', name:'Sardellen',          fact:'2 Sardellen-Filets verdoppeln die Geschmackstiefe jeder Tomatenbase. Umami-Booster Level 99.',                                          combo:'Kapern · Tomaten · Oliven (Puttanesca)',     title:'Das Topping das niemand erkennt – aber alle lieben.' },
+  { nr:30, emoji:'🍑', name:'Feige',              fact:'Frische Feigen enthalten Bromelain-ähnliche Enzyme die Käse-Aromen aktivieren. Süße trifft Würze.',                                     combo:'Gorgonzola · Prosciutto · Walnuss',          title:'Feige: Das süße Geheimnis unserer Herbst-Pizza.' },
+  { nr:31, emoji:'🌰', name:'Walnüsse',           fact:'Walnüsse auf Pizza: Die Franzosen und Italiener machen das seit Jahrhunderten. Wir fragen uns warum nicht alle.',                       combo:'Gorgonzola · Birne · Rucola · Honig',        title:'Walnüsse auf Pizza: Trend oder mediterrane Tradition?' },
+  { nr:32, emoji:'🍍', name:'Ananas',             fact:'Ananas enthält Bromelain – ein Enzym das Proteinfäden in Käse aufbricht. Chemie erklärt den Mythos.',                                   combo:'Prosciutto · Jalapeño · Mozzarella',         title:'Ananas auf Pizza: Wir erklären die Wissenschaft dahinter.' },
+  { nr:33, emoji:'🌿', name:'Oregano',            fact:'Getrockneter Oregano ist 5x intensiver als frischer. Das Hitze-Aroma-Paradox. Mehr Hitze = mehr Geschmack.',                            combo:'Tomatensauce · Mozzarella · Olivenöl',       title:'Oregano: Das älteste Pizzatopping der Geschichte.' },
+  { nr:34, emoji:'🧀', name:'Pecorino Romano',    fact:'Pecorino Romano vs. Parmigiano: Schafsmilch vs. Kuhmilch. Salziger, würziger, direkter. Beide haben ihre Momente.',                    combo:'Speck · Schwarzer Pfeffer · Rucola',         title:'Pecorino: Der Parmesan-Bruder den kaum jemand kennt.' },
+  { nr:35, emoji:'🍋', name:'Zitronenabrieb',     fact:'Zitronenabrieb ist das unsichtbare Geheimnis professioneller Pizzabäcker. 1 Gramm – und alles schmeckt frischer.',                     combo:'Rucola · Stracciatella · Prosciutto',        title:'Das Topping das kein Topping ist. Und trotzdem alles verändert.' },
+];
+
+/* ─── CALENDAR DATA ─── */
+const planCalJuni = [
+  { d:1,  type:'topping',   nr:1,  label:'Tomatensauce' },
+  { d:2,  type:'topping',   nr:2,  label:'Mozzarella' },
+  { d:3,  type:'topping',   nr:3,  label:'Basilikum' },
+  { d:4,  type:'community', label:'Vlogger-Tag: @blocki' },
+  { d:5,  type:'topping',   nr:4,  label:'Thunfisch' },
+  { d:6,  type:'topping',   nr:5,  label:'Rote Zwiebeln' },
+  { d:7,  type:'founder',   label:'Gründer Story' },
+  { d:8,  type:'topping',   nr:6,  label:'Kapern' },
+  { d:9,  type:'topping',   nr:7,  label:'Oliven' },
+  { d:10, type:'community', label:'Stitch / Duet' },
+  { d:11, type:'topping',   nr:8,  label:'Salami' },
+  { d:12, type:'topping',   nr:9,  label:'Speck' },
+  { d:13, type:'comment',   label:'Comment Response' },
+  { d:14, type:'founder',   label:'Gründer Story' },
+  { d:15, type:'topping',   nr:10, label:'Champignons' },
+  { d:16, type:'topping',   nr:11, label:'Jalapeños' },
+  { d:17, type:'community', label:'Vlogger Collab' },
+  { d:18, type:'topping',   nr:12, label:'Paprika' },
+  { d:19, type:'topping',   nr:13, label:'Knoblauch' },
+  { d:20, type:'topping',   nr:14, label:'Rucola' },
+  { d:21, type:'comment',   label:'Comment Response' },
+  { d:22, type:'topping',   nr:15, label:'Ei' },
+  { d:23, type:'community', label:'Q&A + Vlogger-Mention' },
+  { d:24, type:'topping',   nr:16, label:'Parmesan' },
+  { d:25, type:'topping',   nr:17, label:'Prosciutto' },
+  { d:26, type:'founder',   label:'Gründer Story' },
+  { d:27, type:'topping',   nr:18, label:'Gorgonzola' },
+  { d:28, type:'rest',      label:'Puffer / Reel bearbeiten' },
+  { d:29, type:'topping',   nr:19, label:'Büffelmozzarella' },
+  { d:30, type:'topping',   nr:20, label:'Ricotta' },
+];
+
+const planCalJuli = [
+  { d:1,  type:'topping',   nr:21, label:'Spinat' },
+  { d:2,  type:'community', label:'Opening-Teaser Launch' },
+  { d:3,  type:'topping',   nr:22, label:'Stracciatella' },
+  { d:4,  type:'topping',   nr:23, label:"'Nduja" },
+  { d:5,  type:'founder',   label:'Gründer Story' },
+  { d:6,  type:'topping',   nr:24, label:'Honig-Drizzle' },
+  { d:7,  type:'community', label:'Vlogger-Einladungen' },
+  { d:8,  type:'topping',   nr:25, label:'Chili-Öl' },
+  { d:9,  type:'opening',   label:'Opening-Ankündigung' },
+  { d:10, type:'topping',   nr:26, label:'Artischocken' },
+  { d:11, type:'comment',   label:'Comment Response' },
+  { d:12, type:'founder',   label:'Gründer Story' },
+  { d:13, type:'topping',   nr:27, label:'Brokkoli' },
+  { d:14, type:'opening',   label:'Opening Countdown' },
+  { d:15, type:'topping',   nr:28, label:'Hähnchen' },
+  { d:16, type:'community', label:'Vlogger Preview-Event' },
+  { d:17, type:'topping',   nr:29, label:'Sardellen' },
+  { d:18, type:'opening',   label:'Opening Teaser #3' },
+  { d:19, type:'founder',   label:'Gründer Story Final' },
+  { d:20, type:'topping',   nr:30, label:'Feige' },
+  { d:21, type:'community', label:'Mega-Vlogger Collab' },
+  { d:22, type:'topping',   nr:31, label:'Walnüsse' },
+  { d:23, type:'opening',   label:'Countdown 2 Wochen' },
+  { d:24, type:'topping',   nr:32, label:'Ananas' },
+  { d:25, type:'founder',   label:'Es ist fast soweit.' },
+  { d:26, type:'topping',   nr:33, label:'Oregano' },
+  { d:27, type:'opening',   label:'Countdown 1 Woche' },
+  { d:28, type:'topping',   nr:34, label:'Pecorino' },
+  { d:29, type:'community', label:'Press-Invitation' },
+  { d:30, type:'topping',   nr:35, label:'Zitronenabrieb ✨' },
+  { d:31, type:'opening',   label:'🚀 Opening Final Push' },
+];
+
+/* ─── RENDER CALENDAR ─── */
+function renderPlanCalendar(containerId, calData, startWeekday) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const cols = { topping:'#FF6200', community:'#8B5CF6', founder:'#3B82F6', comment:'#22C55E', opening:'#EF4444', rest:'#555555' };
+  const bgs  = { topping:'rgba(255,98,0,.1)', community:'rgba(139,92,246,.1)', founder:'rgba(59,130,246,.1)', comment:'rgba(34,197,94,.1)', opening:'rgba(239,68,68,.12)', rest:'rgba(80,80,80,.06)' };
+  const days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+  let html = days.map(d => `<div class="cal-hd">${d}</div>`).join('');
+  for (let i = 0; i < startWeekday - 1; i++) html += '<div class="cal-cell empty"></div>';
+  calData.forEach(e => {
+    const c = cols[e.type] || '#666';
+    const b = bgs[e.type]  || 'rgba(80,80,80,.06)';
+    const nr = e.nr ? `<div class="cal-nr">#${e.nr}</div>` : '';
+    html += `<div class="cal-cell" style="background:${b}; border-color:${c}44;">
+      <div class="cal-dn">${e.d}</div>
+      <div class="cal-dot" style="background:${c}"></div>
+      <div class="cal-lbl">${e.label}</div>${nr}
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+/* ─── RENDER TOPPINGS ─── */
+function filterToppings() {
+  const q = (document.getElementById('toppingSearch')?.value || '').toLowerCase();
+  const list = planToppings.filter(t => !q || t.name.toLowerCase().includes(q) || t.fact.toLowerCase().includes(q) || t.combo.toLowerCase().includes(q));
+  const grid = document.getElementById('toppingGrid');
+  const empty = document.getElementById('toppingEmpty');
+  if (!grid) return;
+  if (!list.length) { grid.style.display = 'none'; empty && (empty.style.display = 'block'); return; }
+  grid.style.display = 'grid';
+  empty && (empty.style.display = 'none');
+  grid.innerHTML = list.map(t => `
+    <div class="tp-card">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:9px;">
+        <div style="font-size:22px; line-height:1;">${t.emoji}</div>
+        <div>
+          <div style="font-size:10px; font-weight:800; color:var(--orange);">#${t.nr}</div>
+          <div style="font-size:13px; font-weight:800; color:var(--text-dark); line-height:1.2;">${t.name}</div>
+        </div>
+      </div>
+      <div style="font-size:11px; color:var(--text-mid); line-height:1.55; margin-bottom:8px; padding:8px 9px; background:rgba(255,98,0,.06); border-radius:8px; border-left:2px solid var(--orange);">
+        <strong style="color:var(--orange);">💡 </strong>${t.fact}
+      </div>
+      <div style="font-size:10px; color:var(--text-dim); margin-bottom:7px;">
+        <span style="font-weight:700; color:var(--text-mid);">Beste Combo:</span> ${t.combo}
+      </div>
+      <div style="font-size:10.5px; color:var(--orange); font-weight:700; font-style:italic; line-height:1.4;">"${t.title}"</div>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderPlanCalendar('calJuniGrid', planCalJuni, 1); // 1. Juni 2026 = Montag
+  renderPlanCalendar('calJuliGrid', planCalJuli, 3); // 1. Juli 2026 = Mittwoch
+  filterToppings();
+});
+</script>
+
+</body>
+</html>

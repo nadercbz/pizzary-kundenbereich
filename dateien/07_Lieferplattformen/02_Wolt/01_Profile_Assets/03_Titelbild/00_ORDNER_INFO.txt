@@ -1,0 +1,8 @@
+ORDNER-INFO: 03_Titelbild
+==================================================
+
+## INHALT (Unterordner):
+(Keine Unterordner - Endpunkt für Dateien)
+
+## BESCHREIBUNG:
+Hier werden Dateien im Bereich '03_Titelbild' abgelegt.

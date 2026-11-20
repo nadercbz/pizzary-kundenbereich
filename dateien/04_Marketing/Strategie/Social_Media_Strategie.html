@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pizzary — Social Media Strategie 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap');
+
+  :root {
+    --red: #D63B2F;
+    --red-light: #F5E8E7;
+    --dark: #111111;
+    --mid: #444444;
+    --light: #888888;
+    --bg: #FAFAF8;
+    --white: #FFFFFF;
+    --border: #E8E8E4;
+    --accent: #F2EDE8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+
+  /* PAGE STRUCTURE */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 0;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media screen {
+    .page {
+      margin: 20px auto;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+    }
+  }
+
+  @media print {
+    body { background: white; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+  }
+
+  /* COVER PAGE */
+  .cover {
+    background: var(--dark);
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  .cover-top {
+    padding: 50px 55px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cover-label {
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+  }
+
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 52pt;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+
+  .cover-subtitle {
+    font-size: 14pt;
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 50px;
+    letter-spacing: 0.5px;
+  }
+
+  .cover-divider {
+    width: 50px;
+    height: 2px;
+    background: var(--red);
+    margin-bottom: 32px;
+  }
+
+  .cover-description {
+    font-size: 11pt;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.8;
+    max-width: 420px;
+  }
+
+  .cover-bottom {
+    background: var(--red);
+    padding: 30px 55px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cover-meta {
+    font-size: 9pt;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 1px;
+  }
+
+  .cover-meta span {
+    color: white;
+    font-weight: 700;
+  }
+
+  .cover-tag {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* TOC PAGE */
+  .toc-page {
+    padding: 55px;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .toc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28pt;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 50px;
+    line-height: 1.2;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-num {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--red);
+    width: 32px;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+  }
+
+  .toc-text {
+    flex: 1;
+    font-size: 10.5pt;
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  .toc-sub {
+    font-size: 8.5pt;
+    font-weight: 400;
+    color: var(--light);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--border);
+    margin: 0 12px;
+    margin-bottom: 3px;
+  }
+
+  .toc-page-num {
+    font-size: 9pt;
+    font-weight: 600;
+    color: var(--light);
+    width: 20px;
+    text-align: right;
+  }
+
+  /* CONTENT PAGES */
+  .content-page {
+    padding: 55px;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--dark);
+    margin-bottom: 40px;
+  }
+
+  .page-header-left {
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--light);
+  }
+
+  .page-header-right {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 1px;
+  }
+
+  .chapter-number {
+    font-size: 72pt;
+    font-weight: 900;
+    color: var(--red-light);
+    line-height: 1;
+    margin-bottom: -10px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26pt;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .chapter-subtitle {
+    font-size: 10pt;
+    color: var(--light);
+    font-weight: 400;
+    margin-bottom: 35px;
+    letter-spacing: 0.3px;
+  }
+
+  /* TEXT ELEMENTS */
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--dark);
+    margin-top: 28px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--dark);
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 9.5pt;
+    color: var(--mid);
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+
+  /* CARDS & BOXES */
+  .card {
+    background: var(--accent);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+
+  .card-red {
+    background: var(--red);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+
+  .card-red p, .card-red h4 {
+    color: white;
+  }
+
+  .card-dark {
+    background: var(--dark);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+
+  .card-dark p, .card-dark h4 {
+    color: rgba(255,255,255,0.8);
+  }
+
+  .card-dark h4 {
+    color: white;
+  }
+
+  .card h4 {
+    margin-top: 0;
+    margin-bottom: 6px;
+    font-size: 10pt;
+  }
+
+  .card p {
+    margin-bottom: 0;
+  }
+
+  /* GRID LAYOUTS */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .grid-card {
+    background: var(--accent);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .grid-card-dark {
+    background: var(--dark);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .grid-card .label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+
+  .grid-card-dark .label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+
+  .grid-card .value {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+
+  .grid-card-dark .value {
+    font-size: 10pt;
+    font-weight: 600;
+    color: white;
+    line-height: 1.5;
+  }
+
+  /* LISTS */
+  .clean-list {
+    list-style: none;
+    margin-bottom: 18px;
+  }
+
+  .clean-list li {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 9.5pt;
+    color: var(--mid);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .clean-list li:last-child {
+    border-bottom: none;
+  }
+
+  .clean-list li::before {
+    content: "→";
+    color: var(--red);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .dot-list {
+    list-style: none;
+    margin-bottom: 18px;
+  }
+
+  .dot-list li {
+    padding: 5px 0;
+    font-size: 9.5pt;
+    color: var(--mid);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .dot-list li::before {
+    content: "•";
+    color: var(--red);
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* SCRIPT BOX */
+  .script-box {
+    border-left: 3px solid var(--red);
+    background: var(--accent);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .script-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .script-time {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--light);
+    background: var(--white);
+    border-radius: 4px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .script-text {
+    font-size: 9.5pt;
+    color: var(--dark);
+    line-height: 1.75;
+    font-style: italic;
+  }
+
+  /* KPI TABLE */
+  .kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 9pt;
+  }
+
+  .kpi-table th {
+    background: var(--dark);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .kpi-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--mid);
+    vertical-align: top;
+  }
+
+  .kpi-table tr:nth-child(even) td {
+    background: var(--accent);
+  }
+
+  .kpi-table .highlight {
+    color: var(--red);
+    font-weight: 700;
+  }
+
+  /* QUOTE */
+  .quote-block {
+    border-top: 2px solid var(--red);
+    border-bottom: 2px solid var(--red);
+    padding: 24px 0;
+    margin: 30px 0;
+    text-align: center;
+  }
+
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 15pt;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .quote-source {
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+
+  /* PILL TAGS */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    background: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: var(--mid);
+  }
+
+  .tag-red {
+    background: var(--red-light);
+    border: 1px solid rgba(214,59,47,0.2);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: var(--red);
+  }
+
+  /* SIGNAL BAR */
+  .signal-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .signal-rank {
+    font-size: 8pt;
+    font-weight: 800;
+    color: var(--red);
+    width: 20px;
+  }
+
+  .signal-label {
+    flex: 1;
+    font-size: 9.5pt;
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  .signal-desc {
+    font-size: 8.5pt;
+    color: var(--light);
+    width: 200px;
+    text-align: right;
+  }
+
+  /* WEEK CALENDAR */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .day-card {
+    background: var(--accent);
+    border-radius: 6px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+
+  .day-name {
+    font-size: 7.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+
+  .day-content {
+    font-size: 7.5pt;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+
+  /* ACTION CHECKLIST */
+  .checklist {
+    list-style: none;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 9.5pt;
+    color: var(--mid);
+  }
+
+  .check-box {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .check-num {
+    font-size: 8pt;
+    font-weight: 800;
+    color: var(--red);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  /* PHASE BADGE */
+  .phase-badge {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+
+  /* SPACER */
+  .spacer { height: 20px; }
+  .spacer-lg { height: 40px; }
+
+  /* FOOTER */
+  .page-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: 1px;
+  }
+
+  .footer-right {
+    font-size: 8pt;
+    color: var(--light);
+  }
+
+  /* INFOBOX */
+  .infobox {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .infobox-icon {
+    font-size: 18pt;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .infobox-body h4 {
+    margin-top: 0;
+    margin-bottom: 4px;
+    font-size: 9.5pt;
+  }
+
+  .infobox-body p {
+    margin-bottom: 0;
+    font-size: 9pt;
+  }
+
+  /* HOOK FORMAT */
+  .hook-item {
+    background: var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
+
+  .hook-type {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+
+  .hook-example {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.5;
+  }
+
+  /* NUMBER STAT */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 20px 12px;
+    background: var(--accent);
+    border-radius: 8px;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28pt;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--light);
+  }
+
+  /* HASHTAG BOX */
+  .hashtag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .hashtag {
+    background: var(--dark);
+    color: white;
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: 500;
+  }
+
+  .hashtag-secondary {
+    background: var(--accent);
+    color: var(--mid);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: 500;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- PAGE 1: COVER -->
+<!-- ============================================================ -->
+<div class="page cover">
+  <div class="cover-top">
+    <div class="cover-label">Social Media Strategie 2026</div>
+    <div class="cover-title">The<br>Pizzary</div>
+    <div class="cover-subtitle">TikTok &amp; Instagram — Brand + Personal Brand</div>
+    <div class="cover-divider"></div>
+    <div class="cover-description">
+      Ein vollständiger Wachstumsplan für zwei Kanäle, fünf Content-Säulen,
+      fertige Scripts und datenbasierte Viral-Taktiken. Für den Launch und darüber hinaus.
+    </div>
+  </div>
+  <div class="cover-bottom">
+    <div class="cover-meta">
+      <span>@the_pizzary</span> &nbsp;/&nbsp; <span>@steve_thepizzary</span><br>
+      Zimmerstraße 91, 10117 Berlin &nbsp;·&nbsp; Stand: April 2026
+    </div>
+    <div class="cover-tag">15 Kapitel &nbsp;·&nbsp; 5 Scripts</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 2: TABLE OF CONTENTS -->
+<!-- ============================================================ -->
+<div class="page toc-page">
+  <div class="section-eyebrow">Inhalt</div>
+  <div class="toc-title">Überblick</div>
+
+  <div class="toc-item">
+    <div class="toc-num">01</div>
+    <div class="toc-text">Strategische Grundlage
+      <span class="toc-sub">Dual-Channel-Konzept, Positionierung, Warum jetzt</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">3</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">02</div>
+    <div class="toc-text">Algorithmus-Wahrheit 2026
+      <span class="toc-sub">TikTok-Signale, Instagram-Signale, Goldene Regeln</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">4</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">03</div>
+    <div class="toc-text">Die Hook-Bibliothek
+      <span class="toc-sub">20+ Opener-Formate für sofortigen Einsatz</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">5</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">04</div>
+    <div class="toc-text">Content-Säulen
+      <span class="toc-sub">5 Pillar-Themen mit konkreten Video-Ideen</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">6</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">05</div>
+    <div class="toc-text">Wöchentlicher Content-Kalender
+      <span class="toc-sub">Jeder Tag. Beide Kanäle. Rolling-Struktur.</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">7</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">06</div>
+    <div class="toc-text">Vollständige Scripts (5 Stück)
+      <span class="toc-sub">Copy &amp; Use — Killer-Opener, Demo, Kontroverses Statement, Persönliches Video, Series-Format</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">8</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">07</div>
+    <div class="toc-text">TikTok-Taktiken
+      <span class="toc-sub">Loop-Trick, Duett-Bait, Sound-Strategie, Kommentar-Mechanik</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">10</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">08</div>
+    <div class="toc-text">Instagram-Taktiken
+      <span class="toc-sub">Reels, Stories, Carousel, Posting-Zeiten</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">11</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">09</div>
+    <div class="toc-text">Viral Growth Hacks
+      <span class="toc-sub">8 konkrete Hebel: Challenge, PR-Stack, Duett-Bait, Countdown u.v.m.</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">12</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">10</div>
+    <div class="toc-text">Hashtag-Strategie
+      <span class="toc-sub">Cluster für Instagram + TikTok, getrennte Logiken</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">13</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">11</div>
+    <div class="toc-text">Community Management
+      <span class="toc-sub">Antwort-Prinzipien, DM-Strategie, Hater zu Kunden</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">13</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">12</div>
+    <div class="toc-text">Metriken &amp; KPIs
+      <span class="toc-sub">Was täglich getrackt wird. Realistische Follower-Ziele bis 2027.</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">14</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">13</div>
+    <div class="toc-text">Tools &amp; Workflow
+      <span class="toc-sub">Produktion, Schnitt, Planung, Batch-Workflow</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">15</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">14</div>
+    <div class="toc-text">Monatsplan — Phase 1 (April 2026)
+      <span class="toc-sub">Tagesgenauer Launch-Plan, Woche für Woche</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">15</div>
+  </div>
+  <div class="toc-item">
+    <div class="toc-num">15</div>
+    <div class="toc-text">Brand Voice &amp; Langzeit-Vision
+      <span class="toc-sub">Ton, Sprache, 6-Monats- und 12-Monats-Ziele</span>
+    </div>
+    <div class="toc-dots"></div>
+    <div class="toc-page-num">16</div>
+  </div>
+
+  <div style="margin-top: auto;">
+    <div class="page-footer">
+      <div class="footer-brand">THE PIZZARY</div>
+      <div class="footer-right">Social Media Strategie 2026</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 3: KAPITEL 1 + 2 — STRATEGIE + ALGORITHMUS -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 01 + 02</div>
+  </div>
+
+  <div class="chapter-number">01</div>
+  <div class="chapter-title">Strategische Grundlage</div>
+  <div class="chapter-subtitle">Dual-Channel-Konzept · Positionierung · Warum jetzt</div>
+
+  <div class="card card-dark">
+    <h4>Das Zeitfenster</h4>
+    <p>Restaurants haben genau ein Zeitfenster, in dem organic viral growth fast von selbst passiert: der Launch. Wenn wir diesen Moment nicht nutzen, kaufen wir ihn später teuer ein.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="grid-card">
+      <div class="label">Brand-Kanal</div>
+      <div class="value">@the_pizzary</div>
+      <p style="font-size:8.5pt; color:var(--light); margin-top:6px; margin-bottom:0;">Produkt · Erfahrung · Restaurant<br>Ziel: Hunger machen, Besuch auslösen</p>
+    </div>
+    <div class="grid-card">
+      <div class="label">Personal Brand</div>
+      <div class="value">@steve_thepizzary</div>
+      <p style="font-size:8.5pt; color:var(--light); margin-top:6px; margin-bottom:0;">Der Mensch · Vision · Reise<br>Ziel: Loyalität, Followers zu Fans</p>
+    </div>
+  </div>
+
+  <p>Menschen kaufen von Menschen. Brands kaufen sie danach. Wenn Steve 10.000 Follower hat, die ihm vertrauen, sind das 10.000 Menschen, die The Pizzary mindestens einmal besuchen werden.</p>
+
+  <div class="spacer"></div>
+
+  <div class="chapter-number">02</div>
+  <div class="chapter-title">Algorithmus-Wahrheit 2026</div>
+  <div class="chapter-subtitle">Was TikTok &amp; Instagram wirklich rewarden</div>
+
+  <h3>TikTok — Top Signale</h3>
+
+  <div class="signal-bar">
+    <div class="signal-rank">01</div>
+    <div class="signal-label"><strong>Watch Time</strong> — Wie lange schaut jemand?</div>
+    <div class="signal-desc">Ziel: &gt;70% Completion Rate</div>
+  </div>
+  <div class="signal-bar">
+    <div class="signal-rank">02</div>
+    <div class="signal-label"><strong>Re-Watches</strong> — Wird das Video nochmal geschaut?</div>
+    <div class="signal-desc">Taktik: Loops bauen</div>
+  </div>
+  <div class="signal-bar">
+    <div class="signal-rank">03</div>
+    <div class="signal-label"><strong>Comments</strong> — Wird diskutiert?</div>
+    <div class="signal-desc">Taktik: Meinung provozieren</div>
+  </div>
+  <div class="signal-bar">
+    <div class="signal-rank">04</div>
+    <div class="signal-label"><strong>Shares</strong> — Wird es weitergeleitet?</div>
+    <div class="signal-desc">"Das muss mein Freund sehen"</div>
+  </div>
+
+  <h3 style="margin-top:24px;">Instagram — Top Signale</h3>
+
+  <div class="grid-2">
+    <div class="grid-card">
+      <div class="label">Platz 1</div>
+      <div class="value">Saves</div>
+      <p style="font-size:8.5pt;color:var(--light);margin-top:4px;margin-bottom:0;">"Ich will das wieder sehen" Signal</p>
+    </div>
+    <div class="grid-card">
+      <div class="label">Platz 2</div>
+      <div class="value">DM-Shares</div>
+      <p style="font-size:8.5pt;color:var(--light);margin-top:4px;margin-bottom:0;">Stärker als öffentliche Shares</p>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="quote-text">"Ein virales Video ist nicht schön.<br>Es ist informativ, überraschend, lustig<br>oder identitätsstiftend."</div>
+    <div class="quote-source">Kernprinzip dieser Strategie</div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">03</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 4: KAPITEL 3 — HOOK-BIBLIOTHEK -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 03</div>
+  </div>
+
+  <div class="chapter-number">03</div>
+  <div class="chapter-title">Die Hook-Bibliothek</div>
+  <div class="chapter-subtitle">Die ersten 3 Sekunden entscheiden alles — kein Hook = kein View</div>
+
+  <div class="hook-item">
+    <div class="hook-type">Typ 1 — Provokation</div>
+    <div class="hook-example">
+      "Alle Pizzerien in Berlin machen das falsch."<br>
+      "Ich hab 50.000 € ausgegeben, um Pizza in 180 Sekunden zu machen."<br>
+      "Das ist der Grund, warum normales Fast Food bald stirbt."
+    </div>
+  </div>
+
+  <div class="hook-item">
+    <div class="hook-type">Typ 2 — Curiosity Gap</div>
+    <div class="hook-example">
+      "Ich zeige dir, was in 180 Sekunden wirklich passiert."<br>
+      "Das haben wir vorher noch niemandem gezeigt."<br>
+      "Wir haben NYC verlassen. Hier ist, warum."
+    </div>
+  </div>
+
+  <div class="hook-item">
+    <div class="hook-type">Typ 3 — Spezifische Zahlen</div>
+    <div class="hook-example">
+      "3 Monate. 1 Restaurant. 0 Franchise. Alles selbst gebaut."<br>
+      "180 Sekunden. Das ist schneller als du deinen Namen sagen kannst."<br>
+      "Wir haben 7 Teig-Rezepte verworfen, bevor wir diesen fanden."
+    </div>
+  </div>
+
+  <div class="hook-item">
+    <div class="hook-type">Typ 4 — Persönlich / Verletzlich</div>
+    <div class="hook-example">
+      "Ich habe alles riskiert für ein Restaurant in Berlin."<br>
+      "Hier ist der Tag, an dem ich fast aufgehört habe."<br>
+      "Warum ich um 4 Uhr morgens im Restaurant stehe."
+    </div>
+  </div>
+
+  <div class="hook-item">
+    <div class="hook-type">Typ 5 — Bildbasiert (kein Voiceover nötig)</div>
+    <div class="hook-example">
+      Nahaufnahme: Käse zieht sich bei erstem Biss &nbsp;·&nbsp;
+      Timer-Countdown: 3... 2... 1... fertig &nbsp;·&nbsp;
+      Vorher/Nachher: Leere Theke → volle Pizzabox
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <h3>3-Sekunden-Test</h3>
+  <div class="card">
+    <p>Zeig das Video 5 Leuten. Wenn weniger als 3 davon nach 3 Sekunden noch draufschauen, ist der Hook nicht gut genug. Keinen schlechten Hook posten. Wiederholen bis er sitzt.</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <h3>Content-Typen nach Ziel</h3>
+  <table class="kpi-table">
+    <thead>
+      <tr>
+        <th>Ziel</th>
+        <th>Format</th>
+        <th>Hook-Typ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Reichweite maximieren</td>
+        <td>15-30 sek Reel</td>
+        <td class="highlight">Provokation oder Zahlen</td>
+      </tr>
+      <tr>
+        <td>Trust aufbauen</td>
+        <td>60-90 sek Talking Head</td>
+        <td class="highlight">Persönlich / Verletzlich</td>
+      </tr>
+      <tr>
+        <td>Produkt zeigen</td>
+        <td>15-30 sek Visual-Only</td>
+        <td class="highlight">Bildbasiert</td>
+      </tr>
+      <tr>
+        <td>Saves generieren</td>
+        <td>Carousel / Edutainment</td>
+        <td class="highlight">Curiosity Gap</td>
+      </tr>
+      <tr>
+        <td>Kommentare provozieren</td>
+        <td>45-60 sek Statement</td>
+        <td class="highlight">Provokation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">04</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 5: KAPITEL 4 — CONTENT-SÄULEN -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 04</div>
+  </div>
+
+  <div class="chapter-number">04</div>
+  <div class="chapter-title">Content-Säulen</div>
+  <div class="chapter-subtitle">5 Pillar-Themen — jede Säule mit konkreten Video-Ideen</div>
+
+  <div class="infobox">
+    <div class="infobox-icon">🍕</div>
+    <div class="infobox-body">
+      <h4>Säule 1 — The Machine (Produkt / USP)</h4>
+      <p>Frequenz: 2x/Woche · Channels: beide · Kern: 180 Sekunden, Build Your Own, frisch, schnell, gut.<br>
+      <strong>Ideen:</strong> Echtzeit-Demo kein Schnitt · Close-Up ASMR Zutaten · Vergleich Fast Food vs. The Pizzary · Zutatenvideo 7 Uhr morgens</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">👤</div>
+    <div class="infobox-body">
+      <h4>Säule 2 — Steve's Journey (Personal Brand)</h4>
+      <p>Frequenz: 3-4x/Woche auf @steve · Kern: Der Mensch, die Entscheidungen, das Risiko, die Wahrheit.<br>
+      <strong>Ideen:</strong> "Was ich heute gelernt habe" Daily · Tagesvlog Opening-Woche · Fehler-Serie · NYC-Flashback mit aktuellem Kommentar</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">🎬</div>
+    <div class="infobox-body">
+      <h4>Säule 3 — Behind the Scenes (Prozess)</h4>
+      <p>Frequenz: 2x/Woche (abwechselnd) · Kern: Das sieht man normalerweise nicht.<br>
+      <strong>Ideen:</strong> Morgenroutine 5 Uhr Setup · Lieferung Unboxing · Team-Vorstellung · Fehler-Moment (echte Reaktion)</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">📍</div>
+    <div class="infobox-body">
+      <h4>Säule 4 — Community &amp; Berlin (Lokal + Identität)</h4>
+      <p>Frequenz: 1-2x/Woche · Kern: Wir sind Berlin. Für Berlin. Von Berlin.<br>
+      <strong>Ideen:</strong> Stammkunden-Kurzinterviews · Erste Google-Reviews · Berliner Creator-Kollabos · Warum Zimmerstraße 91?</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">💡</div>
+    <div class="infobox-body">
+      <h4>Säule 5 — Edutainment (Viral durch Mehrwert)</h4>
+      <p>Frequenz: 1x/Woche · Kern: Menschen die Mehrwert bekommen, speichern und teilen.<br>
+      <strong>Ideen:</strong> "Das passiert in 180 sek, scientifically" · "3 Fehler aller Berliner Pizzerien" · "Wie wir unseren Teig entwickelt haben"</p>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <h3>Säulen-Übersicht auf einen Blick</h3>
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-number">2x</div>
+      <div class="stat-label">The Machine</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">4x</div>
+      <div class="stat-label">Steve's Journey</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">2x</div>
+      <div class="stat-label">Behind Scenes</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">1x</div>
+      <div class="stat-label">Edutainment</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">05</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 6: KAPITEL 5 — CONTENT-KALENDER -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 05</div>
+  </div>
+
+  <div class="chapter-number">05</div>
+  <div class="chapter-title">Wöchentlicher Content-Kalender</div>
+  <div class="chapter-subtitle">Jeder Tag. Beide Kanäle. Rolling-Struktur — wiederholt sich wöchentlich.</div>
+
+  <table class="kpi-table" style="margin-bottom:24px;">
+    <thead>
+      <tr>
+        <th style="width:90px;">Tag</th>
+        <th>@the_pizzary (Brand)</th>
+        <th>@steve_thepizzary (Personal)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Montag</strong></td>
+        <td>Reel — Produkt-Fokus (15-30 sek)<br><span style="color:var(--light);font-size:8pt;">"Montag. Deine Pizza in 180 Sekunden."</span></td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>Dienstag</strong></td>
+        <td>—</td>
+        <td>Reel — Personal Journey (30-60 sek)<br><span style="color:var(--light);font-size:8pt;">Steve direkt in die Kamera</span></td>
+      </tr>
+      <tr>
+        <td><strong>Mittwoch</strong></td>
+        <td>Story-Serie (3-5 Stories)<br><span style="color:var(--light);font-size:8pt;">BTS + 1x Community-Poll</span></td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>Donnerstag</strong></td>
+        <td>—</td>
+        <td>Reel — Edutainment oder Fehler-Moment<br><span style="color:var(--light);font-size:8pt;">"Das hätte ich anders gemacht."</span></td>
+      </tr>
+      <tr>
+        <td><strong>Freitag</strong></td>
+        <td>Reel — Food-Porn (Hochperformance)<br><span style="color:var(--light);font-size:8pt;">Käse-Pull, Zeitlupe, Zutaten-Cascade</span></td>
+        <td>Stories: Wochenend-Teaser</td>
+      </tr>
+      <tr>
+        <td><strong>Samstag</strong></td>
+        <td>Cross-Promo: Steve-Content zeigen<br><span style="color:var(--light);font-size:8pt;">"Der Kopf hinter The Pizzary..."</span></td>
+        <td>Cross-Promo: Brand-Content zeigen<br><span style="color:var(--light);font-size:8pt;">"Was heute bei uns passiert ist..."</span></td>
+      </tr>
+      <tr>
+        <td><strong>Sonntag</strong></td>
+        <td>—</td>
+        <td>Wochenfazit / Reflection (60-90 sek)<br><span style="color:var(--light);font-size:8pt;">Persönlich, ehrlich, Story-Form</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Beste Posting-Zeiten (Berlin)</h3>
+  <div class="grid-2">
+    <div class="grid-card">
+      <div class="label">TikTok</div>
+      <div class="value" style="font-size:9pt; line-height:1.8;">
+        Di–Do: 18:00–20:00<br>
+        Freitag: 17:00–19:00<br>
+        Samstag: 12:00–14:00<br>
+        Sonntag: 19:00–21:00
+      </div>
+    </div>
+    <div class="grid-card">
+      <div class="label">Instagram</div>
+      <div class="value" style="font-size:9pt; line-height:1.8;">
+        Mo–Fr: 11:30–12:30 + 18:00–20:00<br>
+        Samstag: 10:00–11:00<br>
+        Sonntag: 18:00–20:00
+      </div>
+    </div>
+  </div>
+
+  <h3>Batch-Workflow (Empfehlung)</h3>
+  <div class="card">
+    <p>Nicht täglich filmen. Einmal pro Woche alles drehen: <strong>Montag filmen</strong> (2-3h, 7-10 Clips) · <strong>Dienstag schneiden</strong> (alle Clips fertigstellen) · <strong>Mi-So posten</strong> aus dem Vorrat.<br><br>
+    Ausnahme: Spontane echte Momente (erste Kunden, Fehler, Reaktionen) immer sofort filmen. Authentizität schlägt Perfektion.</p>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">06</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 7+8: KAPITEL 6 — SCRIPTS -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 06 — Scripts</div>
+  </div>
+
+  <div class="chapter-number">06</div>
+  <div class="chapter-title">Vollständige Scripts</div>
+  <div class="chapter-subtitle">5 fertige Scripts — Copy &amp; Use. Sofort einsetzbar.</div>
+
+  <div style="margin-bottom: 20px;">
+    <div class="phase-badge">Script 01 — Personal Brand / Killer-Opener</div>
+    <p style="font-size:8.5pt; color:var(--light); margin-bottom:10px;">@steve_thepizzary · TikTok &amp; Reels · 60-90 Sek · Steve steht im leeren Restaurant, Morgen, 6 Uhr</p>
+
+    <div class="script-box">
+      <div class="script-label">Hook (0–3 Sek)</div>
+      <div class="script-text">"Ich habe alles aufgegeben. Für eine Pizza in 180 Sekunden."</div>
+    </div>
+    <div class="script-box">
+      <div class="script-label">Body (3–45 Sek)</div>
+      <div class="script-text">"Vor einem Jahr hatte ich keinen Laden. Keinen Teig. Keine Maschine. Ich hatte nur eine Idee. Frisches Fast Food. Deine Zutaten. Deine Regeln. In drei Minuten. Kein Franchise. Kein Investor. Ich, mein Team, und eine Reise nach New York. Ich habe dort die Maschine getestet, die alles verändert hat. Heute steht sie hier. Zimmerstraße 91, Berlin."</div>
+    </div>
+    <div class="script-box">
+      <div class="script-label">Reveal + CTA (45–60 Sek)</div>
+      <div class="script-text">[Kamera dreht sich zur Maschine] "Das hier ist The Pizzary. Ab heute offen. Und das ist erst der Anfang. Komm vorbei. Oder folg mir, um zu sehen, wie diese Geschichte weitergeht."</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="phase-badge">Script 02 — Brand-Channel / Produkt-Demo</div>
+    <p style="font-size:8.5pt; color:var(--light); margin-bottom:10px;">@the_pizzary · 15-30 Sek · Kein Voiceover · Nur Bilder + Text-Overlay · Overhead-Shot</p>
+
+    <div class="script-box">
+      <div class="script-label">Text-Overlay Sequenz</div>
+      <div class="script-text">
+        0–2 sek: "Berlin. 2026."<br>
+        2–8 sek: "Wähle deine Zutaten." [Nahaufnahme: Hände belegen die Pizza]<br>
+        8–10 sek: "Schiebe sie rein." [Maschine schließt sich]<br>
+        10–25 sek: TIMER läuft sichtbar: 180... 150... 100... 50... 10...<br>
+        25–28 sek: DING. Maschine öffnet sich.<br>
+        28–30 sek: "Deine Pizza. In 3 Minuten." [Logo + Adresse]
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">07</div>
+  </div>
+</div>
+
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 06 — Scripts (Fortsetzung)</div>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <div class="phase-badge">Script 03 — Kontroverses Statement</div>
+    <p style="font-size:8.5pt; color:var(--light); margin-bottom:10px;">@steve_thepizzary · TikTok · 45-60 Sek · Direkt in die Kamera · Ziel: Kommentare provozieren</p>
+
+    <div class="script-box">
+      <div class="script-label">Hook (0–3 Sek)</div>
+      <div class="script-text">"Fast Food in Berlin ist kaputt. Und ich erkläre dir warum."</div>
+    </div>
+    <div class="script-box">
+      <div class="script-label">Body (3–40 Sek)</div>
+      <div class="script-text">"Wenn du in Berlin Fast Food bestellst, kriegst du meistens: Tiefgefrorenes Zeug, das seit Wochen in einer Kühlkammer liegt. Oder überteuertes Hipster-Essen, das dich 18 Euro kostet. Wo ist die Mitte? Frisch. Schnell. Erschwinglich. Und trotzdem gut? Das existiert nicht. Noch nicht."</div>
+    </div>
+    <div class="script-box">
+      <div class="script-label">Reveal + CTA (40–60 Sek)</div>
+      <div class="script-text">"Bis jetzt. The Pizzary, Zimmerstraße 91. Wir backen deine Pizza in 180 Sekunden. Frische Zutaten, keine Kompromisse, kein Franchise. Das ist kein Startup-Pitch. Das ist ein Restaurant. Was denkst du? Hat Berlin das gebraucht? Schreib mir in die Kommentare."</div>
+    </div>
+
+    <div class="card" style="margin-top:8px;">
+      <p style="font-size:8.5pt; margin-bottom:0;"><strong>Hinweis:</strong> Dieses Video WILL Widerspruch. Das ist gut. Jeder Kommentar — Zustimmung oder Gegenmeinung — schiebt den Algorithmus an. Caption: "Hartes Statement. Aber ich stehe dazu. Stimmt du zu?"</p>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <div class="phase-badge">Script 04 — Das persönliche Tief-Video</div>
+    <p style="font-size:8.5pt; color:var(--light); margin-bottom:10px;">@steve_thepizzary · 90-120 Sek · Sitz-Format · Einmalig · Herz der Personal Brand</p>
+
+    <div class="script-box">
+      <div class="script-label">Hook → Wendepunkt → CTA (Struktur)</div>
+      <div class="script-text">
+        Hook: "Ich will dir ehrlich sagen, warum ich das gemacht habe. Nicht die PR-Version. Die echte."<br><br>
+        Body: "Ich wollte nie ein normales Restaurant bauen... Ich bin nach New York geflogen. Nicht für Urlaub. Ich wollte sehen, ob die Maschine hält, was sie verspricht. Sie hält es. 180 Sekunden. Dann habe ich meine letzten Ersparnisse investiert..."<br><br>
+        Wendepunkt: "Es gab Momente, wo ich gedacht habe: Bist du verrückt? Dann: Der erste Bissen aus unserer Maschine, in Berlin. Und ich wusste: Das stimmt."<br><br>
+        CTA: "Das ist The Pizzary. Das bin ich. Folg mir. Ich erzähl dir alles."
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="phase-badge">Script 05 — Tägliches Series-Format (15 Sek)</div>
+    <p style="font-size:8.5pt; color:var(--light); margin-bottom:10px;">Beide Kanäle · "Was heute bei The Pizzary passiert ist" · Habit Building</p>
+
+    <div class="grid-2">
+      <div class="grid-card">
+        <div class="label">Mo / Di / Mi</div>
+        <div class="value" style="font-size:9pt; line-height:1.8;">
+          "Heute: [X] Pizzen. Unser Rekord."<br>
+          "Neue Zutat: [Zutat]. Komm testen."<br>
+          "Heute Fehler gemacht. Hier was gelernt."
+        </div>
+      </div>
+      <div class="grid-card">
+        <div class="label">Do / Fr / Sa / So</div>
+        <div class="value" style="font-size:9pt; line-height:1.8;">
+          "[Name] war Stammgast Nr. 1."<br>
+          "Freitagabend. Wir sind voll. Danke Berlin."<br>
+          "Wochenende-Spezial: [Topping]. Nur heute."<br>
+          "Morgen Montag. Kommen stärker zurück."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">08</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 9: KAPITEL 7+8 — TIKTOK + INSTAGRAM TAKTIKEN -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 07 + 08</div>
+  </div>
+
+  <div class="chapter-number">07</div>
+  <div class="chapter-title">TikTok-Taktiken</div>
+  <div class="chapter-subtitle">FYP-Mechaniken · Loop-Trick · Duett-Bait · Kommentar-Strategie</div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="grid-card-dark">
+      <div class="label">Der Loop-Trick</div>
+      <div class="value">Video so bauen, dass Ende nahtlos ins Anfang führt. TikTok Re-Watches = positives Signal.</div>
+    </div>
+    <div class="grid-card-dark">
+      <div class="label">Duett &amp; Stitch Köder</div>
+      <div class="value">Videos so formulieren, dass andere TikToker reagieren wollen. "Stitch mich." Jedes Duett ist gratis Reichweite.</div>
+    </div>
+    <div class="grid-card-dark">
+      <div class="label">Trend-Audio nutzen</div>
+      <div class="value">Jede Woche 3-5 trending sounds tracken (TikTok Creative Center). Mindestens 1x/Woche Trend-Audio nutzen.</div>
+    </div>
+    <div class="grid-card-dark">
+      <div class="label">Kommentar-Fenster</div>
+      <div class="value">In den ersten 2 Stunden auf JEDEN Kommentar antworten. Als Erster selbst kommentieren. TikTok misst das.</div>
+    </div>
+  </div>
+
+  <div class="card card-red">
+    <h4>TikTok-Goldene Regel</h4>
+    <p>TikTok hat kein Follower-Gate. Jedes Video kann viral gehen — egal ob 0 oder 100.000 Follower. Das ist der größte Vorteil gegenüber Instagram. Deshalb: TikTok ist Priorität 1.</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="chapter-number">08</div>
+  <div class="chapter-title">Instagram-Taktiken</div>
+  <div class="chapter-subtitle">Reels · Stories · Carousel · Close Friends</div>
+
+  <h3>Reels</h3>
+  <ul class="dot-list">
+    <li>Format immer 9:16 vertikal. Keine Ausnahme.</li>
+    <li>Untertitel immer an. 80% schauen ohne Ton.</li>
+    <li>Länge: 15-30 Sek für maximale Completion Rate.</li>
+    <li>In den ersten 24h nach Post nicht editieren (Algorithmus-Signal).</li>
+    <li>Caption erste Zeile = Hook (sichtbar ohne "mehr lesen").</li>
+  </ul>
+
+  <h3>Stories</h3>
+  <ul class="dot-list">
+    <li>Minimum 5 Stories täglich.</li>
+    <li>Mix: Produkt (1-2) + Behind-the-Scenes (2) + Interaktion (1-2).</li>
+    <li>Sticker nutzen: Frage, Poll, Quiz, Countdown.</li>
+    <li>Stories = Stammkunden-Kanal. Reels = Neukunden-Kanal.</li>
+    <li>Story-Highlights anlegen: "Das Konzept", "Das Team", "Das Restaurant".</li>
+  </ul>
+
+  <h3>Close Friends (VIP-Strategie)</h3>
+  <div class="card">
+    <p>Aktiviere "Close Friends" Stories für treue Follower. Biete exklusive Informationen, erste Blicke, Rabatte. Das schafft Loyalität und das Gefühl, Teil von etwas Besonderem zu sein.</p>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">09</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 10: KAPITEL 9 — VIRAL GROWTH HACKS -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 09</div>
+  </div>
+
+  <div class="chapter-number">09</div>
+  <div class="chapter-title">Viral Growth Hacks</div>
+  <div class="chapter-subtitle">8 konkrete Hebel für explosives Wachstum</div>
+
+  <div class="infobox">
+    <div class="infobox-icon">🎥</div>
+    <div class="infobox-body">
+      <h4>Hack 1 — Der Erste-Kunden-Post</h4>
+      <p>Film den allerersten Kunden beim Opening. Frag: "Was denkst du?" Echte Reaktionen sind Gold. Sofort posten. Das ist kein Marketing — das ist Beweis.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">⚡</div>
+    <div class="infobox-body">
+      <h4>Hack 2 — Die Challenge (#180SekundenChallenge)</h4>
+      <p>Starte eine eigene TikTok-Challenge. Idee: Kunden filmen sich beim Bestellen. "Kannst du deine Traumkombination in 180 Sekunden wählen?" Das läuft von selbst.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">🔁</div>
+    <div class="infobox-body">
+      <h4>Hack 3 — Das Duett-Bait-Video</h4>
+      <p>"Zeig mir die schlimmste Pizza in Berlin, die du je gegessen hast. Ich reagiere darauf." Jedes fremde Duett ist gratis Reichweite und bringt deren Follower zu dir.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">📩</div>
+    <div class="infobox-body">
+      <h4>Hack 4 — Der PR-Stack (Micro-Influencer)</h4>
+      <p>Am Opening-Tag persönliche Nachricht (kein Template) an 5 Berliner Food-Creator unter 50k Follower + 3 Blogger + 2 Journalisten. Text: "Ich bin heute aufgemacht. Kein PR-Budget. Komm vorbei, ich zahl deine Pizza." Micro-Influencer: 3-5x höhere Engagement Rates.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">💬</div>
+    <div class="infobox-body">
+      <h4>Hack 5 — Der Quote-Trick</h4>
+      <p>Wenn jemand in Kommentaren oder DMs etwas Interessantes schreibt, mach daraus ein Video. "Jemand fragte mich: Kann man eine Pizza wirklich in 180 Sek machen?" Community-getriebener Content = minimale Produktion, hohe Resonanz.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">🔥</div>
+    <div class="infobox-body">
+      <h4>Hack 6 — Der Meinungs-Hook (Wöchentlich)</h4>
+      <p>Jeden Donnerstag EIN Video mit klarer, polarisierender Meinung. "Pizza aus dem Supermarkt ist kein Essen." / "Ananas auf die Pizza? Kein Problem, fight me." / "Fast Food muss nicht ungesund sein. Punkt." Meinungen polarisieren = Kommentare = Reichweite.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">📅</div>
+    <div class="infobox-body">
+      <h4>Hack 7 — Der Countdown (7 Tage vor Opening)</h4>
+      <p>Tag 7: "In 7 Tagen" · Tag 6: "Das letzte Problem, das wir lösen mussten" · Tag 5: "Die Zutaten kommen an" · Tag 4: "Erster Testlauf" · Tag 3: "Das Team ist bereit" · Tag 2: "Ich schlafe nicht" · Opening: Live-Dokumentation.</p>
+    </div>
+  </div>
+
+  <div class="infobox">
+    <div class="infobox-icon">📊</div>
+    <div class="infobox-body">
+      <h4>Hack 8 — Der Beweis-Post (Wöchentlich)</h4>
+      <p>Jede Woche nackte Zahlen: "Woche 1: 247 Pizzen. 12 Reviews. Alle 5 Sterne." Authentizität + Beweis = Trust. Trust = Stammkunden.</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">10</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 11: KAPITEL 10+11 — HASHTAGS + COMMUNITY -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 10 + 11</div>
+  </div>
+
+  <div class="chapter-number">10</div>
+  <div class="chapter-title">Hashtag-Strategie</div>
+  <div class="chapter-subtitle">Instagram: 3-5 gezielt · TikTok: 3-4 · Weniger ist mehr (2026)</div>
+
+  <h3>Instagram Hashtag-Cluster</h3>
+  <p style="font-size:8.5pt; color:var(--light); margin-bottom:8px;">Cluster 1 — Lokal (immer nutzen)</p>
+  <div class="hashtag-row">
+    <span class="hashtag">#BerlinFood</span>
+    <span class="hashtag">#BerlinEats</span>
+    <span class="hashtag">#Berlin</span>
+    <span class="hashtag">#BerlinMitte</span>
+    <span class="hashtag">#BerlinFoodScene</span>
+  </div>
+  <p style="font-size:8.5pt; color:var(--light); margin-bottom:8px;">Cluster 2 — Nische (rotieren)</p>
+  <div class="hashtag-row">
+    <span class="hashtag-secondary">#ThePizzary</span>
+    <span class="hashtag-secondary">#BuildYourOwnPizza</span>
+    <span class="hashtag-secondary">#FastCasual</span>
+    <span class="hashtag-secondary">#PizzaBerlin</span>
+    <span class="hashtag-secondary">#PizzaRevolution</span>
+  </div>
+  <p style="font-size:8.5pt; color:var(--light); margin-bottom:8px;">Cluster 3 — Startup / Founder (Personal Brand)</p>
+  <div class="hashtag-row">
+    <span class="hashtag-secondary">#Foodstartup</span>
+    <span class="hashtag-secondary">#FounderLife</span>
+    <span class="hashtag-secondary">#StartupBerlin</span>
+    <span class="hashtag-secondary">#GründerDeutschland</span>
+  </div>
+
+  <h3>TikTok Formel</h3>
+  <div class="card">
+    <p><strong>#ThePizzary</strong> + 1 lokaler Hashtag + 1 Trend-Hashtag + 1 Nischen-Hashtag<br>
+    Beispiel: #ThePizzary #BerlinFood #FoodTok #PizzaRevolution</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="chapter-number">11</div>
+  <div class="chapter-title">Community Management</div>
+  <div class="chapter-subtitle">Der Unterschied zwischen wachsenden und stagnierenden Accounts</div>
+
+  <h3>Antwort-Prinzipien</h3>
+
+  <div class="grid-2">
+    <div class="grid-card">
+      <div class="label">Prinzip 1 — Frag zurück</div>
+      <div class="value" style="font-size:9pt; line-height:1.6;">Kommentar: "Geil, wie lange auf?"<br>Antwort: "Bis 22h! Was ist deine liebste Kombination?" → Thread bleibt lebendig.</div>
+    </div>
+    <div class="grid-card">
+      <div class="label">Prinzip 2 — Persönlich</div>
+      <div class="value" style="font-size:9pt; line-height:1.6;">Nie Standard-Danke. Immer echte Info: "Dann teste: Mozzarella + Jalapeño + Honig. Klingt wild, trust me."</div>
+    </div>
+    <div class="grid-card">
+      <div class="label">Prinzip 3 — Hater to Hero</div>
+      <div class="value" style="font-size:9pt; line-height:1.6;">"Ist das nicht ein Hipster-Laden?" → "Gute Frage. Komm einmal vorbei und sag mir das nochmal. Ich zahl die Pizza."</div>
+    </div>
+    <div class="grid-card">
+      <div class="label">DM-Strategie</div>
+      <div class="value" style="font-size:9pt; line-height:1.6;">Antwort innerhalb 2h (erste 3 Monate). Wiederholte Kommentierer per DM ansprechen: "Du warst 3x dabei. Komm vorbei."</div>
+    </div>
+  </div>
+
+  <div class="card card-red" style="margin-top:8px;">
+    <h4>Kommentar-Timing-Regel</h4>
+    <p>Das erste Kommentar-Fenster nach dem Post (0-2h) ist kritisch. TikTok und Instagram messen Kommentar-Aktivität in diesem Fenster. Selbst als Erster kommentieren und eine spezifische Frage stellen.</p>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">11</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 12: KAPITEL 12+13 — KPIs + TOOLS -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 12 + 13</div>
+  </div>
+
+  <div class="chapter-number">12</div>
+  <div class="chapter-title">Metriken &amp; KPIs</div>
+  <div class="chapter-subtitle">Täglich tracken · Wöchentlich reviewen · Follower-Ziele realistisch</div>
+
+  <h3>Tägliche Tracking-Checkliste</h3>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:8pt; font-weight:700; color:var(--red); letter-spacing:1px; margin-bottom:8px;">TIKTOK</p>
+      <ul class="dot-list">
+        <li>Watch Time / Video (Ziel: &gt;50% Completion)</li>
+        <li>Follower-Wachstum (Ziel: +50-100/Woche in Monat 1)</li>
+        <li>Views auf neuen Posts innerhalb 1 Stunde</li>
+        <li>Kommentar-Anzahl</li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-size:8pt; font-weight:700; color:var(--red); letter-spacing:1px; margin-bottom:8px;">INSTAGRAM</p>
+      <ul class="dot-list">
+        <li>Saves / Post (Ziel: &gt;5% der Reichweite)</li>
+        <li>Profile Visits aus Reels</li>
+        <li>Follower-Wachstum</li>
+        <li>Story-Views (Ziel: &gt;20% der Follower)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Follower-Ziele</h3>
+  <table class="kpi-table">
+    <thead>
+      <tr>
+        <th>Zeitraum</th>
+        <th>@the_pizzary IG</th>
+        <th>@steve IG</th>
+        <th>@the_pizzary TT</th>
+        <th>@steve TT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>April 2026</strong><br><span style="font-size:8pt; color:var(--light);">Launch-Monat</span></td>
+        <td>68 → <span class="highlight">500</span></td>
+        <td>→ <span class="highlight">300</span></td>
+        <td>→ <span class="highlight">500</span></td>
+        <td>→ <span class="highlight">1.000</span></td>
+      </tr>
+      <tr>
+        <td><strong>Juni 2026</strong><br><span style="font-size:8pt; color:var(--light);">Monat 3</span></td>
+        <td class="highlight">2.000</td>
+        <td class="highlight">1.500</td>
+        <td class="highlight">3.000</td>
+        <td class="highlight">5.000</td>
+      </tr>
+      <tr>
+        <td><strong>Sep 2026</strong><br><span style="font-size:8pt; color:var(--light);">Monat 6</span></td>
+        <td class="highlight">5.000</td>
+        <td class="highlight">3.000</td>
+        <td class="highlight">8.000</td>
+        <td class="highlight">10.000</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <p style="margin-bottom:0;"><strong>Wichtig:</strong> Mit einem einzigen viralen Video können diese Zahlen in einer Woche übertroffen werden. Das ist keine Marketing-Theorie. Das ist TikTok-Realität. Die Ziele sind konservative Basislinien ohne viralen Moment.</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="chapter-number">13</div>
+  <div class="chapter-title">Tools &amp; Workflow</div>
+
+  <div class="grid-3">
+    <div class="grid-card">
+      <div class="label">Produktion</div>
+      <div class="value" style="font-size:9pt; line-height:1.7;">iPhone (aktuell)<br>Sony ZV-E10 (empf.)<br>Ring-Light<br>Lavalier-Mikro</div>
+    </div>
+    <div class="grid-card">
+      <div class="label">Schnitt</div>
+      <div class="value" style="font-size:9pt; line-height:1.7;">CapCut (mobil, TikTok-nativ)<br>Premiere Rush<br>DaVinci Resolve</div>
+    </div>
+    <div class="grid-card">
+      <div class="label">Planung</div>
+      <div class="value" style="font-size:9pt; line-height:1.7;">Notion / Google Sheets<br>Creator Studio (Meta)<br>TikTok Creator Center<br>Later / Buffer</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">12</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 13: KAPITEL 14 — MONATSPLAN -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 14</div>
+  </div>
+
+  <div class="chapter-number">14</div>
+  <div class="chapter-title">Monatsplan — Phase 1</div>
+  <div class="chapter-subtitle">April 2026 · Woche für Woche · Launch-Modus</div>
+
+  <div class="phase-badge">Woche 1 — Launch Week (Alles auf Angriff)</div>
+  <div class="spacer" style="height:10px;"></div>
+
+  <table class="kpi-table" style="margin-bottom:20px;">
+    <thead>
+      <tr>
+        <th style="width:80px;">Tag</th>
+        <th>@the_pizzary</th>
+        <th>@steve_thepizzary</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Montag</strong><br><span style="font-size:7.5pt;color:var(--light);">Opening Day</span></td>
+        <td>Script 01 (Killer-Opener) posten</td>
+        <td>Script 04 (Persönliches Video) posten</td>
+      </tr>
+      <tr>
+        <td><strong>Dienstag</strong></td>
+        <td>Erster-Kunden-Reaktionsvideo</td>
+        <td>"Tag 1 — Was heute passiert ist" (60 sek)</td>
+      </tr>
+      <tr>
+        <td><strong>Mittwoch</strong></td>
+        <td>Script 02 (180-Sek Demo)</td>
+        <td>Stories: Behind-the-Scenes Küche</td>
+      </tr>
+      <tr>
+        <td><strong>Donnerstag</strong></td>
+        <td>—</td>
+        <td>Script 03 (Kontroverses Statement)</td>
+      </tr>
+      <tr>
+        <td><strong>Freitag</strong></td>
+        <td>Food-Porn Freitag (Close-Up, Zeitlupe)</td>
+        <td>Stories: Weekend-Teaser</td>
+      </tr>
+      <tr>
+        <td><strong>Samstag</strong></td>
+        <td>Erster Google-Review (Screenshot)</td>
+        <td>"Was mich Woche 1 gelehrt hat"</td>
+      </tr>
+      <tr>
+        <td><strong>Sonntag</strong></td>
+        <td>—</td>
+        <td>Wochenfazit (Zahlen, Learnings, Dank)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="phase-badge">Woche 2 — Engagement aufbauen</div>
+  <ul class="dot-list" style="margin-top:10px;">
+    <li>Erste Poll-Stories starten</li>
+    <li>Auf alle Kommentare der Woche 1 antworten (kein Ausnahme)</li>
+    <li>5 Micro-Influencer persönlich anschreiben (Hack 4)</li>
+    <li>#180SekundenChallenge launchen</li>
+  </ul>
+
+  <div class="phase-badge">Woche 3 — Serien starten</div>
+  <ul class="dot-list" style="margin-top:10px;">
+    <li>"Was heute bei The Pizzary passiert ist" als tägliches Format etablieren</li>
+    <li>"Diese Woche neu bei uns" als wöchentlicher Post einführen</li>
+    <li>Erstes Duett-Bait-Video (Hack 3)</li>
+    <li>Erste Kollaboration mit Berliner Creator abschließen</li>
+  </ul>
+
+  <div class="phase-badge">Woche 4 — Analyse und Optimierung</div>
+  <ul class="dot-list" style="margin-top:10px;">
+    <li>Top-3-Videos des Monats analysieren (was hat funktioniert und warum?)</li>
+    <li>Content-Pillar mit höchsten Saves identifizieren</li>
+    <li>Schwächste Formate aussortieren oder anpassen</li>
+    <li>Plan für Monat 2 aufsetzen</li>
+  </ul>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">13</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 14: KAPITEL 15 — BRAND VOICE + VISION + ACTION LIST -->
+<!-- ============================================================ -->
+<div class="page content-page">
+  <div class="page-header">
+    <div class="page-header-left">The Pizzary — Social Media Strategie</div>
+    <div class="page-header-right">Kapitel 15 + Sofort-Action-Liste</div>
+  </div>
+
+  <div class="chapter-number">15</div>
+  <div class="chapter-title">Brand Voice &amp; Langzeit-Vision</div>
+  <div class="chapter-subtitle">Wie gesprochen wird · Wohin es geht</div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div>
+      <h3>@the_pizzary</h3>
+      <div class="card">
+        <h4>Ton: Selbstbewusst. Einladend. Direkt.</h4>
+        <p>OK: "Deine Pizza. Deine Regeln."<br>
+        OK: "Zimmerstraße 91. Du weißt was zu tun ist."<br><br>
+        NICHT: "Wir würden uns freuen wenn..."<br>
+        NICHT: Lange Beschreibungen. Kurz. Hart. Klar.</p>
+      </div>
+    </div>
+    <div>
+      <h3>@steve_thepizzary</h3>
+      <div class="card">
+        <h4>Ton: Ehrlich. Verletzlich. Meinungsstark.</h4>
+        <p>OK: "Ich hab heute einen Fehler gemacht."<br>
+        OK: "Hier ist, was ich wirklich denke: [Meinung]"<br><br>
+        NICHT: Glattes Corporate-Speak.<br>
+        NICHT: Übertriebener Hype ohne Substanz.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Langzeit-Vision</h3>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="grid-card">
+      <div class="label">September 2026 (6 Monate)</div>
+      <div class="value" style="font-size:9pt; line-height:1.7;">
+        TikTok @steve: 10.000+<br>
+        Instagram @the_pizzary: 5.000+<br>
+        1 virales Video (500k+ Views)<br>
+        #180SekundenChallenge aktiv<br>
+        Email-Liste: 1.000+
+      </div>
+    </div>
+    <div class="grid-card">
+      <div class="label">April 2027 (12 Monate)</div>
+      <div class="value" style="font-size:9pt; line-height:1.7;">
+        Steve = Stimme der Berliner Foodstartup-Szene<br>
+        The Pizzary = Berliner Marke, nicht nur Restaurant<br>
+        Brand-Deals finanzieren Content<br>
+        Fundament für zweite Location
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="quote-text">"The Pizzary ist keine Pizzeria.<br>The Pizzary ist eine Bewegung."</div>
+    <div class="quote-source">Das Ziel dieser Strategie</div>
+  </div>
+
+  <h3>Sofort-Action-Liste</h3>
+  <ul class="checklist">
+    <li><div class="check-num">01</div><div class="check-box"></div>TikTok-Accounts erstellen (@the_pizzary + @steve_thepizzary)</li>
+    <li><div class="check-num">02</div><div class="check-box"></div>Profil-Bios optimieren: kurz, klar, CTA enthalten</li>
+    <li><div class="check-num">03</div><div class="check-box"></div>Script 01 und Script 04 aufnehmen und posten (Priorität 1)</li>
+    <li><div class="check-num">04</div><div class="check-box"></div>Batch-Shoot: 7-10 Clips für erste 2 Wochen filmen</li>
+    <li><div class="check-num">05</div><div class="check-box"></div>#180SekundenChallenge starten</li>
+    <li><div class="check-num">06</div><div class="check-box"></div>5 Berliner Micro-Influencer persönlich anschreiben</li>
+    <li><div class="check-num">07</div><div class="check-box"></div>Content-Kalender in Notion oder Sheets aufsetzen</li>
+    <li><div class="check-num">08</div><div class="check-box"></div>Täglich minimum 3 Stories auf Instagram</li>
+    <li><div class="check-num">09</div><div class="check-box"></div>Auf JEDEN Kommentar antworten (erste 3 Monate)</li>
+    <li><div class="check-num">10</div><div class="check-box"></div>Wöchentlicher Sunday-Review (30 Min, jeden Sonntag)</li>
+  </ul>
+
+  <div class="page-footer">
+    <div class="footer-brand">THE PIZZARY</div>
+    <div class="footer-right">14</div>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- PAGE 15: BACK COVER -->
+<!-- ============================================================ -->
+<div class="page cover" style="justify-content: center; align-items: center; text-align: center;">
+  <div style="padding: 55px;">
+    <div style="font-size:9pt; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--red); margin-bottom:30px;">
+      Der wichtigste Satz dieser Strategie
+    </div>
+
+    <div style="font-family:'Playfair Display', serif; font-size:22pt; font-weight:700; color:white; line-height:1.6; max-width:480px; margin:0 auto 40px;">
+      "Die Leute, die heute viral gehen, sind nicht die mit dem größten Budget. Es sind die, die am ehrlichsten sind."
+    </div>
+
+    <div style="width:40px; height:2px; background:var(--red); margin:0 auto 40px;"></div>
+
+    <div style="font-size:9.5pt; font-weight:300; color:rgba(255,255,255,0.6); line-height:1.9; max-width:360px; margin:0 auto 60px;">
+      Steve hat eine echte Geschichte.<br>
+      The Pizzary hat ein echtes Produkt.<br>
+      Das ist der Vorteil.<br>
+      Jetzt muss man ihn nur noch zeigen.
+    </div>
+
+    <div style="display:flex; gap:30px; justify-content:center; font-size:9pt; color:rgba(255,255,255,0.4);">
+      <span>@the_pizzary</span>
+      <span style="color:var(--red);">·</span>
+      <span>@steve_thepizzary</span>
+      <span style="color:var(--red);">·</span>
+      <span>Zimmerstraße 91, Berlin</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

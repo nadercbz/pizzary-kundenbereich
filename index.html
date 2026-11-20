@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Pizzary Dashboard</title>
+<meta name="description" content="Alles zu The Pizzary an einem Ort: Marke, Logos, Figuren, Bilder, Videos, Skripte, Druckdaten und Kontext zum Ansehen und Herunterladen.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F3F2EA">
+<link rel="icon" type="image/webp" href="media/seal.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&family=Geist+Mono:wght@400;500&display=swap">
+<script>
+  /* Hell oder Dunkel vor dem ersten Zeichnen setzen, damit nichts aufblitzt */
+  (function(){var m="auto";try{m=localStorage.getItem("pz-theme")||"auto";}catch(e){}
+    var d=m==="dark"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme",d?"dark":"light");})();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Menü öffnen"></button>
+  <a class="bar-logo" href="#/start" aria-label="The Pizzary, zur Startseite"><img id="logoImg" src="media/logo-dark.webp" alt="The Pizzary" width="420" height="119"></a>
+  <span class="mono bar-label">Kunden-Bereich</span>
+  <span class="client"><b>The Pizzary</b><span class="pill or">Dashboard</span></span>
+  <div class="bar-right">
+    <button class="search-btn" id="searchBtn" type="button" aria-label="Alles durchsuchen"><span id="searchIc"></span><span>Alles durchsuchen</span><kbd>⌘K</kbd></button>
+    <button class="icon-btn" id="themeBtn" type="button"></button>
+    <span class="avatar" aria-hidden="true">TP</span>
+  </div>
+</header>
+
+<div class="shell">
+  <nav id="side" aria-label="Bereiche"></nav>
+  <main id="view" tabindex="-1"></main>
+</div>
+
+<dialog id="lb" aria-label="Vorschau">
+  <div class="lb-bar">
+    <div class="lb-title"><b id="lbT"></b><span class="mono" id="lbS"></span></div>
+    <div class="lb-actions">
+      <a class="btn inv" id="lbDl" href="#" download><span id="lbDlI"></span>Herunterladen</a>
+      <a class="btn" id="lbTab" href="#" target="_blank" rel="noopener">Neuer Tab ↗</a>
+      <button class="btn" id="lbX" type="button">Schließen ×</button>
+    </div>
+  </div>
+  <div class="lb-stage" id="lbStage"></div>
+  <button class="icon-btn lb-nav prev" id="lbPrev" type="button" aria-label="Zurück">‹</button>
+  <button class="icon-btn lb-nav next" id="lbNext" type="button" aria-label="Weiter">›</button>
+</dialog>
+
+<dialog id="srch" aria-label="Suche">
+  <div class="sr-in"><span id="srIc"></span><input id="srQ" type="search" placeholder="Pizza, Logo, Sam, Skript, Flyer ..." autocomplete="off" aria-label="Suchbegriff"><button class="btn sm" id="srX" type="button">Esc</button></div>
+  <div class="sr-res" id="srRes"></div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
